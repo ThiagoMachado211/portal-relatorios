@@ -1,23 +1,5 @@
-<div style="margin-bottom:30px;">
-  <h1 style="font-size:32px;margin-bottom:8px;">Bem-vindo, <%= current_user.name %></h1>
-  <p style="color:#64748b;font-size:16px;">
-    Selecione um relatório para visualizar o conteúdo disponível para o seu perfil.
-  </p>
-</div>
-
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-  <% @report_pages.each do |page| %>
-    <div style="background:white;border-radius:16px;padding:22px;box-shadow:0 4px 14px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
-      <h3 style="margin-top:0;margin-bottom:10px;font-size:20px;color:#0f172a;">
-        <%= page.title %>
-      </h3>
-
-      <p style="color:#475569;min-height:60px;">
-        <%= page.description.presence || "Página de relatórios e documentos associados." %>
-      </p>
-
-      <%= link_to "Abrir relatório", report_page_path(page.slug),
-          style: "display:inline-block;margin-top:10px;background:#2563eb;color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:bold;" %>
-    </div>
-  <% end %>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, #0f172a, #1e3a8a);padding:20px;">
+  <div style="max-width:900px;text-align:center;color:white;">
+    <h1 style="font-size:54px;margin-bottom:46px;">Página de Relatórios</h1>
+  </div>
 </div>

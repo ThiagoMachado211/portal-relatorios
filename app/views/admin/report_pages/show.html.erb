@@ -1,2 +1,28 @@
-<h1>Admin::ReportPages#show</h1>
-<p>Find me in app/views/admin/report_pages/show.html.erb</p>
+<h1 style="margin-bottom:10px;"><%= @report_page.title %></h1>
+
+<p><strong>Slug:</strong> <%= @report_page.slug %></p>
+<p><strong>Descrição:</strong> <%= @report_page.description %></p>
+<p><strong>Ativo:</strong> <%= @report_page.active ? "Sim" : "Não" %></p>
+
+<p>
+  <strong>Seção lateral:</strong>
+  <%= @report_page.sidebar_section&.title || "Não vinculada" %>
+</p>
+
+<p>
+  <strong>PDF do cliente:</strong>
+  <%= @report_page.external_file.attached? ? @report_page.external_file.filename.to_s : "Não anexado" %>
+</p>
+
+<p>
+  <strong>PDF da diretoria/admin:</strong>
+  <%= @report_page.internal_file.attached? ? @report_page.internal_file.filename.to_s : "Não anexado" %>
+</p>
+
+<div style="margin-top:20px;">
+  <%= link_to "Editar", edit_admin_report_page_path(@report_page),
+      style: "display:inline-block;background:#2563eb;color:white;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
+
+  <%= link_to "Voltar", admin_report_pages_path,
+      style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;margin-left:10px;" %>
+</div>
