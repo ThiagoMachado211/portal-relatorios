@@ -1,0 +1,39 @@
+<%= form_with model: [:admin, @sidebar_section], local: true do |f| %>
+  <% if @sidebar_section.errors.any? %>
+    <div style="background:#fee2e2;color:#991b1b;padding:16px;border-radius:12px;margin-bottom:20px;">
+      <h3>Erros encontrados:</h3>
+      <ul>
+        <% @sidebar_section.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div style="background:white;padding:24px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.08);display:grid;gap:18px;">
+    <div>
+      <%= f.label :title, "Título" %><br>
+      <%= f.text_field :title, style: "width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :slug, "Slug" %><br>
+      <%= f.text_field :slug, style: "width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :position, "Posição" %><br>
+      <%= f.number_field :position, style: "width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :active, "Ativa" %>
+      <%= f.check_box :active %>
+    </div>
+
+    <div>
+      <%= f.submit "Salvar",
+          style: "background:#2563eb;color:white;border:none;padding:12px 18px;border-radius:10px;font-weight:bold;cursor:pointer;" %>
+    </div>
+  </div>
+<% end %>

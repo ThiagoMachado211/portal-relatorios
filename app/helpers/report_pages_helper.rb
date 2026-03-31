@@ -1,0 +1,2 @@
+module ReportPagesHelper
+end

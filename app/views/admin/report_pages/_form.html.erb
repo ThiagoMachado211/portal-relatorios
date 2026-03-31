@@ -1,0 +1,53 @@
+<%= form_with model: [:admin, @report_page], local: true do |f| %>
+  <% if @report_page.errors.any? %>
+    <div style="background:#fee2e2;color:#991b1b;padding:16px;border-radius:12px;margin-bottom:20px;">
+      <h3>Erros encontrados:</h3>
+      <ul>
+        <% @report_page.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div style="background:white;padding:24px;border-radius:16px;display:grid;gap:18px;">
+    <div>
+      <%= f.label :title, "Título" %><br>
+      <%= f.text_field :title %>
+    </div>
+
+    <div>
+      <%= f.label :slug, "Slug" %><br>
+      <%= f.text_field :slug %>
+    </div>
+
+    <div>
+      <%= f.label :description, "Descrição" %><br>
+      <%= f.text_area :description %>
+    </div>
+
+    <div>
+      <%= f.label :active, "Ativo" %>
+      <%= f.check_box :active %>
+    </div>
+
+    <div>
+      <%= f.label :internal_file, "PDF interno" %><br>
+      <%= f.file_field :internal_file %>
+    </div>
+
+    <div>
+      <%= f.label :external_file, "PDF externo" %><br>
+      <%= f.file_field :external_file %>
+    </div>
+
+    <div>
+      <%= f.label :sidebar_section_id, "Seção lateral" %><br>
+      <%= f.collection_select :sidebar_section_id, SidebarSection.order(:position, :title), :id, :title, prompt: "Selecione uma seção" %>
+    </div>
+
+    <div>
+      <%= f.submit "Salvar" %>
+    </div>
+  </div>
+<% end %>

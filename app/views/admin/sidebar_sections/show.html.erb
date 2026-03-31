@@ -1,0 +1,20 @@
+<h1 style="margin-bottom:10px;"><%= @sidebar_section.title %></h1>
+
+<p><strong>Slug:</strong> <%= @sidebar_section.slug %></p>
+<p><strong>Posição:</strong> <%= @sidebar_section.position %></p>
+<p><strong>Status:</strong> <%= @sidebar_section.active ? "Ativa" : "Inativa" %></p>
+
+<h3 style="margin-top:24px;">Relatórios vinculados</h3>
+<ul>
+  <% @sidebar_section.report_pages.order(:title).each do |page| %>
+    <li><%= page.title %></li>
+  <% end %>
+</ul>
+
+<div style="margin-top:20px;">
+  <%= link_to "Editar", edit_admin_sidebar_section_path(@sidebar_section),
+      style: "display:inline-block;background:#2563eb;color:white;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
+
+  <%= link_to "Voltar", admin_sidebar_sections_path,
+      style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;margin-left:10px;" %>
+</div>

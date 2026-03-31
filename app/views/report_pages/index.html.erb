@@ -1,0 +1,41 @@
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+  <div>
+    <h1 style="margin-bottom:6px;">Admin - Páginas de Relatório</h1>
+    <p style="color:#64748b;">Gerencie os relatórios e os PDFs por perfil de usuário.</p>
+  </div>
+
+  <%= link_to "Nova página", new_admin_report_page_path,
+      style: "background:#2563eb;color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:bold;" %>
+</div>
+
+<div style="background:white;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.08);overflow:hidden;">
+  <table style="width:100%;border-collapse:collapse;">
+    <thead style="background:#f8fafc;">
+      <tr>
+        <th style="text-align:left;padding:14px;">Título</th>
+        <th style="text-align:left;padding:14px;">Slug</th>
+        <th style="text-align:left;padding:14px;">Status</th>
+        <th style="text-align:left;padding:14px;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @report_pages.each do |page| %>
+        <tr style="border-top:1px solid #e5e7eb;">
+          <td style="padding:14px;"><%= page.title %></td>
+          <td style="padding:14px;"><%= page.slug %></td>
+          <td style="padding:14px;"><%= page.active ? "Ativo" : "Inativo" %></td>
+          <td style="padding:14px;">
+            <%= link_to "Ver", admin_report_page_path(page) %> |
+            <%= link_to "Editar", edit_admin_report_page_path(page) %> |
+            <%= link_to "Excluir", admin_report_page_path(page), data: { turbo_method: :delete, turbo_confirm: "Tem certeza?" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div style="margin-top:20px;">
+  <%= link_to "Voltar ao dashboard", dashboard_path,
+      style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
+</div>
