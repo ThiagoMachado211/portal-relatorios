@@ -1,13 +1,13 @@
-<h1 style="margin-bottom:70px; display:flex; justify-content:center;"><%= @sidebar_section.title %></h1>
+<h1 style="margin-bottom:40px; display:flex; justify-content:center; color:white;"><%= @sidebar_section.title %></h1>
 
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15vw;">
   <% @report_pages.each do |page| %>
-    <div style="background:grey; border-radius:16px;padding:22px;box-shadow:0 4px 14px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
+    <div style="background:#61c0f1; border-radius:16px;padding:22px;box-shadow:0 4px 14px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
       <h3 style="display:flex; justify-content:center;margin-top:0;margin-bottom:10px;font-size:20px;color:#0f172a;"><%= page.title %></h3>
 
 
       <%= link_to "Abrir relatório", report_page_path(page.slug),
-          style: "display:flex; justify-content:center; margin-top:10px;background:#2563eb;color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:bold;" %>
+          style: "display:flex; justify-content:center; margin-top:10px;background:#041194;color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:bold;" %>
     </div>
   <% end %>
 </div>

@@ -1,8 +1,8 @@
-<h1>Admin - Páginas de Relatório</h1>
+<h1 style="color:white; display:flex; justify-content:center;">Admin - Páginas de Relatório</h1>
 
 <p>
-  <%= link_to "Nova página", new_admin_report_page_path %> |
-  <%= link_to "Voltar ao dashboard", dashboard_path %>
+  <%= link_to "Nova página", new_admin_report_page_path, style: "color:white; margin-right:20px;" %> 
+  <%= link_to "Voltar ao dashboard", dashboard_path, style: "color:white" %>
 </p>
 
 <hr>
@@ -12,15 +12,15 @@
       style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
 </div>
 
-<ul>
+<ul style="color:white;">
   <% @report_pages.each do |page| %>
     <li>
       <strong><%= page.title %></strong>
       (<%= page.slug %>)
       -
-      <%= link_to "Ver", admin_report_page_path(page) %> |
-      <%= link_to "Editar", edit_admin_report_page_path(page) %> |
-      <%= link_to "Excluir", admin_report_page_path(page),
+      <%= link_to "Ver", admin_report_page_path(page), style: "color:white;" %> |
+      <%= link_to "Editar", edit_admin_report_page_path(page), style: "color:white;" %> |
+      <%= link_to "Excluir", admin_report_page_path(page), style: "color:white;",
           data: { turbo_method: :delete, turbo_confirm: "Tem certeza?" } %>
     </li>
   <% end %>

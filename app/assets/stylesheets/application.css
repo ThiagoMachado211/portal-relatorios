@@ -1,10 +1,212 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #041194, #1d2ed8);
+  color: #1f2937;
+}
+
+
+
+/* Container geral do app */
+.app-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #041194, #1d2ed8);
+}
+
+
+
+/* Header */
+.top-header {
+  background: transparent;
+  color: white;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+
+
+/* Links do header */
+.top-header .nav-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nav-button {
+  color: white;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: 0.2s;
+}
+
+.nav-button:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+
+
+/* Botão sair */
+.logout-button {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logout-button:hover {
+  background: #b91c1c;
+}
+
+
+
+/* Avisos */
+.flash-notice {
+  margin: 20px auto;
+  max-width: 1200px;
+  background: #dcfce7;
+  color: #166534;
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+.flash-alert {
+  margin: 20px auto;
+  max-width: 1200px;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+
+
+/* Estrutura principal */
+.app-shell {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+
+
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: transparent;
+  color: white;
+  padding: 20px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-item {
+  margin-bottom: 10px;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.sidebar-link:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+
+
+/* Conteúdo principal */
+.main-content {
+  position: relative;
+  flex: 1;
+  min-height: calc(100vh - 60px);
+  padding: 30px;
+  overflow: hidden;
+  background: transparent;
+}
+
+
+
+/* Marca d'água */
+.main-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.main-watermark img {
+  width: 60%;
+  max-height: 80%;
+  object-fit: contain;
+  opacity: 0.75;
+}
+
+
+
+/* Conteúdo acima da marca d'água */
+.main-content > *:not(.main-watermark) {
+  position: relative;
+  z-index: 1;
+}
+
+
+
+/* Cards */
+.card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border: 1px solid #e5e7eb;
+  width: 25%;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}

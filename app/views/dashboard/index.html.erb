@@ -1,5 +1,24 @@
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, #0f172a, #1e3a8a);padding:20px;">
-  <div style="max-width:900px;text-align:center;color:white;">
-    <h1 style="font-size:54px;margin-bottom:46px;">Página de Relatórios</h1>
-  </div>
+<div style="margin-bottom: 30px; display:flex; flex-direction:column; justify-content:center">
+  <h1 style="font-size: 32px; margin-bottom: 8px; color: white; flex:1;">
+    Bem-vindo, <%= current_user.name %>.
+  </h1>
+
+  <p style="color: rgba(255,255,255,0.85); font-size: 16px; max-width: 760px; flex:2; ">
+    Selecione uma seção na barra lateral para visualizar os relatórios disponíveis.
+  </p>
 </div>
+
+
+<% if current_user.admin? %>
+  <div style="margin-top: 24px;" class="card">
+
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+      <%= link_to "Gerenciar Relatórios", admin_report_pages_path,
+          style: "display:inline-block;background:#2563eb;color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:bold;" %>
+
+      <%= link_to "Gerenciar Seções", admin_sidebar_sections_path,
+          style: "display:inline-block;background:#0f172a;color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:bold;" %>
+    </div>
+  </div>
+<% end %>

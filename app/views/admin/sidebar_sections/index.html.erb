@@ -1,6 +1,6 @@
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
   <div>
-    <h1 style="margin-bottom:6px;">Admin - Seções da Lateral</h1>
+    <h1 style="margin-bottom:6px; color:white; display:flex; justify-content:center;">Admin - Seções da Lateral</h1>
     <p style="color:#64748b;">Gerencie os itens exibidos na navegação lateral.</p>
   </div>
 
@@ -13,11 +13,11 @@
       style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
 </div>
 
-<div style="background:white;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.08);overflow:hidden;">
+<div>
   <table style="width:100%;border-collapse:collapse;">
     <thead style="background:#f8fafc;">
       <tr>
-        <th style="text-align:left;padding:14px;">Título</th>
+        <th style="text-align:left;padding:14px;;">Título</th>
         <th style="text-align:left;padding:14px;">Slug</th>
         <th style="text-align:left;padding:14px;">Posição</th>
         <th style="text-align:left;padding:14px;">Status</th>
@@ -26,7 +26,7 @@
     </thead>
     <tbody>
       <% @sidebar_sections.each do |section| %>
-        <tr style="border-top:1px solid #e5e7eb;">
+        <tr style="border-top:1px solid #e5e7eb; background:white;">
           <td style="padding:14px;"><%= section.title %></td>
           <td style="padding:14px;"><%= section.slug %></td>
           <td style="padding:14px;"><%= section.position %></td>

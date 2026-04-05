@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>PortalRelatorios</title>
+    <title>Relatorios_EstudoPlay</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -10,68 +10,67 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body style="margin:0;font-family:Arial, sans-serif;background:#f4f6f8;color:#1f2937;">
+
+  <body>
     <% if user_signed_in? %>
       <% sidebar_sections = SidebarSection.where(active: true).order(:position, :title) %>
 
-      <div style="background:#0f172a;color:white;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <strong style="font-size:20px;">Relatórios - EstudoPlay</strong>
-        </div>
+      <div class="app-wrapper">
+        <div class="top-header">
+          <div>
+            <strong style="font-size: 20px;">Relatórios - EstudoPlay</strong>
+          </div>
 
-        <div style="display:flex;gap:12px;align-items:center;">
-          <span><strong><%= current_user.name %></strong> - <%= current_user.email %></span>
+          <div class="nav-links">
+            <span>
+              <strong><%= current_user.name %></strong> - <%= current_user.email %>
+            </span>
 
-          <%= link_to "Dashboard", dashboard_path,
-              style: "color:white;text-decoration:none;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);" %>
+            <%= link_to "Dashboard", dashboard_path, class: "nav-button" %>
 
-          <% if current_user.admin? %>
-            <%= link_to "Relatórios", admin_report_pages_path,
-                style: "color:white;text-decoration:none;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);" %>
-
-            <%= link_to "Seções", admin_sidebar_sections_path,
-                style: "color:white;text-decoration:none;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);" %>
-          <% end %>
-
-          <%= button_to "Sair", destroy_user_session_path, method: :delete,
-              style: "background:#dc2626;color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;" %>
-        </div>
-      </div>
-
-
-      <% if notice && notice != "Signed in successfully." && notice != "Signed out successfully." %>
-        <div style="margin:20px auto;max-width:1200px;background:#dcfce7;color:#166534;padding:12px 16px;border-radius:10px;">
-          <%= notice %>
-        </div>
-      <% end %>
-
-      <% if alert %>
-        <div style="margin:20px auto;max-width:1200px;background:#fee2e2;color:#991b1b;padding:12px 16px;border-radius:10px;">
-          <%= alert %>
-        </div>
-      <% end %>
-
-      <div style="display:flex;min-height:calc(100vh - 60px);">
-        <aside style="width:260px;background:#111827;color:white;padding:20px;">
-
-          <ul style="list-style:none;padding:0;margin:0;">
-            <% sidebar_sections.each do |section| %>
-              <li style="margin-bottom:10px;">
-                <%= link_to section.title, sidebar_section_path(section.slug), 
-                style: "color:white;text-decoration:none;display:block;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.06);" %>
-              </li>
+            <% if current_user.admin? %>
             <% end %>
-          </ul>
-        </aside>
 
-        <main style="flex:1;padding:30px;">
-          <%= yield %>
-        </main>
+            <%= button_to "Sair", destroy_user_session_path, method: :delete, class: "logout-button" %>
+          </div>
+        </div>
+
+        
+        <% if notice && notice != "Signed in successfully." && notice != "Signed out successfully." %>
+          <div class="flash-notice">
+            <%= notice %>
+          </div>
+        <% end %>
+
+        <% if alert %>
+          <div class="flash-alert">
+            <%= alert %>
+          </div>
+        <% end %>
+
+        <div class="app-shell">
+          <aside class="sidebar">
+            <ul class="sidebar-list">
+              <% sidebar_sections.each do |section| %>
+                <li class="sidebar-item">
+                  <%= link_to section.title, sidebar_section_path(section.slug), class: "sidebar-link" %>
+                </li>
+              <% end %>
+            </ul>
+          </aside>
+
+          <main class="main-content">
+            <div class="main-watermark">
+              <%= image_tag "Logo_EP_Fundo_Transparente.png", alt: "Marca d'água" %>
+            </div>
+
+            <%= yield %>
+          </main>
+        </div>
       </div>
     <% else %>
-      <div style="max-width:1200px;margin:30px auto;padding:0 20px;">
-        <%= yield %>
-      </div>
+      <%= yield %>
     <% end %>
   </body>
+
 </html>
