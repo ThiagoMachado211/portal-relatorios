@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_31_013023) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_07_161219) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,12 +44,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_31_013023) do
 
   create_table "report_pages", force: :cascade do |t|
     t.boolean "active"
+    t.integer "content_type", default: 0
     t.datetime "created_at", null: false
     t.text "description"
+    t.text "embed_url"
+    t.integer "position", default: 0
     t.integer "sidebar_section_id"
     t.string "slug"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.integer "visible_for", default: 2
     t.index ["sidebar_section_id"], name: "index_report_pages_on_sidebar_section_id"
   end
 

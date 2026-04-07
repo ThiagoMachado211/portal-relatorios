@@ -23,8 +23,13 @@
           </div>
 
           <nav class="sidebar-nav">
-            <%= link_to "Dashboard", dashboard_path, class: "sidebar-link active" %>
+            <%= link_to "Dashboard", dashboard_path, class: "sidebar-link" %>
+
+            <% SidebarSection.active.ordered.each do |section| %>
+              <%= link_to section.title, report_page_path(section.slug), class: "sidebar-link" %>
+            <% end %>
           </nav>
+
         </aside>
 
         <div class="app-main">

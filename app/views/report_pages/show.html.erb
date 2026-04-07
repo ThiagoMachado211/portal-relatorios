@@ -1,18 +1,44 @@
-<h1 style="color:white; display:flex; justify-content:center"><%= @report_page.title %></h1>
+<div class="dashboard-grid">
+  <div class="card">
+    <div class="card-title"><%= @sidebar_section.title %></div>
+    <div class="card-subtitle">
+      Conteúdos disponíveis para o seu perfil
+    </div>
 
-<% file =
-  if current_user.client?
-    @report_page.external_file
-  else
-    @report_page.internal_file
-  end
-%>
+    <% if @report_pages.any? %>
+      <% @report_pages.each do |report| %>
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-title"><%= report.title %></div>
 
-<% if file.attached? %>
-  <iframe src="<%= rails_blob_path(file, disposition: "inline") %>" width="100%" height="800"></iframe>
-<% else %>
-  <p>Sem PDF disponível</p>
-<% end %>
+          <% if report.description.present? %>
+            <div class="card-subtitle"><%= report.description %></div>
+          <% end %>
 
-<br>
-<%= link_to "Voltar", dashboard_path %>
+          <% if report.pdf? || report.report? || report.heatmap? || report.streamlit? %>
+            <iframe
+              src="<%= report.embed_url %>"
+              width="100%"
+              height="700"
+              style="border: 1px solid #e5e7eb; border-radius: 12px; background: white;">
+            </iframe>
+
+          <% elsif report.external_link? %>
+            <p>
+              <%= link_to "Abrir conteúdo", report.embed_url, target: "_blank", rel: "noopener" %>
+            </p>
+
+          <% elsif report.image? %>
+            <img
+              src="<%= report.embed_url %>"
+              alt="<%= report.title %>"
+              style="max-width: 100%; border-radius: 12px; border: 1px solid #e5e7eb;">
+          <% else %>
+            <p>Tipo de conteúdo não suportado.</p>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <p>Nenhum conteúdo disponível para o seu perfil nesta seção.</p>
+    <% end %>
+  </div>
+</div>
