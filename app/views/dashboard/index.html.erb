@@ -1,3 +1,91 @@
-<h1>Dashboard</h1>
-<p>Bem-vindo, <%= current_user.name %></p>
-<p>Perfil: <%= current_user.user_type %></p>
+<div class="dashboard-grid">
+  <section class="metrics-grid">
+    <div class="metric-card primary">
+      <div class="metric-label">Total de Relatórios</div>
+      <div class="metric-value">128</div>
+      <div class="metric-sub">Atualizado hoje</div>
+    </div>
+
+    <div class="metric-card success">
+      <div class="metric-label">Relatórios Ativos</div>
+      <div class="metric-value">94</div>
+      <div class="metric-sub">Em acompanhamento</div>
+    </div>
+
+    <div class="metric-card danger">
+      <div class="metric-label">Pendências</div>
+      <div class="metric-value">07</div>
+      <div class="metric-sub">Exigem atenção</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Seu Perfil</div>
+      <div class="metric-value"><%= current_user.user_type.to_s.capitalize %></div>
+      <div class="metric-sub">Controle por nível de acesso</div>
+    </div>
+  </section>
+
+  <section class="main-grid">
+    <div class="card">
+      <div class="card-title">Atividades Recentes</div>
+      <div class="card-subtitle">Resumo visual das últimas movimentações do portal</div>
+
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-left">
+            <div class="activity-title">Relatório mensal publicado</div>
+            <div class="activity-meta">Hoje, 08:30</div>
+          </div>
+          <div class="activity-value positive">Concluído</div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-left">
+            <div class="activity-title">Indicadores acadêmicos atualizados</div>
+            <div class="activity-meta">Ontem, 17:45</div>
+          </div>
+          <div class="activity-value positive">Atualizado</div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-left">
+            <div class="activity-title">Nova pendência identificada</div>
+            <div class="activity-meta">Ontem, 15:10</div>
+          </div>
+          <div class="activity-value negative">Pendente</div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-left">
+            <div class="activity-title">Base consolidada importada</div>
+            <div class="activity-meta">Há 2 dias</div>
+          </div>
+          <div class="activity-value positive">Importado</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Seu Acesso</div>
+
+      <div class="profile-card">
+        <div class="profile-line">
+          <div class="profile-key">Nome</div>
+          <div class="profile-value"><%= current_user.name %></div>
+        </div>
+
+        <div class="profile-line">
+          <div class="profile-key">E-mail</div>
+          <div class="profile-value"><%= current_user.email %></div>
+        </div>
+
+        <div class="profile-line">
+          <div class="profile-key">Perfil</div>
+          <div class="profile-value">
+            <span class="status-badge"><%= current_user.user_type %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
