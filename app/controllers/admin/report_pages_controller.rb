@@ -1,9 +1,9 @@
 class Admin::ReportPagesController < Admin::BaseController
   before_action :set_report_page, only: [:show, :edit, :update, :destroy]
-  before_action :load_sidebar_sections, only: [:new, :create, :edit, :update]
+  before_action :load_sidebar_data, only: [:new, :create, :edit, :update]
 
   def index
-    @report_pages = ReportPage.includes(:sidebar_section).ordered
+    @report_pages = ReportPage.includes(:sidebar_section, :sidebar_subsection).ordered
   end
 
   def show
@@ -45,8 +45,9 @@ class Admin::ReportPagesController < Admin::BaseController
     @report_page = ReportPage.find(params[:id])
   end
 
-  def load_sidebar_sections
+  def load_sidebar_data
     @sidebar_sections = SidebarSection.active.ordered
+    @sidebar_subsections = SidebarSubsection.active.ordered
   end
 
   def report_page_params
@@ -55,6 +56,7 @@ class Admin::ReportPagesController < Admin::BaseController
       :slug,
       :description,
       :sidebar_section_id,
+      :sidebar_subsection_id,
       :content_type,
       :visible_for,
       :embed_url,

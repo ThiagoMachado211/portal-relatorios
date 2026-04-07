@@ -1,5 +1,6 @@
 class ReportPage < ApplicationRecord
   belongs_to :sidebar_section
+  belongs_to :sidebar_subsection, optional: true
 
   enum :content_type, {
     pdf: 0,

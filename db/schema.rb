@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_07_161219) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_07_192907) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,11 +50,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_07_161219) do
     t.text "embed_url"
     t.integer "position", default: 0
     t.integer "sidebar_section_id"
+    t.bigint "sidebar_subsection_id"
     t.string "slug"
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "visible_for", default: 2
     t.index ["sidebar_section_id"], name: "index_report_pages_on_sidebar_section_id"
+    t.index ["sidebar_subsection_id"], name: "index_report_pages_on_sidebar_subsection_id"
   end
 
   create_table "sidebar_sections", force: :cascade do |t|
@@ -64,6 +66,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_07_161219) do
     t.string "slug"
     t.string "title"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "sidebar_subsections", force: :cascade do |t|
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.integer "position"
+    t.bigint "sidebar_section_id", null: false
+    t.string "slug"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["sidebar_section_id"], name: "index_sidebar_subsections_on_sidebar_section_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -85,4 +98,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_07_161219) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "report_pages", "sidebar_sections"
+  add_foreign_key "report_pages", "sidebar_subsections"
+  add_foreign_key "sidebar_subsections", "sidebar_sections"
 end
