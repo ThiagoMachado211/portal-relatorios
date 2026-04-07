@@ -419,3 +419,16 @@ a {
 .hidden {
   display: none !important;
 }
+
+.sidebar-toggle-button {
+  color: rgba(255,255,255,0.86);
+  padding: 12px 14px;
+  border-radius: 12px;
+  transition: 0.2s ease;
+  font-weight: 600;
+}
+
+.sidebar-toggle-button:hover {
+  background: rgba(255,255,255,0.12);
+  color: white;
+}
