@@ -11,11 +11,8 @@ export default class extends Controller {
 
   async changeSection() {
     const sectionId = this.sectionSelectTarget.value
-
     this.resetSubsectionOptions()
-
     if (!sectionId) return
-
     await this.loadSubsections(sectionId)
   }
 
@@ -27,9 +24,7 @@ export default class extends Controller {
         }
       })
 
-      if (!response.ok) {
-        throw new Error("Erro ao carregar subseções")
-      }
+      if (!response.ok) { throw new Error("Erro ao carregar subseções") }
 
       const subsections = await response.json()
 
