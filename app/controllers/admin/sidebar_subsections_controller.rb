@@ -39,6 +39,16 @@ class Admin::SidebarSubsectionsController < Admin::BaseController
     redirect_to admin_sidebar_subsections_path, notice: "Subseção removida com sucesso."
   end
 
+  def by_section
+    subsections = SidebarSubsection
+                    .where(sidebar_section_id: params[:sidebar_section_id])
+                    .active
+                    .ordered
+                    .select(:id, :title)
+
+    render json: subsections
+  end
+
   private
 
   def set_sidebar_subsection

@@ -15,7 +15,11 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :sidebar_sections
-    resources :sidebar_subsections
+    resources :sidebar_subsections do
+      collection do
+        get :by_section
+      end
+    end
     resources :report_pages
   end
 end

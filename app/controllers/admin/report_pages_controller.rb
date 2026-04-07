@@ -19,6 +19,7 @@ class Admin::ReportPagesController < Admin::BaseController
     if @report_page.save
       redirect_to admin_report_pages_path, notice: "Relatório criado com sucesso."
     else
+      load_sidebar_data
       render :new, status: :unprocessable_entity
     end
   end
@@ -30,6 +31,7 @@ class Admin::ReportPagesController < Admin::BaseController
     if @report_page.update(report_page_params)
       redirect_to admin_report_pages_path, notice: "Relatório atualizado com sucesso."
     else
+      load_sidebar_data
       render :edit, status: :unprocessable_entity
     end
   end
@@ -47,7 +49,13 @@ class Admin::ReportPagesController < Admin::BaseController
 
   def load_sidebar_data
     @sidebar_sections = SidebarSection.active.ordered
-    @sidebar_subsections = SidebarSubsection.active.ordered
+
+    @sidebar_subsections =
+      if @report_page&.sidebar_section_id.present?
+        SidebarSubsection.where(sidebar_section_id: @report_page.sidebar_section_id).active.ordered
+      else
+        []
+      end
   end
 
   def report_page_params

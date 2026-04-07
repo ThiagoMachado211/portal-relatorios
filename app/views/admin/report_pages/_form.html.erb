@@ -1,63 +1,85 @@
-<%= form_with model: [:admin, @report_page], local: true do |f| %>
-  <div style="display:grid;gap:16px;">
-    <div>
-      <%= f.label :title, "Título" %><br>
-      <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-    </div>
+<div data-controller="subsection-select">
+  <%= form_with model: [:admin, @report_page], local: true do |f| %>
+    <div style="display:grid;gap:16px;">
+      <div>
+        <%= f.label :title, "Título" %><br>
+        <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+      </div>
 
-    <div>
-      <%= f.label :slug, "Slug" %><br>
-      <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-    </div>
+      <div>
+        <%= f.label :slug, "Slug" %><br>
+        <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+      </div>
 
-    <div>
-      <%= f.label :description, "Descrição" %><br>
-      <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-    </div>
+      <div>
+        <%= f.label :description, "Descrição" %><br>
+        <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+      </div>
 
-    <div>
-      <%= f.label :sidebar_section_id, "Seção" %><br>
-      <%= f.collection_select :sidebar_section_id, @sidebar_sections, :id, :title, { prompt: "Selecione uma seção" }, { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
-    </div>
+      <div>
+        <%= f.label :sidebar_section_id, "Seção" %><br>
+        <%= f.collection_select :sidebar_section_id,
+              @sidebar_sections,
+              :id,
+              :title,
+              { prompt: "Selecione uma seção" },
+              {
+                style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
+                data: {
+                  subsection_select_target: "sectionSelect",
+                  action: "change->subsection-select#changeSection"
+                }
+              } %>
+      </div>
 
-    <div>
-      <%= f.label :sidebar_subsection_id, "Subseção (opcional)" %><br>
-      <%= f.collection_select :sidebar_subsection_id, @sidebar_subsections, :id, :title, { prompt: "Sem subseção" }, { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
-    </div>
+      <div>
+        <%= f.label :sidebar_subsection_id, "Subseção (opcional)" %><br>
+        <%= f.select :sidebar_subsection_id,
+              options_for_select(
+                @sidebar_subsections.map { |s| [s.title, s.id] },
+                @report_page.sidebar_subsection_id
+              ),
+              { include_blank: "Sem subseção" },
+              {
+                style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
+                data: { subsection_select_target: "subsectionSelect" }
+              } %>
+      </div>
 
-    <div>
-      <%= f.label :content_type, "Tipo de conteúdo" %><br>
-      <%= f.select :content_type,
-            ReportPage.content_types.keys.map { |k| [k.humanize, k] },
-            {},
-            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
-    </div>
+      <div>
+        <%= f.label :content_type, "Tipo de conteúdo" %><br>
+        <%= f.select :content_type,
+              ReportPage.content_types.keys.map { |k| [k.humanize, k] },
+              {},
+              { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+      </div>
 
-    <div>
-      <%= f.label :visible_for, "Visível para" %><br>
-      <%= f.select :visible_for,
-            ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
-            {},
-            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
-    </div>
+      <div>
+        <%= f.label :visible_for, "Visível para" %><br>
+        <%= f.select :visible_for,
+              ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
+              {},
+              { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+      </div>
 
-    <div>
-      <%= f.label :embed_url, "URL / Embed" %><br>
-      <%= f.text_area :embed_url, rows: 3, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-    </div>
+      <div>
+        <%= f.label :embed_url, "URL / Embed" %><br>
+        <%= f.text_area :embed_url, rows: 3, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+      </div>
 
-    <div>
-      <%= f.label :position, "Posição" %><br>
-      <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-    </div>
+      <div>
+        <%= f.label :position, "Posição" %><br>
+        <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+      </div>
 
-    <div>
-      <%= f.check_box :active %>
-      <%= f.label :active, "Ativo" %>
-    </div>
+      <div>
+        <%= f.check_box :active %>
+        <%= f.label :active, "Ativo" %>
+      </div>
 
-    <div>
-      <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
+      <div>
+        <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
+      </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>
