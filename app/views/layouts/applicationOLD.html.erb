@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Relatorios_EstudoPlay</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <% if user_signed_in? %>
+      <% sidebar_sections = SidebarSection.where(active: true).order(:position, :title) %>
+
+      <div class="app-wrapper">
+        <div class="top-header">
+          <div>
+            <strong style="font-size: 20px;">Relatórios - EstudoPlay</strong>
+          </div>
+
+          <div class="nav-links">
+            <span>
+              <strong><%= current_user.name %></strong> - <%= current_user.email %>
+            </span>
+
+            <%= link_to "Dashboard", dashboard_path, class: "nav-button" %>
+
+            <% if current_user.admin? %>
+            <% end %>
+
+            <%= button_to "Sair", destroy_user_session_path, method: :delete, class: "logout-button" %>
+          </div>
+        </div>
+
+        
+        <% if notice && notice != "Signed in successfully." && notice != "Signed out successfully." %>
+          <div class="flash-notice">
+            <%= notice %>
+          </div>
+        <% end %>
+
+        <% if alert %>
+          <div class="flash-alert">
+            <%= alert %>
+          </div>
+        <% end %>
+
+        <div class="app-shell">
+          <aside class="sidebar">
+            <ul class="sidebar-list">
+              <% sidebar_sections.each do |section| %>
+                <li class="sidebar-item">
+                  <%= link_to section.title, sidebar_section_path(section.slug), class: "sidebar-link" %>
+                </li>
+              <% end %>
+            </ul>
+          </aside>
+
+          <main class="main-content">
+            <div class="main-watermark">
+              <%= image_tag "Logo_EP_Fundo_Transparente.png", alt: "Marca d'água" %>
+            </div>
+
+            <%= yield %>
+          </main>
+        </div>
+      </div>
+    <% else %>
+      <%= yield %>
+    <% end %>
+  </body>
+
+</html>
