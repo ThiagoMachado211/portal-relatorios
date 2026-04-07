@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   end
 
   unauthenticated do
-    root to: "devise/sessions#new", as: :unauthenticated_root
+    root to: redirect("/users/sign_in"), as: :unauthenticated_root
   end
 
   get "/dashboard", to: "dashboard#index"
