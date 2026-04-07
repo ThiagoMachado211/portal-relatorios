@@ -5,11 +5,30 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <% if user_signed_in? %>
+      <div style="min-height:100vh;background:#0f172a;color:white;">
+        <header style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:#111827;border-bottom:1px solid rgba(255,255,255,.08);">
+          <div style="font-size:20px;font-weight:bold;">Relatórios - EstudoPlay</div>
+
+          <div style="display:flex;align-items:center;gap:16px;">
+            <span><strong><%= current_user.name %></strong> - <%= current_user.email %></span>
+            <%= link_to "Dashboard", dashboard_path, style: "color:white;text-decoration:none;padding:8px 14px;background:#2563eb;border-radius:8px;" %>
+            <%= button_to "Sair", destroy_user_session_path, method: :delete, form: { style: "display:inline" }, style: "padding:8px 14px;border:none;border-radius:8px;background:#dc2626;color:white;cursor:pointer;" %>
+          </div>
+        </header>
+
+        <main style="padding:32px;">
+          <%= yield %>
+        </main>
+      </div>
+    <% else %>
+      <%= yield %>
+    <% end %>
   </body>
 </html>
