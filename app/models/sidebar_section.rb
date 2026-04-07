@@ -1,4 +1,5 @@
 class SidebarSection < ApplicationRecord
+  has_many :sidebar_subsections, dependent: :destroy
   has_many :report_pages, dependent: :destroy
 
   scope :active, -> { where(active: true) }
