@@ -1,4 +1,4 @@
-<div data-controller="subsection-select">
+<div data-controller="subsection-select embed-preview">
   <%= form_with model: [:admin, @report_page], local: true do |f| %>
     <div style="display:grid;gap:16px;">
       <div>
@@ -51,7 +51,13 @@
         <%= f.select :content_type,
               ReportPage.content_types.keys.map { |k| [k.humanize, k] },
               {},
-              { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+              {
+                style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
+                data: {
+                  embed_preview_target: "type",
+                  action: "change->embed-preview#update"
+                }
+              } %>
       </div>
 
       <div>
@@ -64,7 +70,13 @@
 
       <div>
         <%= f.label :embed_url, "URL / Embed" %><br>
-        <%= f.text_area :embed_url, rows: 3, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+        <%= f.text_area :embed_url,
+              rows: 3,
+              style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
+              data: {
+                embed_preview_target: "input",
+                action: "input->embed-preview#update"
+              } %>
       </div>
 
       <div>
@@ -75,6 +87,36 @@
       <div>
         <%= f.check_box :active %>
         <%= f.label :active, "Ativo" %>
+      </div>
+
+      <div style="margin-top:10px;padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
+        <div style="font-weight:700;margin-bottom:12px;color:#0f172a;">Prévia do conteúdo</div>
+
+        <div data-embed-preview-target="empty" style="color:#64748b;">
+          Nenhuma prévia disponível.
+        </div>
+
+        <iframe
+          data-embed-preview-target="frame"
+          class="hidden"
+          width="100%"
+          height="500"
+          style="border:1px solid #cbd5e1;border-radius:12px;background:white;">
+        </iframe>
+
+        <img
+          data-embed-preview-target="image"
+          class="hidden"
+          alt="Prévia da imagem"
+          style="max-width:100%;border-radius:12px;border:1px solid #cbd5e1;" />
+
+        <a
+          data-embed-preview-target="link"
+          class="hidden"
+          target="_blank"
+          rel="noopener"
+          style="color:#2563eb;word-break:break-all;">
+        </a>
       </div>
 
       <div>
