@@ -1,27 +1,38 @@
-<h1 style="color:white; display:flex; justify-content:center;">Admin - Páginas de Relatório</h1>
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div>
+      <div class="card-title">Relatórios / Conteúdos</div>
+      <div class="card-subtitle">Gerencie os conteúdos exibidos para client e manager</div>
+    </div>
 
-<p>
-  <%= link_to "Nova página", new_admin_report_page_path, style: "color:white; margin-right:20px;" %> 
-  <%= link_to "Voltar ao dashboard", dashboard_path, style: "color:white" %>
-</p>
+    <%= link_to "Novo Conteúdo", new_admin_report_page_path, class: "logout-button", style: "background:#2563eb;" %>
+  </div>
 
-<hr>
-
-<div style="margin-bottom:20px;">
-  <%= link_to "Gerenciar seções da lateral", admin_sidebar_sections_path,
-      style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
+  <table style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr style="text-align:left;border-bottom:1px solid #e5e7eb;">
+        <th style="padding:12px;">Título</th>
+        <th style="padding:12px;">Seção</th>
+        <th style="padding:12px;">Tipo</th>
+        <th style="padding:12px;">Visível para</th>
+        <th style="padding:12px;">Ativo</th>
+        <th style="padding:12px;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @report_pages.each do |report| %>
+        <tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:12px;"><%= report.title %></td>
+          <td style="padding:12px;"><%= report.sidebar_section&.title %></td>
+          <td style="padding:12px;"><%= report.content_type %></td>
+          <td style="padding:12px;"><%= report.visible_for %></td>
+          <td style="padding:12px;"><%= report.active ? "Sim" : "Não" %></td>
+          <td style="padding:12px;display:flex;gap:8px;">
+            <%= link_to "Editar", edit_admin_report_page_path(report), class: "sidebar-link", style: "color:#2563eb;background:#eff6ff;" %>
+            <%= button_to "Excluir", admin_report_page_path(report), method: :delete, form: { style: "display:inline;" }, class: "logout-button", style: "padding:8px 12px;" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
-
-<ul style="color:white;">
-  <% @report_pages.each do |page| %>
-    <li>
-      <strong><%= page.title %></strong>
-      (<%= page.slug %>)
-      -
-      <%= link_to "Ver", admin_report_page_path(page), style: "color:white;" %> |
-      <%= link_to "Editar", edit_admin_report_page_path(page), style: "color:white;" %> |
-      <%= link_to "Excluir", admin_report_page_path(page), style: "color:white;",
-          data: { turbo_method: :delete, turbo_confirm: "Tem certeza?" } %>
-    </li>
-  <% end %>
-</ul>

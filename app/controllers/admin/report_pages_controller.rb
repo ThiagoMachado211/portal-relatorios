@@ -1,10 +1,9 @@
-class Admin::ReportPagesController < ApplicationController
-  before_action :authenticate_user!
-  before_action :ensure_admin!
+class Admin::ReportPagesController < Admin::BaseController
   before_action :set_report_page, only: [:show, :edit, :update, :destroy]
+  before_action :load_sidebar_sections, only: [:new, :create, :edit, :update]
 
   def index
-    @report_pages = ReportPage.order(:title)
+    @report_pages = ReportPage.includes(:sidebar_section).ordered
   end
 
   def show
@@ -18,7 +17,7 @@ class Admin::ReportPagesController < ApplicationController
     @report_page = ReportPage.new(report_page_params)
 
     if @report_page.save
-      redirect_to admin_report_page_path(@report_page), notice: "Página criada com sucesso."
+      redirect_to admin_report_pages_path, notice: "Relatório criado com sucesso."
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +28,7 @@ class Admin::ReportPagesController < ApplicationController
 
   def update
     if @report_page.update(report_page_params)
-      redirect_to admin_report_page_path(@report_page), notice: "Página atualizada com sucesso."
+      redirect_to admin_report_pages_path, notice: "Relatório atualizado com sucesso."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -37,17 +36,17 @@ class Admin::ReportPagesController < ApplicationController
 
   def destroy
     @report_page.destroy
-    redirect_to admin_report_pages_path, notice: "Página removida com sucesso."
+    redirect_to admin_report_pages_path, notice: "Relatório removido com sucesso."
   end
 
   private
 
-  def ensure_admin!
-    redirect_to dashboard_path, alert: "Acesso não autorizado." unless current_user.admin?
-  end
-
   def set_report_page
     @report_page = ReportPage.find(params[:id])
+  end
+
+  def load_sidebar_sections
+    @sidebar_sections = SidebarSection.active.ordered
   end
 
   def report_page_params
@@ -55,10 +54,12 @@ class Admin::ReportPagesController < ApplicationController
       :title,
       :slug,
       :description,
-      :active,
-      :internal_file,
-      :external_file,
-      :sidebar_section_id
+      :sidebar_section_id,
+      :content_type,
+      :visible_for,
+      :embed_url,
+      :position,
+      :active
     )
   end
 end

@@ -1,53 +1,58 @@
 <%= form_with model: [:admin, @report_page], local: true do |f| %>
-  <% if @report_page.errors.any? %>
-    <div style="background:#fee2e2;color:#991b1b;padding:16px;border-radius:12px;margin-bottom:20px;">
-      <h3>Erros encontrados:</h3>
-      <ul>
-        <% @report_page.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div style="background:white;padding:24px;border-radius:16px;display:grid;gap:18px;">
+  <div style="display:grid;gap:16px;">
     <div>
       <%= f.label :title, "Título" %><br>
-      <%= f.text_field :title %>
+      <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
     <div>
       <%= f.label :slug, "Slug" %><br>
-      <%= f.text_field :slug %>
+      <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
     <div>
       <%= f.label :description, "Descrição" %><br>
-      <%= f.text_area :description %>
+      <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
     <div>
-      <%= f.label :active, "Ativo" %>
+      <%= f.label :sidebar_section_id, "Seção" %><br>
+      <%= f.collection_select :sidebar_section_id, @sidebar_sections, :id, :title, { prompt: "Selecione uma seção" }, { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :content_type, "Tipo de conteúdo" %><br>
+      <%= f.select :content_type,
+            ReportPage.content_types.keys.map { |k| [k.humanize, k] },
+            {},
+            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :visible_for, "Visível para" %><br>
+      <%= f.select :visible_for,
+            ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
+            {},
+            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :embed_url, "URL / Embed" %><br>
+      <%= f.text_area :embed_url, rows: 3, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :position, "Posição" %><br>
+      <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
       <%= f.check_box :active %>
+      <%= f.label :active, "Ativo" %>
     </div>
 
     <div>
-      <%= f.label :internal_file, "PDF interno" %><br>
-      <%= f.file_field :internal_file %>
-    </div>
-
-    <div>
-      <%= f.label :external_file, "PDF externo" %><br>
-      <%= f.file_field :external_file %>
-    </div>
-
-    <div>
-      <%= f.label :sidebar_section_id, "Seção lateral" %><br>
-      <%= f.collection_select :sidebar_section_id, SidebarSection.order(:position, :title), :id, :title, prompt: "Selecione uma seção" %>
-    </div>
-
-    <div>
-      <%= f.submit "Salvar" %>
+      <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
     </div>
   </div>
 <% end %>

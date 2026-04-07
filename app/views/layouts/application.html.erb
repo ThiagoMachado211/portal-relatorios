@@ -28,7 +28,15 @@
             <% SidebarSection.active.ordered.each do |section| %>
               <%= link_to section.title, report_page_path(section.slug), class: "sidebar-link" %>
             <% end %>
+
+            <% if current_user.admin? %>
+              <hr style="border:none;border-top:1px solid rgba(255,255,255,0.12);margin:16px 0;">
+
+              <%= link_to "Admin - Seções", admin_sidebar_sections_path, class: "sidebar-link" %>
+              <%= link_to "Admin - Conteúdos", admin_report_pages_path, class: "sidebar-link" %>
+            <% end %>
           </nav>
+
         </aside>
 
         <div class="app-main">

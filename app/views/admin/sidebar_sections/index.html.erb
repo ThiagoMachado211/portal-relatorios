@@ -1,48 +1,36 @@
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-  <div>
-    <h1 style="margin-bottom:6px; color:white; display:flex; justify-content:center;">Admin - Seções da Lateral</h1>
-    <p style="color:#64748b;">Gerencie os itens exibidos na navegação lateral.</p>
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div>
+      <div class="card-title">Seções da Sidebar</div>
+      <div class="card-subtitle">Gerencie as seções exibidas no menu lateral</div>
+    </div>
+
+    <%= link_to "Nova Seção", new_admin_sidebar_section_path, class: "logout-button", style: "background:#2563eb;" %>
   </div>
 
-  <%= link_to "Nova seção", new_admin_sidebar_section_path,
-      style: "background:#2563eb;color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:bold;" %>
-</div>
-
-<div style="margin-bottom:20px;">
-  <%= link_to "Gerenciar relatórios", admin_report_pages_path,
-      style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
-</div>
-
-<div>
   <table style="width:100%;border-collapse:collapse;">
-    <thead style="background:#f8fafc;">
-      <tr>
-        <th style="text-align:left;padding:14px;;">Título</th>
-        <th style="text-align:left;padding:14px;">Slug</th>
-        <th style="text-align:left;padding:14px;">Posição</th>
-        <th style="text-align:left;padding:14px;">Status</th>
-        <th style="text-align:left;padding:14px;">Ações</th>
+    <thead>
+      <tr style="text-align:left;border-bottom:1px solid #e5e7eb;">
+        <th style="padding:12px;">Título</th>
+        <th style="padding:12px;">Slug</th>
+        <th style="padding:12px;">Posição</th>
+        <th style="padding:12px;">Ativa</th>
+        <th style="padding:12px;">Ações</th>
       </tr>
     </thead>
     <tbody>
       <% @sidebar_sections.each do |section| %>
-        <tr style="border-top:1px solid #e5e7eb; background:white;">
-          <td style="padding:14px;"><%= section.title %></td>
-          <td style="padding:14px;"><%= section.slug %></td>
-          <td style="padding:14px;"><%= section.position %></td>
-          <td style="padding:14px;"><%= section.active ? "Ativa" : "Inativa" %></td>
-          <td style="padding:14px;">
-            <%= link_to "Ver", admin_sidebar_section_path(section) %> |
-            <%= link_to "Editar", edit_admin_sidebar_section_path(section) %> |
-            <%= link_to "Excluir", admin_sidebar_section_path(section), data: { turbo_method: :delete, turbo_confirm: "Tem certeza?" } %>
+        <tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:12px;"><%= section.title %></td>
+          <td style="padding:12px;"><%= section.slug %></td>
+          <td style="padding:12px;"><%= section.position %></td>
+          <td style="padding:12px;"><%= section.active ? "Sim" : "Não" %></td>
+          <td style="padding:12px;display:flex;gap:8px;">
+            <%= link_to "Editar", edit_admin_sidebar_section_path(section), class: "sidebar-link", style: "color:#2563eb;background:#eff6ff;" %>
+            <%= button_to "Excluir", admin_sidebar_section_path(section), method: :delete, form: { style: "display:inline;" }, class: "logout-button", style: "padding:8px 12px;" %>
           </td>
         </tr>
       <% end %>
     </tbody>
   </table>
-</div>
-
-<div style="margin-top:20px;">
-  <%= link_to "Voltar ao dashboard", dashboard_path,
-      style: "display:inline-block;background:#e2e8f0;color:#0f172a;padding:10px 16px;border-radius:10px;text-decoration:none;" %>
 </div>

@@ -11,4 +11,9 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#index"
   get "/relatorios/:slug", to: "report_pages#show", as: :report_page
+
+  namespace :admin do
+    resources :sidebar_sections
+    resources :report_pages
+  end
 end
