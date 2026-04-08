@@ -1,27 +1,31 @@
 <div class="dashboard-grid">
   <section class="metrics-grid">
     <div class="metric-card primary">
-      <div class="metric-label">Total de Relatórios</div>
-      <div class="metric-value">128</div>
-      <div class="metric-sub">Atualizado hoje</div>
+      <div class="metric-label">Último acesso</div>
+      <div class="metric-value" style="font-size: 24px;">
+        <%= @last_access_at.present? ? @last_access_at.strftime("%d/%m/%Y %H:%M") : "Primeiro acesso" %>
+      </div>
+      <div class="metric-sub">Registro mais recente do usuário</div>
     </div>
 
     <div class="metric-card success">
-      <div class="metric-label">Relatórios Ativos</div>
-      <div class="metric-value">94</div>
-      <div class="metric-sub">Em acompanhamento</div>
-    </div>
-
-    <div class="metric-card danger">
-      <div class="metric-label">Pendências</div>
-      <div class="metric-value">07</div>
-      <div class="metric-sub">Exigem atenção</div>
+      <div class="metric-label">Contador de acessos</div>
+      <div class="metric-value"><%= @access_count %></div>
+      <div class="metric-sub">Total de entradas no portal</div>
     </div>
 
     <div class="metric-card">
-      <div class="metric-label">Seu Perfil</div>
-      <div class="metric-value"><%= current_user.user_type.to_s.capitalize %></div>
-      <div class="metric-sub">Controle por nível de acesso</div>
+      <div class="metric-label">Última atualização dos dados</div>
+      <div class="metric-value" style="font-size: 24px;">
+        <%= @last_data_update.present? ? @last_data_update.strftime("%d/%m/%Y %H:%M") : "Sem dados" %>
+      </div>
+      <div class="metric-sub">Com base nos conteúdos visíveis para o perfil</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-label">Conteúdos disponíveis</div>
+      <div class="metric-value"><%= @available_content_count %></div>
+      <div class="metric-sub">Itens liberados para o seu perfil</div>
     </div>
   </section>
 
@@ -33,34 +37,40 @@
       <div class="activity-list">
         <div class="activity-item">
           <div class="activity-left">
-            <div class="activity-title">Relatório mensal publicado</div>
-            <div class="activity-meta">Hoje, 08:30</div>
+            <div class="activity-title">Último acesso registrado</div>
+            <div class="activity-meta">
+              <%= @last_access_at.present? ? @last_access_at.strftime("%d/%m/%Y %H:%M") : "Primeiro acesso ainda não registrado" %>
+            </div>
           </div>
-          <div class="activity-value positive">Concluído</div>
+          <div class="activity-value positive">Acesso</div>
         </div>
 
         <div class="activity-item">
           <div class="activity-left">
-            <div class="activity-title">Indicadores acadêmicos atualizados</div>
-            <div class="activity-meta">Ontem, 17:45</div>
+            <div class="activity-title">Conteúdos disponíveis para seu perfil</div>
+            <div class="activity-meta">Total atualmente liberado no portal</div>
           </div>
-          <div class="activity-value positive">Atualizado</div>
+          <div class="activity-value positive"><%= @available_content_count %></div>
         </div>
 
         <div class="activity-item">
           <div class="activity-left">
-            <div class="activity-title">Nova pendência identificada</div>
-            <div class="activity-meta">Ontem, 15:10</div>
+            <div class="activity-title">Última atualização dos dados</div>
+            <div class="activity-meta">
+              <%= @last_data_update.present? ? @last_data_update.strftime("%d/%m/%Y %H:%M") : "Sem atualização identificada" %>
+            </div>
           </div>
-          <div class="activity-value negative">Pendente</div>
+          <div class="activity-value <%= @last_data_update.present? ? 'positive' : 'negative' %>">
+            <%= @last_data_update.present? ? "Atualizado" : "Pendente" %>
+          </div>
         </div>
 
         <div class="activity-item">
           <div class="activity-left">
-            <div class="activity-title">Base consolidada importada</div>
-            <div class="activity-meta">Há 2 dias</div>
+            <div class="activity-title">Número total de acessos</div>
+            <div class="activity-meta">Histórico acumulado do usuário</div>
           </div>
-          <div class="activity-value positive">Importado</div>
+          <div class="activity-value positive"><%= @access_count %></div>
         </div>
       </div>
     </div>
