@@ -11,23 +11,23 @@ export default class extends Controller {
 
   async changeSection() {
     const sectionId = this.sectionSelectTarget.value
+
     this.resetSubsectionOptions()
+
     if (!sectionId) return
+
     await this.loadSubsections(sectionId)
   }
 
   async loadSubsections(sectionId) {
     try {
       const response = await fetch(`/admin/sidebar_subsections/by_section?sidebar_section_id=${sectionId}`, {
-        headers: {
-          "Accept": "application/json"
-        }
+        headers: { "Accept": "application/json" }
       })
 
-      if (!response.ok) { throw new Error("Erro ao carregar subseções") }
+      if (!response.ok) throw new Error("Erro ao carregar subseções")
 
       const subsections = await response.json()
-
       this.populateSubsections(subsections)
     } catch (error) {
       console.error("Erro ao buscar subseções:", error)
