@@ -84,15 +84,16 @@ a {
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .sidebar-link {
-  color: rgba(255,255,255,0.86);
-  padding: 12px 14px;
-  border-radius: 12px;
+  display: block;
+  width: 100%;
+  color: rgba(255,255,255,0.85);
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
   transition: 0.2s ease;
-  font-weight: 600;
 }
 
 .sidebar-link:hover,
@@ -420,15 +421,50 @@ a {
   display: none !important;
 }
 
+
+/* ============================= */
+/* SEÇÕES (NÍVEL PRINCIPAL) */
+/* ============================= */
+
 .sidebar-toggle-button {
-  color: rgba(255,255,255,0.86);
+  font-size: 15px;        /* MAIOR */
+  font-weight: 700;       /* MAIS FORTE */
   padding: 12px 14px;
-  border-radius: 12px;
-  transition: 0.2s ease;
-  font-weight: 600;
+  color: white;
 }
 
 .sidebar-toggle-button:hover {
   background: rgba(255,255,255,0.12);
+}
+
+
+/* ============================= */
+/* SUBSEÇÕES */
+/* ============================= */
+
+.sidebar-nav a[style*="padding-left: 28px"],
+.sidebar-nav a[style*="padding-left: 40px"] {
+  display: block;
+  width: 100%;
+  font-size: 13px;        /* MENOR QUE SEÇÃO */
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+/* indentação visual */
+.sidebar-nav a[style*="padding-left: 28px"] {
+  padding-left: 28px;
+}
+
+.sidebar-nav a[style*="padding-left: 40px"] {
+  padding-left: 40px;
+}
+
+/* ============================= */
+/* HOVER SUBSEÇÕES */
+/* ============================= */
+
+.sidebar-nav a:hover {
+  background: rgba(255,255,255,0.08);
   color: white;
 }

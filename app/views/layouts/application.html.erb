@@ -36,7 +36,7 @@
                   <span data-sidebar-toggle-target="icon">▸</span>
                 </button>
 
-                <div data-sidebar-toggle-target="children" class="hidden">
+                <div data-sidebar-toggle-target="children" class="<%= section_open?(section) ? '' : 'hidden' %>" style="display:flex;flex-direction:column;">
                   <%= link_to "Visão geral",
                       report_page_path(section.slug),
                       class: "sidebar-link",
