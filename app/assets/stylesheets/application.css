@@ -26,12 +26,15 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  width: 100%;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-  background: #f1f5f9;
-  color: #0f172a;
+  margin: 0; 
+  width: 100%;
+  background: linear-gradient(135deg, #041194, #2f7fd1);
+  color: white;
 }
 
 a {
@@ -103,14 +106,16 @@ a {
 }
 
 .app-main {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  background: transparent !important;
 }
 
 .topbar {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
   padding: 18px 28px;
   display: flex;
   align-items: center;
@@ -121,12 +126,12 @@ a {
 .topbar-title {
   font-size: 28px;
   font-weight: 700;
-  color: #0f172a;
+  color: white;
 }
 
 .topbar-subtitle {
   font-size: 14px;
-  color: #64748b;
+  color: rgba(255,255,255,0.78);
   margin-top: 4px;
 }
 
@@ -399,7 +404,9 @@ a {
   }
 
   .content {
-    padding: 16px;
+    flex: 1;
+    padding: 28px;
+    background: transparent !important;
   }
 
   .metrics-grid {
@@ -412,7 +419,14 @@ a {
   }
 
   .user-pill {
-    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.16);
+    padding: 8px 12px;
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
   }
 }
 
@@ -512,6 +526,7 @@ a {
 
 .app-wrapper {
   min-height: 100vh;
+  width: 100%;
   background: linear-gradient(135deg, #041194, #2f7fd1);
   display: flex;
   flex-direction: column;
@@ -531,6 +546,8 @@ a {
 /* ============================= */
 
 .app-shell {
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   flex: 1;
   background: transparent !important;
@@ -541,8 +558,14 @@ a {
 /* ============================= */
 
 .sidebar {
+  width: 20vw;
+  min-width: 240px;
+  max-width: 360px;
   background: transparent !important;
   color: white;
+  padding: 24px 18px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  box-sizing: border-box;
 }
 
 /* ============================= */
