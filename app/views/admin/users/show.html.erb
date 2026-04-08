@@ -1,0 +1,38 @@
+<div class="card">
+  <div class="card-title">Detalhes do Usuário</div>
+  <div class="card-subtitle">Informações completas do usuário</div>
+
+  <div class="profile-card">
+    <div class="profile-line">
+      <div class="profile-key">Nome</div>
+      <div class="profile-value"><%= @user.name %></div>
+    </div>
+
+    <div class="profile-line">
+      <div class="profile-key">E-mail</div>
+      <div class="profile-value"><%= @user.email %></div>
+    </div>
+
+    <div class="profile-line">
+      <div class="profile-key">Tipo</div>
+      <div class="profile-value"><%= @user.user_type %></div>
+    </div>
+
+    <div class="profile-line">
+      <div class="profile-key">Contador de acessos</div>
+      <div class="profile-value"><%= @user.access_count || 0 %></div>
+    </div>
+
+    <div class="profile-line">
+      <div class="profile-key">Último acesso</div>
+      <div class="profile-value">
+        <%= @user.last_access_at.present? ? @user.last_access_at.strftime("%d/%m/%Y %H:%M") : "Sem acesso" %>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;display:flex;gap:12px;">
+    <%= link_to "Editar", edit_admin_user_path(@user), class: "logout-button", style: "background:#2563eb;" %>
+    <%= link_to "Voltar", admin_users_path, class: "sidebar-link", style: "background:#eff6ff;color:#2563eb;" %>
+  </div>
+</div>

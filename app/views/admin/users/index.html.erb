@@ -1,0 +1,49 @@
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div>
+      <div class="card-title">Usuários</div>
+      <div class="card-subtitle">Gerencie os usuários do sistema</div>
+    </div>
+
+    <%= link_to "Novo Usuário", new_admin_user_path, class: "logout-button", style: "background:#2563eb;" %>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr style="text-align:left;border-bottom:1px solid #e5e7eb;">
+        <th style="padding:12px;">Nome</th>
+        <th style="padding:12px;">E-mail</th>
+        <th style="padding:12px;">Tipo</th>
+        <th style="padding:12px;">Acessos</th>
+        <th style="padding:12px;">Último acesso</th>
+        <th style="padding:12px;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:12px;"><%= user.name %></td>
+          <td style="padding:12px;"><%= user.email %></td>
+          <td style="padding:12px;"><%= user.user_type %></td>
+          <td style="padding:12px;"><%= user.access_count || 0 %></td>
+          <td style="padding:12px;">
+            <%= user.last_access_at.present? ? user.last_access_at.strftime("%d/%m/%Y %H:%M") : "Sem acesso" %>
+          </td>
+          <td style="padding:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <%= link_to "Ver", admin_user_path(user), class: "sidebar-link", style: "color:#0f172a;background:#f1f5f9;" %>
+            <%= link_to "Editar", edit_admin_user_path(user), class: "sidebar-link", style: "color:#2563eb;background:#eff6ff;" %>
+
+            <% unless user == current_user %>
+              <%= button_to "Excluir",
+                  admin_user_path(user),
+                  method: :delete,
+                  form: { style: "display:inline;" },
+                  class: "logout-button",
+                  style: "padding:8px 12px;" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

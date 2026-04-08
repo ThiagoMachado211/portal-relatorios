@@ -1,0 +1,36 @@
+<%= form_with model: [:admin, @user], local: true do |f| %>
+  <div style="display:grid;gap:16px;">
+    <div>
+      <%= f.label :name, "Nome" %><br>
+      <%= f.text_field :name, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :email, "E-mail" %><br>
+      <%= f.email_field :email, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :user_type, "Tipo de usuário" %><br>
+      <%= f.select :user_type,
+            User.user_types.keys.map { |k| [k.humanize, k] },
+            {},
+            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :password, "Senha" %><br>
+      <%= f.password_field :password, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+      <small style="color:#64748b;">Ao editar, deixe em branco para manter a senha atual.</small>
+    </div>
+
+    <div>
+      <%= f.label :password_confirmation, "Confirmar senha" %><br>
+      <%= f.password_field :password_confirmation, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
+    </div>
+  </div>
+<% end %>

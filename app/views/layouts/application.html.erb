@@ -50,6 +50,7 @@
               <% if current_user.admin? %>
                 <hr style="border:none;border-top:1px solid rgba(255,255,255,0.12);margin:16px 0;">
 
+                <%= link_to "Admin - Usuários", admin_users_path, class: "sidebar-link" %>
                 <%= link_to "Admin - Seções", admin_sidebar_sections_path, class: "sidebar-link" %>
                 <%= link_to "Admin - Subseções", admin_sidebar_subsections_path, class: "sidebar-link" %>
                 <%= link_to "Admin - Conteúdos", admin_report_pages_path, class: "sidebar-link" %>

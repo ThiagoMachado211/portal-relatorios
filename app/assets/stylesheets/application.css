@@ -149,6 +149,7 @@ a {
   border: 1px solid #e2e8f0;
   padding: 8px 12px;
   border-radius: 14px;
+  color: black;
 }
 
 .user-avatar {
@@ -427,6 +428,7 @@ a {
     padding: 8px 12px;
     border-radius: 14px;
     backdrop-filter: blur(6px);
+    color: black;
   }
 }
 
