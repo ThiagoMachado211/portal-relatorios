@@ -2,16 +2,12 @@ class DashboardController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @available_reports = ReportPage.active.select { |report| report.visible_to?(current_user) }
+    @last_access_at = current_user.respond_to?(:last_access_at) ? current_user.last_access_at : nil
+    @access_count = current_user.respond_to?(:access_count) ? (current_user.access_count || 0) : 0
 
-    @available_content_count = @available_reports.count
+    visible_reports = ReportPage.active.select { |report| report.visible_to?(current_user) }
 
-    @last_data_update =
-      if @available_reports.any?
-        @available_reports.map(&:updated_at).compact.max
-      end
-
-    @last_access_at = current_user.last_access_at
-    @access_count = current_user.access_count
+    @available_content_count = visible_reports.count
+    @last_data_update = visible_reports.map(&:updated_at).compact.max
   end
 end

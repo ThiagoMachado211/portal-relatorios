@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   get "/relatorios/:section_slug/:subsection_slug", to: "report_pages#subsection", as: :report_subsection
 
   namespace :admin do
+    resources :users
     resources :sidebar_sections
     resources :sidebar_subsections do
       collection do
@@ -22,6 +23,5 @@ Rails.application.routes.draw do
       end
     end
     resources :report_pages
-    resources :users
   end
 end
