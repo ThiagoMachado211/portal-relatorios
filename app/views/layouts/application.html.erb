@@ -36,17 +36,17 @@
                   <span data-sidebar-toggle-target="icon">▸</span>
                 </button>
 
-                <div data-sidebar-toggle-target="children" class="<%= section_open?(section) ? '' : 'hidden' %>" style="display:flex;flex-direction:column;">
+                <div
+                  data-sidebar-toggle-target="children"
+                  class="hidden sidebar-children-container">
                   <%= link_to "Visão geral",
                       report_page_path(section.slug),
-                      class: "sidebar-link",
-                      style: "padding-left: 28px; font-size: 14px; opacity: 0.95;" %>
+                      class: "sidebar-link sidebar-subsection-level-1" %>
 
                   <% section.sidebar_subsections.active.ordered.each do |subsection| %>
                     <%= link_to subsection.title,
                         report_subsection_path(section.slug, subsection.slug),
-                        class: "sidebar-link",
-                        style: "padding-left: 40px; font-size: 14px; opacity: 0.9;" %>
+                        class: "sidebar-link sidebar-subsection-level-2" %>
                   <% end %>
                 </div>
               </div>

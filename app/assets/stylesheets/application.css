@@ -468,3 +468,39 @@ a {
   background: rgba(255,255,255,0.08);
   color: white;
 }
+
+
+
+.sidebar-children-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-toggle-button {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 14px;
+  color: white;
+}
+
+.sidebar-toggle-button:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.sidebar-subsection-level-1 {
+  display: block;
+  width: 100%;
+  padding-left: 28px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.sidebar-subsection-level-2 {
+  display: block;
+  width: 100%;
+  padding-left: 40px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
