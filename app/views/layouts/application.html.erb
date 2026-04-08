@@ -36,13 +36,7 @@
                   <span data-sidebar-toggle-target="icon">▸</span>
                 </button>
 
-                <div
-                  data-sidebar-toggle-target="children"
-                  class="hidden sidebar-children-container">
-                  <%= link_to "Visão geral",
-                      report_page_path(section.slug),
-                      class: "sidebar-link sidebar-subsection-level-1" %>
-
+                <div data-sidebar-toggle-target="children" class="hidden sidebar-children-container">
                   <% section.sidebar_subsections.active.ordered.each do |subsection| %>
                     <%= link_to subsection.title,
                         report_subsection_path(section.slug, subsection.slug),
