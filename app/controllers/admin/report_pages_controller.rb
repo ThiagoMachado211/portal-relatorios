@@ -68,6 +68,7 @@ class Admin::ReportPagesController < Admin::BaseController
       :content_type,
       :visible_for,
       :embed_url,
+      :file,
       :position,
       :active
     )

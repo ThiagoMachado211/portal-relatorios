@@ -1,47 +1,97 @@
-<div class="dashboard-grid">
-  <div class="card">
-    <div class="card-title">
-      <%= @sidebar_subsection.present? ? @sidebar_subsection.title : @sidebar_section.title %>
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-title"><%= @report_page.title %></div>
+
+  <% if @report_page.description.present? %>
+    <div class="card-subtitle" style="margin-top:6px;">
+      <%= @report_page.description %>
     </div>
+  <% end %>
+</div>
 
-    <div class="card-subtitle">
-      Conteúdos disponíveis para o seu perfil
-    </div>
+<div class="card">
+  <% report = @report_page %>
 
-    <% if @report_pages.any? %>
-      <% @report_pages.each do |report| %>
-        <div class="card" style="margin-bottom: 20px;">
-          <div class="card-title"><%= report.title %></div>
+  <%# ============================= %>
+  <%# PDF / RELATÓRIOS / STREAMLIT %>
+  <%# ============================= %>
 
-          <% if report.description.present? %>
-            <div class="card-subtitle"><%= report.description %></div>
-          <% end %>
+  <% if report.pdf? || report.report? || report.heatmap? || report.streamlit? %>
 
-          <% if report.pdf? || report.report? || report.heatmap? || report.streamlit? %>
-            <iframe
-              src="<%= report.embed_url %>"
-              width="100%"
-              height="700"
-              style="border: 1px solid #e5e7eb; border-radius: 12px; background: white;">
-            </iframe>
+    <% if report.file.attached? %>
+      <iframe
+        src="<%= url_for(report.file) %>"
+        width="100%"
+        height="750"
+        style="border:1px solid #e5e7eb;border-radius:16px;background:white;">
+      </iframe>
 
-          <% elsif report.external_link? %>
-            <p>
-              <%= link_to "Abrir conteúdo", report.embed_url, target: "_blank", rel: "noopener" %>
-            </p>
+    <% elsif report.embed_url.present? %>
+      <iframe
+        src="<%= report.embed_url %>"
+        width="100%"
+        height="750"
+        style="border:1px solid #e5e7eb;border-radius:16px;background:white;">
+      </iframe>
 
-          <% elsif report.image? %>
-            <img
-              src="<%= report.embed_url %>"
-              alt="<%= report.title %>"
-              style="max-width: 100%; border-radius: 12px; border: 1px solid #e5e7eb;">
-          <% else %>
-            <p>Tipo de conteúdo não suportado.</p>
-          <% end %>
-        </div>
-      <% end %>
     <% else %>
-      <p>Nenhum conteúdo disponível para o seu perfil nesta área.</p>
+      <div style="padding:20px;color:#64748b;">
+        Nenhum conteúdo disponível para este relatório.
+      </div>
     <% end %>
-  </div>
+
+  <%# ============================= %>
+  <%# IMAGENS %>
+  <%# ============================= %>
+
+  <% elsif report.image? %>
+
+    <% if report.file.attached? %>
+      <img
+        src="<%= url_for(report.file) %>"
+        alt="<%= report.title %>"
+        style="max-width:100%;border-radius:16px;border:1px solid #e5e7eb;display:block;margin:auto;">
+
+    <% elsif report.embed_url.present? %>
+      <img
+        src="<%= report.embed_url %>"
+        alt="<%= report.title %>"
+        style="max-width:100%;border-radius:16px;border:1px solid #e5e7eb;display:block;margin:auto;">
+
+    <% else %>
+      <div style="padding:20px;color:#64748b;">
+        Nenhuma imagem disponível.
+      </div>
+    <% end %>
+
+  <%# ============================= %>
+  <%# LINK EXTERNO %>
+  <%# ============================= %>
+
+  <% elsif report.external_link? %>
+
+    <% if report.embed_url.present? %>
+      <div style="text-align:center;padding:40px;">
+        <a href="<%= report.embed_url %>"
+           target="_blank"
+           style="display:inline-block;padding:14px 22px;background:#2563eb;color:white;border-radius:12px;text-decoration:none;font-weight:600;">
+          Acessar conteúdo externo
+        </a>
+      </div>
+    <% else %>
+      <div style="padding:20px;color:#64748b;">
+        Nenhum link disponível.
+      </div>
+    <% end %>
+
+  <%# ============================= %>
+  <%# FALLBACK %>
+  <%# ============================= %>
+
+  <% else %>
+
+    <div style="padding:20px;color:#64748b;">
+      Tipo de conteúdo não suportado.
+    </div>
+
+  <% end %>
 </div>
