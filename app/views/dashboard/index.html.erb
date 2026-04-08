@@ -1,45 +1,66 @@
 <div class="dashboard-grid">
+
+  <!-- ========================= -->
+  <!-- MÉTRICAS -->
+  <!-- ========================= -->
+
   <section class="metrics-grid">
+
     <div class="metric-card primary">
       <div class="metric-label">Último acesso do usuário</div>
       <div class="metric-value" style="font-size: 22px;">
-        <%= @last_access_at.present? ? @last_access_at.strftime("%d/%m/%Y %H:%M") : "Sem registro" %>
+        <%= current_user.last_access_at&.strftime("%d/%m/%Y %H:%M") || "Sem registro" %>
       </div>
       <div class="metric-sub">Registro mais recente</div>
     </div>
 
     <div class="metric-card success">
       <div class="metric-label">Contador de acessos</div>
-      <div class="metric-value"><%= @access_count %></div>
+      <div class="metric-value">
+        <%= current_user.access_count || 0 %>
+      </div>
       <div class="metric-sub">Total de acessos do usuário</div>
     </div>
 
     <div class="metric-card">
       <div class="metric-label">Última atualização dos dados</div>
       <div class="metric-value" style="font-size: 22px;">
-        <%= @last_data_update.present? ? @last_data_update.strftime("%d/%m/%Y %H:%M") : "Sem dados" %>
+        Sem dados
       </div>
       <div class="metric-sub">Com base nos conteúdos visíveis</div>
     </div>
 
     <div class="metric-card">
       <div class="metric-label">Conteúdos disponíveis</div>
-      <div class="metric-value"><%= @available_content_count %></div>
+      <div class="metric-value">
+        <%= ReportPage.active
+              .where(visible_for: ["shared", current_user.user_type])
+              .count %>
+      </div>
       <div class="metric-sub">Itens liberados para seu perfil</div>
     </div>
+
   </section>
 
+
+  <!-- ========================= -->
+  <!-- GRID PRINCIPAL -->
+  <!-- ========================= -->
+
   <section class="main-grid">
+
+    <!-- ATIVIDADES RECENTES -->
     <div class="card">
       <div class="card-title">Atividades Recentes</div>
       <div class="card-subtitle">Resumo das informações do seu acesso</div>
 
       <div class="activity-list">
+
         <div class="activity-item">
           <div class="activity-left">
             <div class="activity-title">Último acesso</div>
             <div class="activity-meta">
-              <%= @last_access_at.present? ? @last_access_at.strftime("%d/%m/%Y às %H:%M") : "Sem registro" %>
+              <%= current_user.last_access_at&.strftime("%d/%m/%Y às %H:%M") || "Sem registro" %>
             </div>
           </div>
           <div class="activity-value positive">Acesso</div>
@@ -50,35 +71,30 @@
             <div class="activity-title">Contador de acessos</div>
             <div class="activity-meta">Histórico acumulado do usuário</div>
           </div>
-          <div class="activity-value positive"><%= @access_count %></div>
+          <div class="activity-value positive">
+            <%= current_user.access_count || 0 %>
+          </div>
         </div>
 
         <div class="activity-item">
           <div class="activity-left">
             <div class="activity-title">Última atualização dos dados</div>
-            <div class="activity-meta">
-              <%= @last_data_update.present? ? @last_data_update.strftime("%d/%m/%Y às %H:%M") : "Sem atualização" %>
-            </div>
+            <div class="activity-meta">Status atual</div>
           </div>
-          <div class="activity-value <%= @last_data_update.present? ? 'positive' : 'negative' %>">
-            <%= @last_data_update.present? ? "Atualizado" : "Pendente" %>
-          </div>
+          <div class="activity-value negative">Sem atualização</div>
         </div>
 
-        <div class="activity-item">
-          <div class="activity-left">
-            <div class="activity-title">Conteúdos disponíveis</div>
-            <div class="activity-meta">Itens atualmente liberados</div>
-          </div>
-          <div class="activity-value positive"><%= @available_content_count %></div>
-        </div>
       </div>
     </div>
 
+
+    <!-- PERFIL DO USUÁRIO -->
     <div class="card">
       <div class="card-title">Seu Acesso</div>
+      <div class="card-subtitle">Informações da sua conta</div>
 
       <div class="profile-card">
+
         <div class="profile-line">
           <div class="profile-key">Nome</div>
           <div class="profile-value"><%= current_user.name %></div>
@@ -92,11 +108,15 @@
         <div class="profile-line">
           <div class="profile-key">Perfil</div>
           <div class="profile-value">
-            <span class="status-badge"><%= current_user.user_type %></span>
+            <span class="status-badge">
+              <%= current_user.user_type.capitalize %>
+            </span>
           </div>
         </div>
+
       </div>
     </div>
+
   </section>
 
 </div>
