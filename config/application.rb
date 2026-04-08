@@ -8,6 +8,10 @@ require "action_mailer/railtie"
 require "action_view/railtie"
 require "action_mailbox/engine"
 require "action_text/engine"
+require "propshaft/railtie"
+# require "action_cable/engine"
+
+Bundler.require(*Rails.groups)
 
 module PortalRelatorios
   class Application < Rails::Application
