@@ -24,7 +24,6 @@ class ReportPage < ApplicationRecord
 
   validates :title, presence: true
   validates :slug, presence: true
-  validates :embed_url, presence: true
 
   def visible_to?(user)
     shared? || visible_for == user.user_type

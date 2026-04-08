@@ -49,7 +49,6 @@ class Admin::ReportPagesController < Admin::BaseController
 
   def load_sidebar_data
     @sidebar_sections = SidebarSection.active.ordered
-
     @sidebar_subsections =
       if @report_page&.sidebar_section_id.present?
         SidebarSubsection.where(sidebar_section_id: @report_page.sidebar_section_id).active.ordered

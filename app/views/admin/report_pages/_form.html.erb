@@ -1,22 +1,22 @@
 <div data-controller="subsection-select embed-preview">
   <%= form_with model: [:admin, @report_page], local: true do |f| %>
     <div style="display:grid;gap:16px;">
-      <div style="color:black">
+      <div>
         <%= f.label :title, "Título" %><br>
         <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.label :slug, "Slug" %><br>
         <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.label :description, "Descrição" %><br>
         <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.label :sidebar_section_id, "Seção" %><br>
         <%= f.collection_select :sidebar_section_id,
               @sidebar_sections,
@@ -32,7 +32,7 @@
               } %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.label :sidebar_subsection_id, "Subseção (opcional)" %><br>
         <%= f.select :sidebar_subsection_id,
               options_for_select(
@@ -46,7 +46,7 @@
               } %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.label :content_type, "Tipo de conteúdo" %><br>
         <%= f.select :content_type,
               ReportPage.content_types.keys.map { |k| [k.humanize, k] },
@@ -60,7 +60,7 @@
               } %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.label :visible_for, "Visível para" %><br>
         <%= f.select :visible_for,
               ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
@@ -68,7 +68,7 @@
               { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.label :embed_url, "URL / Embed" %><br>
         <%= f.text_area :embed_url,
               rows: 3,
@@ -80,22 +80,22 @@
       </div>
 
       <div>
-        <%= f.label :file, "Arquivo (PDF ou imagem)" %><br>
+        <%= f.label :file, "Arquivo (opcional)" %><br>
         <%= f.file_field :file, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-      </div>
-      <% if @report_page.file.attached? %>
-        <div style="margin-top:8px;color:#475569;">
-          Arquivo atual:
-          <%= @report_page.file.filename.to_s %>
-        </div>
-      <% end %>
 
-      <div style="color:black">
+        <% if @report_page.respond_to?(:file) && @report_page.file.attached? %>
+          <div style="margin-top:8px;color:#475569;">
+            Arquivo atual: <%= @report_page.file.filename.to_s %>
+          </div>
+        <% end %>
+      </div>
+
+      <div>
         <%= f.label :position, "Posição" %><br>
         <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
       </div>
 
-      <div style="color:black">
+      <div>
         <%= f.check_box :active %>
         <%= f.label :active, "Ativo" %>
       </div>
