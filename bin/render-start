@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+unset RAILS_ENV
+unset RACK_ENV
+
+export RAILS_ENV=production
+export RACK_ENV=production
+
+exec bundle exec rails server -e production -b 0.0.0.0 -p "${PORT:-3000}"
