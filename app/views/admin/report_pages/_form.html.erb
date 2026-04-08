@@ -1,138 +1,84 @@
-<div data-controller="subsection-select embed-preview">
-  <%= form_with model: [:admin, @report_page], local: true do |f| %>
-    <div style="display:grid;gap:16px;">
-      <div>
-        <%= f.label :title, "Título" %><br>
-        <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-      </div>
-
-      <div>
-        <%= f.label :slug, "Slug" %><br>
-        <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-      </div>
-
-      <div>
-        <%= f.label :description, "Descrição" %><br>
-        <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-      </div>
-
-      <div>
-        <%= f.label :sidebar_section_id, "Seção" %><br>
-        <%= f.collection_select :sidebar_section_id,
-              @sidebar_sections,
-              :id,
-              :title,
-              { prompt: "Selecione uma seção" },
-              {
-                style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
-                data: {
-                  subsection_select_target: "sectionSelect",
-                  action: "change->subsection-select#changeSection"
-                }
-              } %>
-      </div>
-
-      <div>
-        <%= f.label :sidebar_subsection_id, "Subseção (opcional)" %><br>
-        <%= f.select :sidebar_subsection_id,
-              options_for_select(
-                @sidebar_subsections.map { |s| [s.title, s.id] },
-                @report_page.sidebar_subsection_id
-              ),
-              { include_blank: "Sem subseção" },
-              {
-                style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
-                data: { subsection_select_target: "subsectionSelect" }
-              } %>
-      </div>
-
-      <div>
-        <%= f.label :content_type, "Tipo de conteúdo" %><br>
-        <%= f.select :content_type,
-              ReportPage.content_types.keys.map { |k| [k.humanize, k] },
-              {},
-              {
-                style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
-                data: {
-                  embed_preview_target: "type",
-                  action: "change->embed-preview#update"
-                }
-              } %>
-      </div>
-
-      <div>
-        <%= f.label :visible_for, "Visível para" %><br>
-        <%= f.select :visible_for,
-              ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
-              {},
-              { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
-      </div>
-
-      <div>
-        <%= f.label :embed_url, "URL / Embed" %><br>
-        <%= f.text_area :embed_url,
-              rows: 3,
-              style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;",
-              data: {
-                embed_preview_target: "input",
-                action: "input->embed-preview#update"
-              } %>
-      </div>
-
-      <div>
-        <%= f.label :file, "Arquivo (opcional)" %><br>
-        <%= f.file_field :file, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-
-        <% if @report_page.respond_to?(:file) && @report_page.file.attached? %>
-          <div style="margin-top:8px;color:#475569;">
-            Arquivo atual: <%= @report_page.file.filename.to_s %>
-          </div>
-        <% end %>
-      </div>
-
-      <div>
-        <%= f.label :position, "Posição" %><br>
-        <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-      </div>
-
-      <div>
-        <%= f.check_box :active %>
-        <%= f.label :active, "Ativo" %>
-      </div>
-
-      <div style="margin-top:10px;padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
-        <div style="font-weight:700;margin-bottom:12px;color:#0f172a;">Prévia do conteúdo</div>
-
-        <div data-embed-preview-target="empty" style="color:#64748b;">
-          Nenhuma prévia disponível.
-        </div>
-
-        <iframe
-          data-embed-preview-target="frame"
-          class="hidden"
-          width="100%"
-          height="500"
-          style="border:1px solid #cbd5e1;border-radius:12px;background:white;">
-        </iframe>
-
-        <img
-          data-embed-preview-target="image"
-          class="hidden"
-          alt="Prévia da imagem"
-          style="max-width:100%;border-radius:12px;border:1px solid #cbd5e1;" />
-
-        <a
-          data-embed-preview-target="link"
-          class="hidden"
-          target="_blank"
-          rel="noopener"
-          style="color:#2563eb;word-break:break-all;">
-        </a>
-      </div>
-
-      <div>
-        <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
-      </div>
+<%= form_with model: [:admin, @report_page], local: true do |f| %>
+  <div style="display:grid;gap:16px;">
+    <div>
+      <%= f.label :title, "Título" %><br>
+      <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
-  <% end %>
-</div>
+
+    <div>
+      <%= f.label :slug, "Slug" %><br>
+      <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :description, "Descrição" %><br>
+      <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :sidebar_section_id, "Seção" %><br>
+      <%= f.collection_select :sidebar_section_id,
+            @sidebar_sections,
+            :id,
+            :title,
+            { prompt: "Selecione uma seção" },
+            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :sidebar_subsection_id, "Subseção (opcional)" %><br>
+      <%= f.collection_select :sidebar_subsection_id,
+            @sidebar_subsections,
+            :id,
+            :title,
+            { include_blank: "Sem subseção" },
+            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :content_type, "Tipo de conteúdo" %><br>
+      <%= f.select :content_type,
+            ReportPage.content_types.keys.map { |k| [k.humanize, k] },
+            {},
+            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :visible_for, "Visível para" %><br>
+      <%= f.select :visible_for,
+            ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
+            {},
+            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :embed_url, "URL / Embed" %><br>
+      <%= f.text_area :embed_url, rows: 3, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :file, "Arquivo (opcional)" %><br>
+      <%= f.file_field :file, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+
+      <% if @report_page.persisted? && @report_page.file.attached? %>
+        <div style="margin-top:8px;color:#475569;">
+          Arquivo atual: <%= @report_page.file.filename.to_s %>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= f.label :position, "Posição" %><br>
+      <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.check_box :active %>
+      <%= f.label :active, "Ativo" %>
+    </div>
+
+    <div>
+      <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
+    </div>
+  </div>
+<% end %>

@@ -1,7 +1,8 @@
 class Admin::ReportPagesController < Admin::BaseController
   before_action :set_report_page, only: [:show, :edit, :update, :destroy]
+  before_action :build_report_page, only: [:new]
   before_action :load_sidebar_data, only: [:new, :create, :edit, :update]
-
+  
   def index
     @report_pages = ReportPage.includes(:sidebar_section, :sidebar_subsection).ordered
   end
@@ -10,6 +11,9 @@ class Admin::ReportPagesController < Admin::BaseController
   end
 
   def new
+  end
+
+  def build_report_page
     @report_page = ReportPage.new
   end
 
