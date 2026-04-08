@@ -11,22 +11,22 @@
   <table style="width:100%;border-collapse:collapse;">
     <thead>
       <tr style="text-align:left;border-bottom:1px solid black;color:black;">
-        <th style="padding:12px;">Título</th>
-        <th style="padding:12px;">Seção</th>
-        <th style="padding:12px;">Tipo</th>
-        <th style="padding:12px;">Visível para</th>
-        <th style="padding:12px;">Ativo</th>
-        <th style="padding:12px;">Ações</th>
+        <th style="padding:12px; color:black;">Título</th>
+        <th style="padding:12px; color:black;">Seção</th>
+        <th style="padding:12px; color:black;">Tipo</th>
+        <th style="padding:12px; color:black;">Visível para</th>
+        <th style="padding:12px; color:black;">Ativo</th>
+        <th style="padding:12px; color:black;">Ações</th>
       </tr>
     </thead>
     <tbody>
       <% @report_pages.each do |report| %>
-        <tr style="border-bottom:1px solid #e5e7eb;">
-          <td style="padding:12px;"><%= report.title %></td>
-          <td style="padding:12px;"><%= report.sidebar_section&.title %></td>
-          <td style="padding:12px;"><%= report.content_type %></td>
-          <td style="padding:12px;"><%= report.visible_for %></td>
-          <td style="padding:12px;"><%= report.active ? "Sim" : "Não" %></td>
+        <tr style="border-bottom:1px solid #e5e7eb; color:black;">
+          <td style="padding:12px; color:black;"><%= report.title %></td>
+          <td style="padding:12px; color:black;"><%= report.sidebar_section&.title %></td>
+          <td style="padding:12px; color:black;"><%= report.content_type %></td>
+          <td style="padding:12px; color:black;"><%= report.visible_for %></td>
+          <td style="padding:12px; color:black;"><%= report.active ? "Sim" : "Não" %></td>
           <td style="padding:12px;display:flex;gap:8px;">
             <%= link_to "Editar", edit_admin_report_page_path(report), class: "sidebar-link", style: "color:#2563eb;background:#eff6ff;" %>
             <%= button_to "Excluir", admin_report_page_path(report), method: :delete, form: { style: "display:inline;" }, class: "logout-button", style: "padding:8px 12px;" %>

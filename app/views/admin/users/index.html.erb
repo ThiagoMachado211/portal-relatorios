@@ -10,22 +10,22 @@
 
   <table style="width:100%;border-collapse:collapse;">
     <thead>
-      <tr style="text-align:left;border-bottom:1px solid #e5e7eb;">
-        <th style="padding:12px;">Nome</th>
-        <th style="padding:12px;">E-mail</th>
-        <th style="padding:12px;">Tipo</th>
-        <th style="padding:12px;">Acessos</th>
-        <th style="padding:12px;">Último acesso</th>
-        <th style="padding:12px;">Ações</th>
+      <tr style="text-align:left;border-bottom:1px solid #e5e7eb; color:black;">
+        <th style="padding:12px; color:black;">Nome</th>
+        <th style="padding:12px; color:black;">E-mail</th>
+        <th style="padding:12px; color:black;">Tipo</th>
+        <th style="padding:12px; color:black;">Acessos</th>
+        <th style="padding:12px; color:black;">Último acesso</th>
+        <th style="padding:12px; color:black;">Ações</th>
       </tr>
     </thead>
     <tbody>
       <% @users.each do |user| %>
         <tr style="border-bottom:1px solid #e5e7eb;">
-          <td style="padding:12px;"><%= user.name %></td>
-          <td style="padding:12px;"><%= user.email %></td>
-          <td style="padding:12px;"><%= user.user_type %></td>
-          <td style="padding:12px;"><%= user.access_count || 0 %></td>
+          <td style="padding:12px; color:black;"><%= user.name %></td>
+          <td style="padding:12px; color:black;"><%= user.email %></td>
+          <td style="padding:12px; color:black;"><%= user.user_type %></td>
+          <td style="padding:12px; color:black;"><%= user.access_count || 0 %></td>
           <td style="padding:12px;">
             <%= user.last_access_at.present? ? user.last_access_at.strftime("%d/%m/%Y %H:%M") : "Sem acesso" %>
           </td>

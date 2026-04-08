@@ -11,22 +11,22 @@
   <table style="width:100%;border-collapse:collapse;">
     <thead>
       <tr style="text-align:left;border-bottom:1px solid #e5e7eb;color:black;">
-        <th style="padding:12px;">Título</th>
-        <th style="padding:12px;">Seção</th>
-        <th style="padding:12px;">Slug</th>
-        <th style="padding:12px;">Posição</th>
-        <th style="padding:12px;">Ativa</th>
-        <th style="padding:12px;">Ações</th>
+        <th style="padding:12px; color:black;">Título</th>
+        <th style="padding:12px; color:black;">Seção</th>
+        <th style="padding:12px; color:black;">Slug</th>
+        <th style="padding:12px; color:black;">Posição</th>
+        <th style="padding:12px; color:black;">Ativa</th>
+        <th style="padding:12px; color:black;">Ações</th>
       </tr>
     </thead>
     <tbody>
       <% @sidebar_subsections.each do |subsection| %>
-        <tr style="border-bottom:1px solid #e5e7eb;">
-          <td style="padding:12px;"><%= subsection.title %></td>
-          <td style="padding:12px;"><%= subsection.sidebar_section.title %></td>
-          <td style="padding:12px;"><%= subsection.slug %></td>
-          <td style="padding:12px;"><%= subsection.position %></td>
-          <td style="padding:12px;"><%= subsection.active ? "Sim" : "Não" %></td>
+        <tr style="border-bottom:1px solid #e5e7eb; color:black;">
+          <td style="padding:12px; color:black;"><%= subsection.title %></td>
+          <td style="padding:12px; color:black;"><%= subsection.sidebar_section.title %></td>
+          <td style="padding:12px; color:black;"><%= subsection.slug %></td>
+          <td style="padding:12px; color:black;"><%= subsection.position %></td>
+          <td style="padding:12px; color:black;"><%= subsection.active ? "Sim" : "Não" %></td>
           <td style="padding:12px;display:flex;gap:8px;">
             <%= link_to "Editar", edit_admin_sidebar_subsection_path(subsection), class: "sidebar-link", style: "color:#2563eb;background:#eff6ff;" %>
             <%= button_to "Excluir", admin_sidebar_subsection_path(subsection), method: :delete, form: { style: "display:inline;" }, class: "logout-button", style: "padding:8px 12px;" %>

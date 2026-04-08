@@ -11,20 +11,20 @@
   <table style="width:100%;border-collapse:collapse;">
     <thead>
       <tr style="text-align:left;border-bottom:1px solid #e5e7eb;color:black;">
-        <th style="padding:12px;">Título</th>
-        <th style="padding:12px;">Slug</th>
-        <th style="padding:12px;">Posição</th>
-        <th style="padding:12px;">Ativa</th>
-        <th style="padding:12px;">Ações</th>
+        <th style="padding:12px; color:black;">Título</th>
+        <th style="padding:12px; color:black;">Slug</th>
+        <th style="padding:12px; color:black;">Posição</th>
+        <th style="padding:12px; color:black;">Ativa</th>
+        <th style="padding:12px; color:black;">Ações</th>
       </tr>
     </thead>
     <tbody>
       <% @sidebar_sections.each do |section| %>
-        <tr style="border-bottom:1px solid #e5e7eb;">
-          <td style="padding:12px;"><%= section.title %></td>
-          <td style="padding:12px;"><%= section.slug %></td>
-          <td style="padding:12px;"><%= section.position %></td>
-          <td style="padding:12px;"><%= section.active ? "Sim" : "Não" %></td>
+        <tr style="border-bottom:1px solid #e5e7eb; color:black;">
+          <td style="padding:12px; color:black;"><%= section.title %></td>
+          <td style="padding:12px; color:black;"><%= section.slug %></td>
+          <td style="padding:12px; color:black;"><%= section.position %></td>
+          <td style="padding:12px; color:black;"><%= section.active ? "Sim" : "Não" %></td>
           <td style="padding:12px;display:flex;gap:8px;">
             <%= link_to "Editar", edit_admin_sidebar_section_path(section), class: "sidebar-link", style: "color:#2563eb;background:#eff6ff;" %>
             <%= button_to "Excluir", admin_sidebar_section_path(section), method: :delete, form: { style: "display:inline;" }, class: "logout-button", style: "padding:8px 12px;" %>
