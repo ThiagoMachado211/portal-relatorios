@@ -8,67 +8,70 @@
   </div>
 
   <% if @report_pages.present? && @report_pages.any? %>
-    <% @report_pages.each do |page| %>
-      <div class="content-block" style="margin-top: 24px;">
-        <% if page.title.present? %>
-          <div class="profile-line" style="margin-bottom: 16px;">
-            <div class="profile-key">Conteúdo</div>
-            <div class="profile-value"><%= page.title %></div>
-          </div>
-        <% end %>
-
-        <% if page.pdf? && page.file.attached? %>
-          <div class="pdf-viewer-wrapper">
-            <iframe
-              src="<%= url_for(page.file) %>"
-              width="100%"
-              height="900"
-              style="border: 1px solid #dbe2ea; border-radius: 14px; background: white;">
-            </iframe>
+    <div class="profile-card">
+      <% @report_pages.each do |page| %>
+        <div class="profile-line" style="margin-bottom: 14px;">
+          <div class="profile-key">
+            Relatório
           </div>
 
-        <% elsif page.image? && page.file.attached? %>
-          <div class="image-viewer-wrapper">
-            <%= image_tag page.file, style: "max-width: 100%; border-radius: 14px; display: block;" %>
-          </div>
-
-        <% elsif page.external_link? && page.embed_url.present? %>
-          <div class="profile-line">
-            <div class="profile-key">Link externo</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
             <div class="profile-value">
-              <%= link_to page.embed_url, page.embed_url, target: "_blank", rel: "noopener" %>
+              <%= page.title %>
+            </div>
+
+            <div>
+              <% if page.pdf? && page.file.attached? %>
+                <%= link_to "Abrir PDF",
+                    rails_storage_proxy_path(page.file, disposition: "inline"),
+                    target: "_blank",
+                    rel: "noopener",
+                    class: "btn-primary" %>
+
+              <% elsif page.external_link? && page.embed_url.present? %>
+                <%= link_to "Abrir Link",
+                    page.embed_url,
+                    target: "_blank",
+                    rel: "noopener",
+                    class: "btn-primary" %>
+
+              <% elsif page.streamlit? && page.embed_url.present? %>
+                <%= link_to "Abrir Dashboard",
+                    page.embed_url,
+                    target: "_blank",
+                    rel: "noopener",
+                    class: "btn-primary" %>
+
+              <% elsif page.file.attached? %>
+                <%= link_to "Abrir Arquivo",
+                    rails_storage_proxy_path(page.file, disposition: "inline"),
+                    target: "_blank",
+                    rel: "noopener",
+                    class: "btn-primary" %>
+
+              <% elsif page.embed_url.present? %>
+                <%= link_to "Abrir Conteúdo",
+                    page.embed_url,
+                    target: "_blank",
+                    rel: "noopener",
+                    class: "btn-primary" %>
+
+              <% else %>
+                <span class="btn-secondary" style="opacity:0.7;cursor:default;">
+                  Indisponível
+                </span>
+              <% end %>
             </div>
           </div>
 
-        <% elsif page.streamlit? && page.embed_url.present? %>
-          <div class="pdf-viewer-wrapper">
-            <iframe
-              src="<%= page.embed_url %>"
-              width="100%"
-              height="900"
-              style="border: 1px solid #dbe2ea; border-radius: 14px; background: white;">
-            </iframe>
-          </div>
-
-        <% elsif page.embed_url.present? %>
-          <div class="pdf-viewer-wrapper">
-            <iframe
-              src="<%= page.embed_url %>"
-              width="100%"
-              height="900"
-              style="border: 1px solid #dbe2ea; border-radius: 14px; background: white;">
-            </iframe>
-          </div>
-
-        <% else %>
-          <div class="profile-line">
-            <div class="profile-value">
-              Este conteúdo ainda não possui arquivo ou link disponível.
+          <% if page.description.present? %>
+            <div style="margin-top:10px;color:#475569;font-size:14px;">
+              <%= page.description %>
             </div>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
   <% else %>
     <div class="profile-line">
       <div class="profile-value">

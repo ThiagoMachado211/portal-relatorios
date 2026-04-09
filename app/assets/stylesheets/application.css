@@ -698,3 +698,31 @@ body {
 .hidden {
   display: none !important;
 }
+
+.report-item-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.report-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.report-item-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.report-item-description {
+  margin-top: 10px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
