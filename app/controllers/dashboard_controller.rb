@@ -1,8 +1,6 @@
 class DashboardController < ApplicationController
   before_action :authenticate_user!
 
-  layout false
-
   def index
     @last_access_at =
       if current_user.respond_to?(:last_access_at)
