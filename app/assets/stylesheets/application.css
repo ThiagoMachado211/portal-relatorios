@@ -593,3 +593,85 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+
+
+/* ============================= */
+/* ADMIN - TABELAS/LISTAGENS */
+/* ============================= */
+
+.admin-table,
+.admin-table th,
+.admin-table td,
+.admin-table a,
+.admin-list,
+.admin-list * {
+  color: #0f172a !important;
+}
+
+.admin-table th {
+  font-weight: 700;
+}
+
+.admin-table td {
+  font-weight: 500;
+}
+
+/* cards brancos do admin */
+.card,
+.card-title,
+.card-subtitle,
+.profile-key,
+.profile-value {
+  color: #0f172a;
+}
+
+
+
+
+/* ============================= */
+/* ADMIN - TEXTO ESCURO */
+/* ============================= */
+
+.admin-table,
+.admin-table th,
+.admin-table td,
+.admin-table a,
+.admin-list,
+.admin-list * {
+  color: #0f172a !important;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 10px;
+}
+
+.admin-table td {
+  padding: 10px;
+}
+
+/* BOTÕES */
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-right: 6px;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+}

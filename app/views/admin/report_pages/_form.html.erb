@@ -1,84 +1,82 @@
-<%= form_with model: [:admin, @report_page], local: true do |f| %>
-  <div style="display:grid;gap:16px;">
-    <div style="color:black;">
-      <%= f.label :title, "Título" %><br>
-      <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+<div class="card">
+  <%= form_with(model: [:admin, @report_page], local: true) do |form| %>
+
+    <div class="form-group">
+      <%= form.label :title, "Título" %>
+      <%= form.text_field :title, class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :slug, "Slug" %><br>
-      <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    <div class="form-group">
+      <%= form.label :slug, "Slug" %>
+      <%= form.text_field :slug, class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :description, "Descrição" %><br>
-      <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    <div class="form-group">
+      <%= form.label :description, "Descrição" %>
+      <%= form.text_area :description, class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :sidebar_section_id, "Seção" %><br>
-      <%= f.collection_select :sidebar_section_id,
-            @sidebar_sections,
-            :id,
-            :title,
-            { prompt: "Selecione uma seção" },
-            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    <!-- SEÇÃO -->
+    <div class="form-group">
+      <%= form.label :sidebar_section_id, "Seção" %>
+      <%= form.collection_select :sidebar_section_id,
+          SidebarSection.active.ordered,
+          :id,
+          :title,
+          { prompt: "Selecione uma seção" },
+          { class: "form-input" } %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :sidebar_subsection_id, "Subseção (opcional)" %><br>
-      <%= f.collection_select :sidebar_subsection_id,
-            @sidebar_subsections,
-            :id,
-            :title,
-            { include_blank: "Sem subseção" },
-            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    <!-- SUBSEÇÃO -->
+    <div class="form-group">
+      <%= form.label :sidebar_subsection_id, "Subseção" %>
+      <%= form.collection_select :sidebar_subsection_id,
+          SidebarSubsection.active.ordered,
+          :id,
+          :title,
+          { prompt: "Selecione uma subseção" },
+          { class: "form-input" } %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :content_type, "Tipo de conteúdo" %><br>
-      <%= f.select :content_type,
-            ReportPage.content_types.keys.map { |k| [k.humanize, k] },
-            {},
-            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    <div class="form-group">
+      <%= form.label :content_type, "Tipo de conteúdo" %>
+      <%= form.select :content_type,
+          ReportPage.content_types.keys.map { |k| [k.humanize, k] },
+          {},
+          class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :visible_for, "Visível para" %><br>
-      <%= f.select :visible_for,
-            ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
-            {},
-            { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    <div class="form-group">
+      <%= form.label :visible_for, "Visível para" %>
+      <%= form.select :visible_for,
+          ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
+          {},
+          class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :embed_url, "URL / Embed" %><br>
-      <%= f.text_area :embed_url, rows: 3, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    <div class="form-group">
+      <%= form.label :embed_url, "Embed URL" %>
+      <%= form.text_field :embed_url, class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :file, "Arquivo (opcional)" %><br>
-      <%= f.file_field :file, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
-
-      <% if @report_page.persisted? && @report_page.file.attached? %>
-        <div style="margin-top:8px;color:#475569;">
-          Arquivo atual: <%= @report_page.file.filename.to_s %>
-        </div>
-      <% end %>
+    <div class="form-group">
+      <%= form.label :file, "Arquivo (PDF, imagem, etc)" %>
+      <%= form.file_field :file, class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.label :position, "Posição" %><br>
-      <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    <div class="form-group">
+      <%= form.label :position, "Posição" %>
+      <%= form.number_field :position, class: "form-input" %>
     </div>
 
-    <div style="color:black;">
-      <%= f.check_box :active %>
-      <%= f.label :active, "Ativo" %>
+    <div class="form-group">
+      <%= form.label :active, "Ativo" %>
+      <%= form.check_box :active %>
     </div>
 
-    <div style="color:black;">
-      <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
+    <div class="form-actions">
+      <%= form.submit "Salvar", class: "btn-primary" %>
     </div>
-  </div>
-<% end %>
+
+  <% end %>
+</div>

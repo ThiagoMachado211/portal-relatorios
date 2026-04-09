@@ -1,44 +1,53 @@
-<div class="card">
+<div class="card admin-list">
+
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
     <div>
       <div class="card-title">Relatórios / Conteúdos</div>
-      <div class="card-subtitle">Gerencie os conteúdos exibidos para client e manager</div>
+      <div class="card-subtitle">
+        Gerencie os conteúdos exibidos para client e manager
+      </div>
     </div>
 
-    <%= link_to "Novo Conteúdo", new_admin_report_page_path, class: "logout-button", style: "background:#2563eb;" %>
+    <%= link_to "Novo Conteúdo",
+        new_admin_report_page_path,
+        class: "btn-primary" %>
   </div>
 
-  <% if @report_pages.any? %>
-    <table style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr style="text-align:left;border-bottom:1px solid #e5e7eb;">
-          <th style="padding:12px;">Título</th>
-          <th style="padding:12px;">Seção</th>
-          <th style="padding:12px;">Subseção</th>
-          <th style="padding:12px;">Tipo</th>
-          <th style="padding:12px;">Visível para</th>
-          <th style="padding:12px;">Ativo</th>
-          <th style="padding:12px;">Ações</th>
+  <table class="admin-table" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Seção</th>
+        <th>Subseção</th>
+        <th>Tipo</th>
+        <th>Visibilidade</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @report_pages.each do |page| %>
+        <tr style="border-top:1px solid #e5e7eb;">
+          <td><%= page.title %></td>
+          <td><%= page.sidebar_section&.title %></td>
+          <td><%= page.sidebar_subsection&.title || "-" %></td>
+          <td><%= page.content_type %></td>
+          <td><%= page.visible_for %></td>
+
+          <td>
+            <%= link_to "Editar",
+                edit_admin_report_page_path(page),
+                class: "btn-secondary" %>
+
+            <%= link_to "Excluir",
+                admin_report_page_path(page),
+                method: :delete,
+                data: { confirm: "Tem certeza?" },
+                class: "btn-danger" %>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        <% @report_pages.each do |report| %>
-          <tr style="border-bottom:1px solid #e5e7eb;">
-            <td style="padding:12px;"><%= report.title %></td>
-            <td style="padding:12px;"><%= report.sidebar_section&.title || "-" %></td>
-            <td style="padding:12px;"><%= report.sidebar_subsection&.title || "-" %></td>
-            <td style="padding:12px;"><%= report.content_type %></td>
-            <td style="padding:12px;"><%= report.visible_for %></td>
-            <td style="padding:12px;"><%= report.active ? "Sim" : "Não" %></td>
-            <td style="padding:12px;display:flex;gap:8px;flex-wrap:wrap;">
-              <%= link_to "Editar", edit_admin_report_page_path(report), class: "sidebar-link", style: "color:#2563eb;background:#eff6ff;" %>
-              <%= button_to "Excluir", admin_report_page_path(report), method: :delete, form: { style: "display:inline;" }, class: "logout-button", style: "padding:8px 12px;" %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>Nenhum conteúdo cadastrado ainda.</p>
-  <% end %>
+      <% end %>
+    </tbody>
+  </table>
+
 </div>

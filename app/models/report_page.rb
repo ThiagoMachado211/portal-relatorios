@@ -1,6 +1,8 @@
 class ReportPage < ApplicationRecord
   belongs_to :sidebar_section
-  belongs_to :sidebar_subsection, optional: true
+  belongs_to :sidebar_subsection
+
+  validates :sidebar_subsection, presence: true
 
   has_one_attached :file
 
