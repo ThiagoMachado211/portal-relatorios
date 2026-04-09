@@ -18,7 +18,14 @@
               </div>
 
               <div>
-                <% if page.pdf? && page.file.attached? %>
+                <% if page.embed_url.present? %>
+                  <%= link_to "Abrir PDF",
+                      page.embed_url,
+                      target: "_blank",
+                      rel: "noopener",
+                      class: "btn-primary" %>
+
+                <% elsif page.pdf? && page.file.attached? %>
                   <%= link_to "Abrir PDF",
                       url_for(page.file),
                       target: "_blank",
@@ -42,13 +49,6 @@
                 <% elsif page.file.attached? %>
                   <%= link_to "Abrir Arquivo",
                       url_for(page.file),
-                      target: "_blank",
-                      rel: "noopener",
-                      class: "btn-primary" %>
-
-                <% elsif page.embed_url.present? %>
-                  <%= link_to "Abrir Conteúdo",
-                      page.embed_url,
                       target: "_blank",
                       rel: "noopener",
                       class: "btn-primary" %>
