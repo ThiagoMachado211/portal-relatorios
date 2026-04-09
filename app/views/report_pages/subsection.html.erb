@@ -1,31 +1,19 @@
 <div class="card">
-  <div class="card-title">
-    <%= @subsection&.title || "Subseção" %>
+  <div class="card-title">Teste da subseção</div>
+  <div class="card-subtitle">Se esta página abrir, a view básica está funcionando.</div>
+
+  <div class="profile-line">
+    <div class="profile-key">Seção</div>
+    <div class="profile-value"><%= @section.title %></div>
   </div>
 
-  <div class="card-subtitle">
-    Conteúdos disponíveis nesta área
+  <div class="profile-line">
+    <div class="profile-key">Subseção</div>
+    <div class="profile-value"><%= @subsection.title %></div>
   </div>
 
-  <% if @report_pages.present? && @report_pages.any? %>
-    <div class="profile-card">
-      <% @report_pages.each do |page| %>
-        <div class="profile-line">
-          <div class="profile-key">
-            <%= page.title %>
-          </div>
-
-          <div class="profile-value">
-            <%= page.description.presence || "Sem descrição" %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="profile-line">
-      <div class="profile-value">
-        Nenhum conteúdo disponível para esta subseção.
-      </div>
-    </div>
-  <% end %>
+  <div class="profile-line">
+    <div class="profile-key">Quantidade de páginas</div>
+    <div class="profile-value"><%= @report_pages.count %></div>
+  </div>
 </div>
