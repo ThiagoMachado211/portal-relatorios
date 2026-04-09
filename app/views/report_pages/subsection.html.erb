@@ -1,0 +1,31 @@
+<div class="card">
+  <div class="card-title">
+    <%= @subsection&.title || "Subseção" %>
+  </div>
+
+  <div class="card-subtitle">
+    Conteúdos disponíveis nesta área
+  </div>
+
+  <% if @report_pages.present? && @report_pages.any? %>
+    <div class="profile-card">
+      <% @report_pages.each do |page| %>
+        <div class="profile-line">
+          <div class="profile-key">
+            <%= page.title %>
+          </div>
+
+          <div class="profile-value">
+            <%= page.description.presence || "Sem descrição" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="profile-line">
+      <div class="profile-value">
+        Nenhum conteúdo disponível para esta subseção.
+      </div>
+    </div>
+  <% end %>
+</div>

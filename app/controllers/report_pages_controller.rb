@@ -1,25 +1,14 @@
 class ReportPagesController < ApplicationController
   before_action :authenticate_user!
 
-  def show
-    @sidebar_section = SidebarSection.find_by!(slug: params[:slug])
-
-    @report_pages = @sidebar_section.report_pages
-                                    .where(sidebar_subsection_id: nil)
-                                    .active
-                                    .ordered
-                                    .select { |report| report.visible_to?(current_user) }
-  end
-
   def subsection
-    @sidebar_section = SidebarSection.find_by!(slug: params[:section_slug])
-    @sidebar_subsection = @sidebar_section.sidebar_subsections.find_by!(slug: params[:subsection_slug])
+    @section = SidebarSection.active.find_by!(slug: params[:section_slug])
 
-    @report_pages = @sidebar_subsection.report_pages
-                                       .active
-                                       .ordered
-                                       .select { |report| report.visible_to?(current_user) }
+    @subsection = @section.sidebar_subsections.active.find_by!(slug: params[:subsection_slug])
 
-    render :show
+    @report_pages = ReportPage.active
+                              .where(sidebar_section: @section, sidebar_subsection: @subsection)
+                              .where(visible_for: ["shared", current_user.user_type])
+                              .order(:position)
   end
 end
