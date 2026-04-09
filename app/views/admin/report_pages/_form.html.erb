@@ -1,21 +1,21 @@
 <%= form_with model: [:admin, @report_page], local: true do |f| %>
   <div style="display:grid;gap:16px;">
-    <div>
+    <div style="color:black;">
       <%= f.label :title, "Título" %><br>
       <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :slug, "Slug" %><br>
       <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :description, "Descrição" %><br>
       <%= f.text_area :description, rows: 4, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :sidebar_section_id, "Seção" %><br>
       <%= f.collection_select :sidebar_section_id,
             @sidebar_sections,
@@ -25,7 +25,7 @@
             { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :sidebar_subsection_id, "Subseção (opcional)" %><br>
       <%= f.collection_select :sidebar_subsection_id,
             @sidebar_subsections,
@@ -35,7 +35,7 @@
             { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :content_type, "Tipo de conteúdo" %><br>
       <%= f.select :content_type,
             ReportPage.content_types.keys.map { |k| [k.humanize, k] },
@@ -43,7 +43,7 @@
             { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :visible_for, "Visível para" %><br>
       <%= f.select :visible_for,
             ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
@@ -51,12 +51,12 @@
             { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :embed_url, "URL / Embed" %><br>
       <%= f.text_area :embed_url, rows: 3, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :file, "Arquivo (opcional)" %><br>
       <%= f.file_field :file, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
 
@@ -67,17 +67,17 @@
       <% end %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.label :position, "Posição" %><br>
       <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.check_box :active %>
       <%= f.label :active, "Ativo" %>
     </div>
 
-    <div>
+    <div style="color:black;">
       <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
     </div>
   </div>
