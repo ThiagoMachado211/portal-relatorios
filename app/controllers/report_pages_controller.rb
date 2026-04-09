@@ -9,6 +9,6 @@ class ReportPagesController < ApplicationController
     @report_pages = ReportPage.active
                               .where(sidebar_section: @section, sidebar_subsection: @subsection)
                               .where(visible_for: ["shared", current_user.user_type])
-                              .order(:position)
+                              .order(:position, :title)
   end
 end

@@ -675,3 +675,15 @@ body {
   padding: 8px 12px;
   border-radius: 8px;
 }
+
+
+.pdf-viewer-wrapper {
+  width: 100%;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.content-block + .content-block {
+  margin-top: 32px;
+}

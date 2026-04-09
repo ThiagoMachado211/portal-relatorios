@@ -1,19 +1,79 @@
 <div class="card">
-  <div class="card-title">Teste da subseção</div>
-  <div class="card-subtitle">Se esta página abrir, a view básica está funcionando.</div>
-
-  <div class="profile-line">
-    <div class="profile-key">Seção</div>
-    <div class="profile-value"><%= @section.title %></div>
+  <div class="card-title">
+    <%= @subsection.title %>
   </div>
 
-  <div class="profile-line">
-    <div class="profile-key">Subseção</div>
-    <div class="profile-value"><%= @subsection.title %></div>
+  <div class="card-subtitle">
+    Conteúdos disponíveis nesta subseção
   </div>
 
-  <div class="profile-line">
-    <div class="profile-key">Quantidade de páginas</div>
-    <div class="profile-value"><%= @report_pages.count %></div>
-  </div>
+  <% if @report_pages.present? && @report_pages.any? %>
+    <% @report_pages.each do |page| %>
+      <div class="content-block" style="margin-top: 24px;">
+        <% if page.title.present? %>
+          <div class="profile-line" style="margin-bottom: 16px;">
+            <div class="profile-key">Conteúdo</div>
+            <div class="profile-value"><%= page.title %></div>
+          </div>
+        <% end %>
+
+        <% if page.pdf? && page.file.attached? %>
+          <div class="pdf-viewer-wrapper">
+            <iframe
+              src="<%= url_for(page.file) %>"
+              width="100%"
+              height="900"
+              style="border: 1px solid #dbe2ea; border-radius: 14px; background: white;">
+            </iframe>
+          </div>
+
+        <% elsif page.image? && page.file.attached? %>
+          <div class="image-viewer-wrapper">
+            <%= image_tag page.file, style: "max-width: 100%; border-radius: 14px; display: block;" %>
+          </div>
+
+        <% elsif page.external_link? && page.embed_url.present? %>
+          <div class="profile-line">
+            <div class="profile-key">Link externo</div>
+            <div class="profile-value">
+              <%= link_to page.embed_url, page.embed_url, target: "_blank", rel: "noopener" %>
+            </div>
+          </div>
+
+        <% elsif page.streamlit? && page.embed_url.present? %>
+          <div class="pdf-viewer-wrapper">
+            <iframe
+              src="<%= page.embed_url %>"
+              width="100%"
+              height="900"
+              style="border: 1px solid #dbe2ea; border-radius: 14px; background: white;">
+            </iframe>
+          </div>
+
+        <% elsif page.embed_url.present? %>
+          <div class="pdf-viewer-wrapper">
+            <iframe
+              src="<%= page.embed_url %>"
+              width="100%"
+              height="900"
+              style="border: 1px solid #dbe2ea; border-radius: 14px; background: white;">
+            </iframe>
+          </div>
+
+        <% else %>
+          <div class="profile-line">
+            <div class="profile-value">
+              Este conteúdo ainda não possui arquivo ou link disponível.
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="profile-line">
+      <div class="profile-value">
+        Nenhum conteúdo disponível para esta subseção.
+      </div>
+    </div>
+  <% end %>
 </div>

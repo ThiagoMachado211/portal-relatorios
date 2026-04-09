@@ -20,32 +20,41 @@
               <div>
                 <div class="sidebar-title">EstudoPlay</div>
                 <div class="sidebar-subtitle">Portal de Relatórios</div>
-              </div>
+              </d  iv>
             </div>
 
             <nav class="sidebar-nav">
               <%= link_to "Dashboard", dashboard_path, class: "sidebar-link" %>
 
               <% SidebarSection.active.ordered.includes(:sidebar_subsections).each do |section| %>
+                <% section_open = params[:section_slug] == section.slug %>
+
                 <div data-controller="sidebar-toggle">
                   <button
                     type="button"
                     class="sidebar-link sidebar-toggle-button"
                     data-action="click->sidebar-toggle#toggle"
                     style="width:100%;text-align:left;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+
                     <span><%= section.title %></span>
-                    <span data-sidebar-toggle-target="icon">▸</span>
+                    <span data-sidebar-toggle-target="icon"><%= section_open ? "▾" : "▸" %></span>
                   </button>
 
-                  <div data-sidebar-toggle-target="children" class="hidden sidebar-children-container">
+                  <div
+                    data-sidebar-toggle-target="children"
+                    class="<%= section_open ? "" : "hidden" %> sidebar-children-container">
+
                     <% section.sidebar_subsections.active.ordered.each do |subsection| %>
+                      <% active_subsection = params[:section_slug] == section.slug && params[:subsection_slug] == subsection.slug %>
+
                       <%= link_to subsection.title,
                           report_subsection_path(section.slug, subsection.slug),
-                          class: "sidebar-link sidebar-subsection-level-2" %>
+                          class: "sidebar-link sidebar-subsection-level-2 #{'active' if active_subsection}" %>
                     <% end %>
                   </div>
                 </div>
               <% end %>
+            
 
               <% if current_user.admin? %>
                 <hr style="border:none;border-top:1px solid rgba(255,255,255,0.12);margin:16px 0;">
