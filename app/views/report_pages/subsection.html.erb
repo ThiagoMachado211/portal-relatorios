@@ -10,13 +10,9 @@
   <% if @report_pages.present? && @report_pages.any? %>
     <div class="profile-card">
       <% @report_pages.each do |page| %>
-        <div class="profile-line" style="margin-bottom: 14px;">
-          <div class="profile-key">
-            Relatório
-          </div>
-
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
-            <div class="profile-value">
+        <div class="report-item-card">
+          <div class="report-item-header">
+            <div class="report-item-title">
               <%= page.title %>
             </div>
 
@@ -65,7 +61,7 @@
           </div>
 
           <% if page.description.present? %>
-            <div style="margin-top:10px;color:#475569;font-size:14px;">
+            <div class="report-item-description">
               <%= page.description %>
             </div>
           <% end %>
