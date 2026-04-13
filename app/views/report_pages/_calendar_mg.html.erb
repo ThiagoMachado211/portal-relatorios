@@ -1,0 +1,138 @@
+<div class="calendar-page">
+  <div class="calendar-page__header">
+    <div>
+      <p class="calendar-page__eyebrow">Calendário pedagógico</p>
+      <h1 class="calendar-page__title">Minas Gerais (MG)</h1>
+      <p class="calendar-page__subtitle">
+        Cronograma de simulados, testes de redação, uploads e divulgação de resultados.
+      </p>
+    </div>
+  </div>
+
+  <div class="calendar-stats">
+    <div class="calendar-stat-card">
+      <span class="calendar-stat-card__label">Total de eventos</span>
+      <strong class="calendar-stat-card__value"><%= @calendar_items.size %></strong>
+    </div>
+
+    <div class="calendar-stat-card">
+      <span class="calendar-stat-card__label">Simulados</span>
+      <strong class="calendar-stat-card__value">
+        <%= @calendar_items.count { |item| item[:test_type] == "Simulado" } %>
+      </strong>
+    </div>
+
+    <div class="calendar-stat-card">
+      <span class="calendar-stat-card__label">Testes de Redação</span>
+      <strong class="calendar-stat-card__value">
+        <%= @calendar_items.count { |item| item[:test_type] == "Teste de Redação" } %>
+      </strong>
+    </div>
+
+    <div class="calendar-stat-card">
+      <span class="calendar-stat-card__label">Próximo resultado</span>
+      <strong class="calendar-stat-card__value">
+        <%= l(@calendar_items.min_by { |item| item[:result_date] }[:result_date], format: :short) rescue "-" %>
+      </strong>
+    </div>
+  </div>
+
+  <div class="calendar-layout">
+    <section class="calendar-panel">
+      <div class="calendar-panel__header">
+        <h2 class="calendar-panel__title">Linha do tempo</h2>
+        <p class="calendar-panel__description">Visão resumida das principais entregas e marcos.</p>
+      </div>
+
+      <div class="calendar-timeline">
+        <% @calendar_items.each do |item| %>
+          <article class="calendar-timeline__item">
+            <div class="calendar-timeline__marker"></div>
+
+            <div class="calendar-timeline__content">
+              <div class="calendar-timeline__top">
+                <h3 class="calendar-timeline__title"><%= item[:test_name] %></h3>
+
+                <div class="calendar-timeline__badges">
+                  <span class="calendar-badge <%= item[:test_type] == 'Simulado' ? 'calendar-badge--blue' : 'calendar-badge--orange' %>">
+                    <%= item[:test_type] %>
+                  </span>
+
+                  <span class="calendar-badge calendar-badge--gray">
+                    <%= item[:print_type] %>
+                  </span>
+                </div>
+              </div>
+
+              <div class="calendar-timeline__dates">
+                <div class="calendar-date-chip">
+                  <span class="calendar-date-chip__label">Impressão</span>
+                  <strong><%= l(item[:print_file_date], format: :short) %></strong>
+                </div>
+
+                <div class="calendar-date-chip">
+                  <span class="calendar-date-chip__label">Início upload</span>
+                  <strong><%= l(item[:upload_start_date], format: :short) %></strong>
+                </div>
+
+                <div class="calendar-date-chip">
+                  <span class="calendar-date-chip__label">Fim upload</span>
+                  <strong><%= l(item[:upload_end_date], format: :short) %></strong>
+                </div>
+
+                <div class="calendar-date-chip calendar-date-chip--highlight">
+                  <span class="calendar-date-chip__label">Resultado</span>
+                  <strong><%= l(item[:result_date], format: :short) %></strong>
+                </div>
+              </div>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="calendar-panel">
+      <div class="calendar-panel__header">
+        <h2 class="calendar-panel__title">Tabela completa</h2>
+        <p class="calendar-panel__description">Visão detalhada para consulta operacional.</p>
+      </div>
+
+      <div class="calendar-table-wrapper">
+        <table class="calendar-table">
+          <thead>
+            <tr>
+              <th>Nome do teste</th>
+              <th>Tipo do teste</th>
+              <th>Data arquivo impressão</th>
+              <th>Data início upload</th>
+              <th>Data fim upload</th>
+              <th>Data resultado</th>
+              <th>Tipo impressão</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @calendar_items.each do |item| %>
+              <tr>
+                <td><%= item[:test_name] %></td>
+                <td>
+                  <span class="calendar-badge <%= item[:test_type] == 'Simulado' ? 'calendar-badge--blue' : 'calendar-badge--orange' %>">
+                    <%= item[:test_type] %>
+                  </span>
+                </td>
+                <td><%= l(item[:print_file_date], format: :default) %></td>
+                <td><%= l(item[:upload_start_date], format: :default) %></td>
+                <td><%= l(item[:upload_end_date], format: :default) %></td>
+                <td><%= l(item[:result_date], format: :default) %></td>
+                <td>
+                  <span class="calendar-badge calendar-badge--gray">
+                    <%= item[:print_type] %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
