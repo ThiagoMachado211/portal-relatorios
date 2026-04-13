@@ -14,6 +14,10 @@ module PortalRelatorios
     # Evita erro com propshaft
     config.assets.enabled = true
 
+    config.i18n.available_locales = [:"pt-BR"]
+    config.i18n.locale = :"pt-BR"
+    config.i18n.default_locale = :"pt-BR"
+
     # Active Storage
     config.active_storage.variant_processor = :vips
 

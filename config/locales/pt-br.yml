@@ -3,3 +3,4 @@ pt-BR:
     formats:
       default: "%d/%m/%Y"
       short: "%d/%m/%y"
+      long: "%d de %B de %Y"
