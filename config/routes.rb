@@ -24,4 +24,12 @@ Rails.application.routes.draw do
     end
     resources :report_pages
   end
+
+  resources :travel_metrics do
+    collection do
+      get :dashboard
+      get :presentation
+    end
+  end
+
 end

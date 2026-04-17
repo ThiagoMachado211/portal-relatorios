@@ -1,0 +1,36 @@
+<div class="subsection-page">
+  <div class="subsection-card">
+
+    <div class="report-item-header">
+      <div>
+        <div class="card-title">Métricas</div>
+      </div>
+
+      <div>
+        <%= link_to "Nova Métrica", new_travel_metric_path, class: "btn-primary" %>
+      </div>
+    </div>
+
+    <% if @travel_metrics.any? %>
+      <div class="profile-card">
+        <% @travel_metrics.each do |m| %>
+          <div class="report-item-card">
+            <div class="report-item-title">
+              <%= m.category %> - <%= m.metric_type %>
+            </div>
+            <div class="report-item-description">
+              Estado: <%= m.state %><br>
+              Mês: <%= I18n.t("date.month_names")[m.month] %>/<%= m.year %><br>
+              Valor: <%= m.value %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="profile-line">
+        <div class="profile-value">Nenhum registro ainda.</div>
+      </div>
+    <% end %>
+
+  </div>
+</div>

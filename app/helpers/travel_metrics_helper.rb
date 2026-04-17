@@ -1,0 +1,2 @@
+module TravelMetricsHelper
+end

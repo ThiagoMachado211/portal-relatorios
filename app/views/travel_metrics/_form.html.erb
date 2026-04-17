@@ -1,0 +1,67 @@
+<%= form_with model: @travel_metric, class: "travel-form" do |f| %>
+  <% if @travel_metric.errors.any? %>
+    <div class="form-errors">
+      <h3>Erro ao salvar</h3>
+      <ul>
+        <% @travel_metric.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-grid form-grid--3">
+
+    <div class="form-field">
+      <%= f.label :category, "Categoria" %>
+      <%= f.select :category,
+        TravelMetric::CATEGORIES,
+        { prompt: "Selecione" },
+        class: "input" %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :metric_type, "Tipo da métrica" %>
+      <%= f.select :metric_type,
+        TravelMetric::METRIC_TYPES,
+        { prompt: "Selecione" },
+        class: "input" %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :state, "Estado" %>
+      <%= f.select :state,
+        ["MG", "RJ", "BA"],
+        { prompt: "Selecione" },
+        class: "input" %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :month, "Mês" %>
+      <%= f.select :month,
+        (1..12).map { |m| [I18n.t("date.month_names")[m], m] },
+        { prompt: "Selecione" },
+        class: "input" %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :year, "Ano" %>
+      <%= f.number_field :year, value: Date.current.year, class: "input" %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :value, "Valor" %>
+      <%= f.number_field :value, step: 0.01, class: "input" %>
+    </div>
+
+    <div class="form-field form-field--full">
+      <%= f.label :notes, "Observações" %>
+      <%= f.text_area :notes, rows: 3, class: "input" %>
+    </div>
+
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit "Salvar", class: "btn-primary" %>
+  </div>
+<% end %>
