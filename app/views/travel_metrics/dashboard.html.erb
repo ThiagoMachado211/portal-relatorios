@@ -1,0 +1,61 @@
+<div class="travel-dashboard-page">
+  <div class="travel-dashboard-header">
+    <h1>GESTÃO DE VIAGENS</h1>
+    <h2><%= @category %>: <%= @metric_type %></h2>
+  </div>
+
+  <div class="travel-dashboard-body">
+    <aside class="travel-dashboard-sidebar">
+      <div class="travel-kpi-card">
+        <div class="travel-kpi-card__title">
+          <%= @metric_type %> Total de <%= @category %>
+        </div>
+        <div class="travel-kpi-card__value">
+          <%= @total_value.to_i == @total_value ? @total_value.to_i : @total_value %>
+        </div>
+      </div>
+    </aside>
+
+    <section class="travel-dashboard-main">
+      <div class="travel-chart-card">
+        <div class="travel-chart-card__header">
+          <div class="travel-chart-card__title">
+            <%= @metric_type %> de <%= @category %>
+          </div>
+          <div class="travel-chart-card__subtitle">
+            Evolução Mensal
+          </div>
+        </div>
+
+        <div class="travel-bar-chart">
+          <% max_value = @monthly_data.map { |item| item[:value] }.max.to_f %>
+          <% max_value = 1 if max_value <= 0 %>
+
+          <% @monthly_data.select { |item| item[:value] > 0 }.each do |item| %>
+            <% width_percent = (item[:value] / max_value) * 100 %>
+
+            <div class="travel-bar-row">
+              <div class="travel-bar-row__label">
+                <%= item[:label] %>
+              </div>
+
+              <div class="travel-bar-row__track">
+                <div class="travel-bar-row__bar" style="width: <%= width_percent %>%;">
+                  <span class="travel-bar-row__value">
+                    <%= item[:value].to_i == item[:value] ? item[:value].to_i : item[:value] %>
+                  </span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <% if @monthly_data.none? { |item| item[:value] > 0 } %>
+            <div class="travel-empty-state">
+              Nenhum dado encontrado para os filtros selecionados.
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

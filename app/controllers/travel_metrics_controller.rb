@@ -29,7 +29,12 @@ class TravelMetricsController < ApplicationController
     @metric_type = params[:metric_type].presence || "Quantidade"
     @year = params[:year].presence&.to_i || Date.current.year
 
-    base_scope = current_user.admin? ? TravelMetric.all : current_user.travel_metrics
+    base_scope =
+      if current_user.admin?
+        TravelMetric.all
+      else
+        current_user.travel_metrics
+      end
 
     scoped = base_scope.where(
       category: @category,
@@ -44,7 +49,10 @@ class TravelMetricsController < ApplicationController
     @monthly_data = (1..12).map do |month|
       {
         month: month,
-        label: I18n.t("date.month_names")[month],
+        label: [
+          nil, "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ][month],
         value: monthly_hash[month].to_f
       }
     end

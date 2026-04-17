@@ -966,3 +966,179 @@ a {
   display: flex;
   justify-content: flex-end;
 }
+
+
+.travel-dashboard-page {
+  min-height: 100vh;
+  background: #63b8ea;
+  padding: 12px 18px 18px;
+  box-sizing: border-box;
+}
+
+.travel-dashboard-header {
+  text-align: center;
+  color: #061b9a;
+  margin-bottom: 18px;
+}
+
+.travel-dashboard-header h1 {
+  margin: 0;
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.travel-dashboard-header h2 {
+  margin: 6px 0 0;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.travel-dashboard-body {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.travel-dashboard-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.travel-kpi-card {
+  width: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1626ad;
+  color: #d8ff28;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.travel-kpi-card__title {
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.travel-kpi-card__value {
+  padding: 18px 10px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.travel-dashboard-main {
+  display: flex;
+}
+
+.travel-chart-card {
+  width: 100%;
+  min-height: 520px;
+  background: #367fcc;
+  border: 1px solid rgba(17, 24, 39, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.travel-chart-card__header {
+  background: #1626ad;
+  color: #d8ff28;
+  text-align: center;
+  padding: 10px 12px 8px;
+}
+
+.travel-chart-card__title {
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.travel-chart-card__subtitle {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.travel-bar-chart {
+  padding: 34px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.travel-bar-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.travel-bar-row__label {
+  color: #d8ff28;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: right;
+}
+
+.travel-bar-row__track {
+  position: relative;
+  width: 100%;
+  height: 44px;
+}
+
+.travel-bar-row__bar {
+  position: relative;
+  height: 44px;
+  background: #1c28ab;
+  min-width: 18px;
+}
+
+.travel-bar-row__value {
+  position: absolute;
+  right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d8ff28;
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.travel-empty-state {
+  color: #ffffff;
+  font-size: 20px;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+@media (max-width: 900px) {
+  .travel-dashboard-header h1 {
+    font-size: 34px;
+  }
+
+  .travel-dashboard-header h2 {
+    font-size: 20px;
+  }
+
+  .travel-dashboard-body {
+    grid-template-columns: 1fr;
+  }
+
+  .travel-dashboard-sidebar {
+    justify-content: flex-start;
+  }
+
+  .travel-bar-row {
+    grid-template-columns: 1fr;
+  }
+
+  .travel-bar-row__label {
+    text-align: left;
+  }
+}
