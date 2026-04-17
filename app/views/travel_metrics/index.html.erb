@@ -4,10 +4,13 @@
     <div class="report-item-header">
       <div>
         <div class="card-title">Métricas</div>
+        <div class="card-subtitle">Registros lançados pelos managers.</div>
       </div>
 
-      <div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <%= link_to "Nova Métrica", new_travel_metric_path, class: "btn-primary" %>
+        <%= link_to "Dashboard", dashboard_travel_metrics_path, class: "btn-primary" %>
+        <%= link_to "Apresentação", presentation_travel_metrics_path, class: "btn-primary" %>
       </div>
     </div>
 
@@ -18,10 +21,14 @@
             <div class="report-item-title">
               <%= m.category %> - <%= m.metric_type %>
             </div>
+
             <div class="report-item-description">
-              Estado: <%= m.state %><br>
-              Mês: <%= I18n.t("date.month_names")[m.month] %>/<%= m.year %><br>
-              Valor: <%= m.value %>
+              <strong>Estado:</strong> <%= m.state %><br>
+              <strong>Mês/Ano:</strong> <%= I18n.t("date.month_names")[m.month] %>/<%= m.year %><br>
+              <strong>Valor:</strong> <%= m.value %>
+              <% if m.notes.present? %>
+                <br><strong>Observações:</strong> <%= m.notes %>
+              <% end %>
             </div>
           </div>
         <% end %>
