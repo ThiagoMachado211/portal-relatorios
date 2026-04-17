@@ -38,10 +38,23 @@
 
     <div class="form-field">
       <%= f.label :month, "Mês" %>
-      <%= f.select :month,
-        (1..12).map { |m| [I18n.t("date.month_names")[m], m] },
-        { prompt: "Selecione" },
-        class: "input" %>
+        <%= f.select :month,
+          [
+            ["Janeiro", 1],
+            ["Fevereiro", 2],
+            ["Março", 3],
+            ["Abril", 4],
+            ["Maio", 5],
+            ["Junho", 6],
+            ["Julho", 7],
+            ["Agosto", 8],
+            ["Setembro", 9],
+            ["Outubro", 10],
+            ["Novembro", 11],
+            ["Dezembro", 12]
+          ],
+          { prompt: "Selecione" },
+          class: "input" %>
     </div>
 
     <div class="form-field">
