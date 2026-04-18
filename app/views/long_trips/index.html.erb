@@ -8,9 +8,12 @@
         </div>
       </div>
 
-      <div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <%= link_to "Novo Trecho Longo", new_long_trip_path, class: "btn-primary" %>
-      </div>
+        <%= link_to "Dashboard", dashboard_long_trips_path, class: "btn-primary" %>
+        <%= link_to "Apresentação", presentation_long_trips_path, class: "btn-primary", target: "_blank", rel: "noopener" %>
+      </div>  
+
     </div>
 
     <% if @long_trips.any? %>

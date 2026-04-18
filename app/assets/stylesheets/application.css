@@ -1250,3 +1250,9 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+
+.presentation-body {
+  margin: 0;
+  background: #63b8ea;
+}

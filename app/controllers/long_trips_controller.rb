@@ -66,6 +66,11 @@ class LongTripsController < ApplicationController
     @destination_distribution = destination_frequency
   end
 
+  def presentation
+    dashboard
+    render :presentation
+  end
+
   private
 
   def long_trip_params
