@@ -1142,3 +1142,23 @@ a {
     text-align: left;
   }
 }
+
+
+.presentation-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #000;
+}
+
+.presentation-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+}
+
+.presentation-frame.is-active {
+  display: block;
+}

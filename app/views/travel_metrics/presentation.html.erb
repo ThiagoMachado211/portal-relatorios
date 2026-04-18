@@ -1,0 +1,23 @@
+<div class="presentation-wrapper">
+  <% @dashboards.each_with_index do |item, index| %>
+    <iframe
+      class="presentation-frame <%= index == 0 ? 'is-active' : '' %>"
+      src="<%= dashboard_travel_metrics_path(category: item[:category], metric_type: item[:metric_type], year: @year) %>">
+    </iframe>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const frames = document.querySelectorAll(".presentation-frame");
+    let current = 0;
+
+    if (frames.length === 0) return;
+
+    setInterval(() => {
+      frames[current].classList.remove("is-active");
+      current = (current + 1) % frames.length;
+      frames[current].classList.add("is-active");
+    }, 8000);
+  });
+</script>
