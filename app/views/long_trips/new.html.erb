@@ -1,0 +1,179 @@
+<div class="subsection-page">
+  <div class="subsection-card">
+    <div class="card-title">Novo Trecho Longo</div>
+    <div class="card-subtitle">
+      Preencha os dados da viagem. Os campos calculados serão exibidos depois automaticamente.
+    </div>
+
+    <%= form_with model: @long_trip, class: "travel-form" do |f| %>
+      <% if @long_trip.errors.any? %>
+        <div class="form-errors">
+          <h3>Não foi possível salvar o trecho</h3>
+          <ul>
+            <% @long_trip.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="subsection-card">
+        <div class="card-title">Identificação</div>
+
+        <div class="form-grid form-grid--3">
+          <div class="form-field">
+            <%= f.label :travel_request_id, "ID da viagem (interno)" %>
+            <%= f.number_field :travel_request_id, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :traveler_name, "Nome do viajante" %>
+            <%= f.text_field :traveler_name, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :traveler_sector, "Setor do viajante" %>
+            <%= f.text_field :traveler_sector, class: "input" %>
+          </div>
+
+          <div class="form-field form-field--full">
+            <%= f.label :travel_reason, "Motivo da viagem" %>
+            <%= f.text_area :travel_reason, rows: 3, class: "input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection-card">
+        <div class="card-title">Datas e transporte</div>
+
+        <div class="form-grid form-grid--3">
+          <div class="form-field">
+            <%= f.label :purchase_date, "Data da compra" %>
+            <%= f.date_field :purchase_date, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :travel_date, "Data da viagem" %>
+            <%= f.date_field :travel_date, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :transport_mode, "Meio de transporte" %>
+            <%= f.select :transport_mode,
+              ["Aéreo", "Rodoviário", "Carro", "Outro"],
+              { prompt: "Selecione" },
+              class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :transport_company, "Nome da empresa de transporte" %>
+            <%= f.text_field :transport_company, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :mileage, "Quilometragem" %>
+            <%= f.number_field :mileage, step: 0.01, class: "input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection-card">
+        <div class="card-title">Origem e destino</div>
+
+        <div class="form-grid form-grid--3">
+          <div class="form-field">
+            <%= f.label :origin_city, "Cidade origem" %>
+            <%= f.text_field :origin_city, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :origin_state, "Estado origem" %>
+            <%= f.text_field :origin_state, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :origin_terminal, "Nome do aeroporto ou rodoviária (origem)" %>
+            <%= f.text_field :origin_terminal, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :destination_city, "Cidade destino" %>
+            <%= f.text_field :destination_city, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :destination_state, "Estado destino" %>
+            <%= f.text_field :destination_state, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :destination_terminal, "Nome do aeroporto ou rodoviária (destino)" %>
+            <%= f.text_field :destination_terminal, class: "input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection-card">
+        <div class="card-title">Política e status</div>
+
+        <div class="form-grid form-grid--3">
+          <div class="form-field">
+            <%= f.label :policy_compliant, "Cumpriu política?" %>
+            <%= f.select :policy_compliant,
+              [["Sim", true], ["Não", false]],
+              { prompt: "Selecione" },
+              class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :canceled, "Passagem foi cancelada?" %>
+            <%= f.select :canceled,
+              [["Sim", true], ["Não", false]],
+              { prompt: "Selecione" },
+              class: "input" %>
+          </div>
+
+          <div class="form-field form-field--full">
+            <%= f.label :non_compliance_reason, "Motivo do não-cumprimento" %>
+            <%= f.text_area :non_compliance_reason, rows: 3, class: "input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection-card">
+        <div class="card-title">Valores</div>
+
+        <div class="form-grid form-grid--3">
+          <div class="form-field">
+            <%= f.label :purchase_value_brl, "Valor da compra (R$)" %>
+            <%= f.number_field :purchase_value_brl, step: 0.01, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :purchase_value_points, "Valor da compra (Pontos)" %>
+            <%= f.number_field :purchase_value_points, step: 0.01, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :extra_fees_brl, "Taxas extras (R$)" %>
+            <%= f.number_field :extra_fees_brl, step: 0.01, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :refund_value_brl, "Valor Reembolso (R$)" %>
+            <%= f.number_field :refund_value_brl, step: 0.01, class: "input" %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :refund_value_points, "Valor Reembolso (Pontos)" %>
+            <%= f.number_field :refund_value_points, step: 0.01, class: "input" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Salvar trecho longo", class: "btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -32,4 +32,6 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :long_trips, only: [:index, :new, :create]
+
 end

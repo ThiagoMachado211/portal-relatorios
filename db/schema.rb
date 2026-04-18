@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_17_152614) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_18_025246) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_152614) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "long_trips", force: :cascade do |t|
+    t.boolean "canceled"
+    t.datetime "created_at", null: false
+    t.string "destination_city"
+    t.string "destination_state"
+    t.string "destination_terminal"
+    t.decimal "extra_fees_brl"
+    t.decimal "mileage"
+    t.text "non_compliance_reason"
+    t.string "origin_city"
+    t.string "origin_state"
+    t.string "origin_terminal"
+    t.boolean "policy_compliant"
+    t.date "purchase_date"
+    t.decimal "purchase_value_brl"
+    t.decimal "purchase_value_points"
+    t.decimal "refund_value_brl"
+    t.decimal "refund_value_points"
+    t.string "transport_company"
+    t.string "transport_mode"
+    t.date "travel_date"
+    t.string "travel_reason"
+    t.integer "travel_request_id"
+    t.string "traveler_name"
+    t.string "traveler_sector"
+    t.datetime "updated_at", null: false
   end
 
   create_table "report_pages", force: :cascade do |t|
