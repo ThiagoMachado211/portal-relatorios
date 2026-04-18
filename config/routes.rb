@@ -32,6 +32,10 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :long_trips, only: [:index, :new, :create]
+  resources :long_trips, only: [:index, :new, :create] do
+    collection do
+      get :dashboard
+    end
+  end
 
 end
