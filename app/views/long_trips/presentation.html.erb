@@ -1,156 +1,22 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Apresentação - Trechos Longos</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta http-equiv="refresh" content="20">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<div class="presentation-wrapper">
+  <iframe
+    id="presentationFrame"
+    class="presentation-frame is-active"
+    src="<%= dashboard_long_trips_path(page: @pages.first) %>">
+  </iframe>
+</div>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  </head>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const pages = <%= raw @pages.to_json %>;
+    const frame = document.getElementById("presentationFrame");
+    let current = 0;
 
-  <body class="presentation-body">
-    <div class="travel-dashboard-page">
-      <div class="travel-dashboard-header">
-        <h1>TRECHOS LONGOS</h1>
-        <h2>Painel Contínuo</h2>
-      </div>
+    if (!frame || pages.length === 0) return;
 
-      <div class="dashboard-kpi-grid">
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Total de Passagens Aéreas</span>
-          <strong class="dashboard-kpi-card__value"><%= @total_air_tickets %></strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Total de Passagens Terrestres</span>
-          <strong class="dashboard-kpi-card__value"><%= @total_land_tickets %></strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Média Dias de Antecedência (Aéreas)</span>
-          <strong class="dashboard-kpi-card__value"><%= @average_air_days_between %></strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Quilometragem Total (Aéreas)</span>
-          <strong class="dashboard-kpi-card__value"><%= @total_air_mileage.round(1) %></strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Quilometragem Total (Terrestres)</span>
-          <strong class="dashboard-kpi-card__value"><%= @total_land_mileage.round(1) %></strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Destino mais frequente</span>
-          <strong class="dashboard-kpi-card__value dashboard-kpi-card__value--text">
-            <%= @most_frequent_destination ? @most_frequent_destination[0] : "-" %>
-          </strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Total de Cancelamentos (Aéreas)</span>
-          <strong class="dashboard-kpi-card__value"><%= @total_air_cancellations %></strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Total de Cancelamentos (Terrestres)</span>
-          <strong class="dashboard-kpi-card__value"><%= @total_land_cancellations %></strong>
-        </div>
-
-        <div class="dashboard-kpi-card">
-          <span class="dashboard-kpi-card__label">Taxa de Cancelamento (Aéreas)</span>
-          <strong class="dashboard-kpi-card__value"><%= @air_cancellation_rate %>%</strong>
-        </div>
-      </div>
-
-      <div class="dashboard-chart-grid">
-        <section class="dashboard-chart-panel">
-          <div class="dashboard-chart-panel__header">
-            <h2 class="dashboard-chart-panel__title">Distribuição por Setor</h2>
-            <p class="dashboard-chart-panel__description">Participação dos setores nos trechos cadastrados.</p>
-          </div>
-
-          <% if @sector_distribution.any? %>
-            <div class="pie-chart-wrapper">
-              <canvas id="sectorPieChart"></canvas>
-            </div>
-          <% else %>
-            <div class="travel-empty-state">Nenhum dado disponível.</div>
-          <% end %>
-        </section>
-
-        <section class="dashboard-chart-panel">
-          <div class="dashboard-chart-panel__header">
-            <h2 class="dashboard-chart-panel__title">Frequência de Cidades de Destino</h2>
-            <p class="dashboard-chart-panel__description">Participação das cidades de destino nos trechos.</p>
-          </div>
-
-          <% if @destination_distribution.any? %>
-            <div class="pie-chart-wrapper">
-              <canvas id="destinationPieChart"></canvas>
-            </div>
-          <% else %>
-            <div class="travel-empty-state">Nenhum dado disponível.</div>
-          <% end %>
-        </section>
-      </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const sectorCanvas = document.getElementById("sectorPieChart");
-        const destinationCanvas = document.getElementById("destinationPieChart");
-
-        const sectorLabels = <%= raw @sector_distribution.keys.to_json %>;
-        const sectorValues = <%= raw @sector_distribution.values.to_json %>;
-
-        const destinationLabels = <%= raw @destination_distribution.keys.to_json %>;
-        const destinationValues = <%= raw @destination_distribution.values.to_json %>;
-
-        if (sectorCanvas && sectorLabels.length > 0) {
-          new Chart(sectorCanvas, {
-            type: "pie",
-            data: {
-              labels: sectorLabels,
-              datasets: [{
-                data: sectorValues
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: "bottom"
-                }
-              }
-            }
-          });
-        }
-
-        if (destinationCanvas && destinationLabels.length > 0) {
-          new Chart(destinationCanvas, {
-            type: "pie",
-            data: {
-              labels: destinationLabels,
-              datasets: [{
-                data: destinationValues
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: "bottom"
-                }
-              }
-            }
-          });
-        }
-      });
-    </script>
-  </body>
-</html>
+    setInterval(() => {
+      current = (current + 1) % pages.length;
+      frame.src = "/long_trips/dashboard?page=" + encodeURIComponent(pages[current]);
+    }, 8000);
+  });
+</script>

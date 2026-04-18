@@ -1,0 +1,47 @@
+<div class="travel-dashboard-page">
+  <div class="travel-dashboard-header">
+    <h1>GESTÃO DE VIAGENS</h1>
+    <h2><%= @dashboard_title %></h2>
+  </div>
+
+  <div class="dashboard-chart-grid dashboard-chart-grid--single">
+    <section class="dashboard-chart-panel">
+      <div class="dashboard-chart-panel__header">
+        <h2 class="dashboard-chart-panel__title"><%= @pie_title %></h2>
+      </div>
+
+      <% if @pie_data.any? %>
+        <div class="pie-chart-wrapper pie-chart-wrapper--large">
+          <canvas id="sectorPieChart"></canvas>
+        </div>
+      <% else %>
+        <div class="travel-empty-state">Nenhum dado disponível.</div>
+      <% end %>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.getElementById("sectorPieChart");
+    const labels = <%= raw @pie_data.keys.to_json %>;
+    const values = <%= raw @pie_data.values.to_json %>;
+
+    if (canvas && labels.length > 0) {
+      new Chart(canvas, {
+        type: "pie",
+        data: {
+          labels: labels,
+          datasets: [{ data: values }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom" }
+          }
+        }
+      });
+    }
+  });
+</script>
