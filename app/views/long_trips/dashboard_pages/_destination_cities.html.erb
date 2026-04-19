@@ -1,0 +1,37 @@
+<div class="travel-dashboard-page">
+  <div class="travel-dashboard-header">
+    <h1>GESTÃO DE VIAGENS</h1>
+    <h2><%= @dashboard_title %></h2>
+  </div>
+
+  <div class="dashboard-chart-grid dashboard-chart-grid--single">
+    <section class="dashboard-chart-panel">
+      <div class="dashboard-chart-panel__header">
+        <h2 class="dashboard-chart-panel__title"><%= @bar_title %></h2>
+      </div>
+
+      <div class="travel-bar-chart">
+        <% max_value = @city_data.values.max.to_f %>
+        <% max_value = 1 if max_value <= 0 %>
+
+        <% @city_data.each do |city, value| %>
+          <% width_percent = (value.to_f / max_value) * 100 %>
+
+          <div class="travel-bar-row">
+            <div class="travel-bar-row__label"><%= city %></div>
+
+            <div class="travel-bar-row__track">
+              <div class="travel-bar-row__bar" style="width: <%= width_percent %>%;">
+                <span class="travel-bar-row__value"><%= value %></span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @city_data.empty? %>
+          <div class="travel-empty-state">Nenhum dado disponível.</div>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</div>

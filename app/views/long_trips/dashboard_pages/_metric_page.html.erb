@@ -32,10 +32,11 @@
           <% max_value = 1 if max_value <= 0 %>
 
           <% @monthly_series.select { |item| item[:value] > 0 }.each do |item| %>
-            <% width_percent = (item[:value] / max_value) * 100 %>
+            <% width_percent = (item[:value].to_f / max_value) * 100 %>
 
             <div class="travel-bar-row">
               <div class="travel-bar-row__label"><%= item[:label] %></div>
+
               <div class="travel-bar-row__track">
                 <div class="travel-bar-row__bar" style="width: <%= width_percent %>%;">
                   <span class="travel-bar-row__value"><%= item[:value] %></span>
@@ -44,8 +45,10 @@
             </div>
           <% end %>
 
-          <% if @monthly_series.none? { |item| item[:value] > 0 } %>
-            <div class="travel-empty-state">Nenhum dado disponível.</div>
+          <% if @monthly_series.none? { |item| item[:value].to_f > 0 } %>
+            <div class="travel-empty-state">
+              Nenhum dado disponível.
+            </div>
           <% end %>
         </div>
       </div>

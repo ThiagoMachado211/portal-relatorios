@@ -47,16 +47,7 @@ class LongTripsController < ApplicationController
   end
 
   def presentation
-    @pages = [
-      "overview",
-      "air_quantity",
-      "land_quantity",
-      "air_mileage",
-      "land_mileage",
-      "lead_time",
-      "sector_distribution",
-      "destination_cities"
-    ]
+    @pages = presentation_pages
   end
 
   private
@@ -89,6 +80,19 @@ class LongTripsController < ApplicationController
     )
   end
 
+  def presentation_pages
+    [
+      "overview",
+      "air_quantity",
+      "land_quantity",
+      "air_mileage",
+      "land_mileage",
+      "lead_time",
+      "sector_distribution",
+      "destination_cities"
+    ]
+  end
+
   def normalized_transport_mode(trip)
     trip.transport_mode.to_s.strip.downcase
   end
@@ -96,14 +100,14 @@ class LongTripsController < ApplicationController
   def air_trips
     @long_trips.select do |trip|
       mode = normalized_transport_mode(trip)
-      mode == "aéreo" || mode == "aereo"
+      ["aéreo", "aereo"].include?(mode)
     end
   end
 
   def land_trips
     @long_trips.select do |trip|
       mode = normalized_transport_mode(trip)
-      mode == "rodoviário" || mode == "rodoviario" || mode == "terrestre"
+      ["rodoviário", "rodoviario", "terrestre", "carro"].include?(mode)
     end
   end
 

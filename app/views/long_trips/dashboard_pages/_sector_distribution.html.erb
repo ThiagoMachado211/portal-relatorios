@@ -33,12 +33,16 @@
         type: "pie",
         data: {
           labels: labels,
-          datasets: [{ data: values }]
+          datasets: [{
+            data: values
+          }]
         },
         options: {
           responsive: true,
           plugins: {
-            legend: { position: "bottom" }
+            legend: {
+              position: "bottom"
+            }
           }
         }
       });
