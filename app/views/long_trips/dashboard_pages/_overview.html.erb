@@ -4,6 +4,12 @@
     <h2>Visão Geral</h2>
   </div>
 
+  <div class="dashboard-nav">
+    <span class="dashboard-nav__button dashboard-nav__button--disabled">← Anterior</span>
+    <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "dashboard-nav__button" %>
+    <%= link_to "Próxima →", dashboard_long_trips_path(page: "air_quantity"), class: "dashboard-nav__button" %>
+  </div>
+
   <div class="dashboard-kpi-grid">
     <div class="dashboard-kpi-card">
       <span class="dashboard-kpi-card__label">Total de Passagens Aéreas</span>

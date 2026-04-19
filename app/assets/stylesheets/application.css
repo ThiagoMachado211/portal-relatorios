@@ -1256,3 +1256,50 @@ a {
   margin: 0;
   background: #63b8ea;
 }
+
+
+.dashboard-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  flex-wrap: wrap;
+}
+
+.dashboard-nav__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #1626ad;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
+}
+
+.dashboard-nav__button:hover {
+  opacity: 0.92;
+}
+
+.dashboard-nav__button--disabled {
+  background: #94a3b8;
+  cursor: default;
+}
+
+.travel-dashboard-main--full {
+  display: block;
+}
+
+.travel-bar-row__bar--zero {
+  min-width: 2px;
+  background: rgba(28, 40, 171, 0.35);
+}
+
+.travel-bar-row__value {
+  min-width: 48px;
+  text-align: right;
+}

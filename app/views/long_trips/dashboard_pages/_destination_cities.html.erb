@@ -1,7 +1,28 @@
+<% pages = ["overview", "air_quantity", "land_quantity", "air_mileage", "land_mileage", "lead_time", "sector_distribution", "destination_cities"] %>
+<% current_index = pages.index(@page) || 0 %>
+<% previous_page = current_index.positive? ? pages[current_index - 1] : nil %>
+<% next_page = current_index < pages.length - 1 ? pages[current_index + 1] : nil %>
+
 <div class="travel-dashboard-page">
   <div class="travel-dashboard-header">
     <h1>GESTÃO DE VIAGENS</h1>
     <h2><%= @dashboard_title %></h2>
+  </div>
+
+  <div class="dashboard-nav">
+    <% if previous_page %>
+      <%= link_to "← Anterior", dashboard_long_trips_path(page: previous_page), class: "dashboard-nav__button" %>
+    <% else %>
+      <span class="dashboard-nav__button dashboard-nav__button--disabled">← Anterior</span>
+    <% end %>
+
+    <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "dashboard-nav__button" %>
+
+    <% if next_page %>
+      <%= link_to "Próxima →", dashboard_long_trips_path(page: next_page), class: "dashboard-nav__button" %>
+    <% else %>
+      <span class="dashboard-nav__button dashboard-nav__button--disabled">Próxima →</span>
+    <% end %>
   </div>
 
   <div class="dashboard-chart-grid dashboard-chart-grid--single">
@@ -15,13 +36,13 @@
         <% max_value = 1 if max_value <= 0 %>
 
         <% @city_data.each do |city, value| %>
-          <% width_percent = (value.to_f / max_value) * 100 %>
+          <% width_percent = value.to_f > 0 ? (value.to_f / max_value) * 100 : 0 %>
 
           <div class="travel-bar-row">
             <div class="travel-bar-row__label"><%= city %></div>
 
             <div class="travel-bar-row__track">
-              <div class="travel-bar-row__bar" style="width: <%= width_percent %>%;">
+              <div class="travel-bar-row__bar <%= 'travel-bar-row__bar--zero' if value.to_f <= 0 %>" style="width: <%= width_percent %>%;">
                 <span class="travel-bar-row__value"><%= value %></span>
               </div>
             </div>
