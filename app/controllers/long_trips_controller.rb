@@ -38,6 +38,8 @@ class LongTripsController < ApplicationController
       load_lead_time_data
     when "sector_distribution"
       load_sector_distribution_data
+    when "sector_distribution_monthly"
+      load_sector_distribution_monthly_data
     when "destination_cities"
       load_destination_cities_data
     when "destination_cities_monthly"
@@ -91,6 +93,7 @@ class LongTripsController < ApplicationController
       "land_mileage",
       "lead_time",
       "sector_distribution",
+      "sector_distribution_monthly",
       "destination_cities",
       "destination_cities_monthly"
     ]
@@ -251,11 +254,35 @@ class LongTripsController < ApplicationController
     quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
 
     @dashboard_title = "Distribuição por Setor"
-    @pie_title = "Distribuição das Passagens por Setor"
-    @pie_data = quarter_long_trips
+    @bar_title = "Distribuição das Passagens por Setor"
+    @sector_data = quarter_long_trips
       .select { |trip| trip.traveler_sector.present? }
       .group_by(&:traveler_sector)
       .transform_values(&:count)
+      .sort_by { |_sector, count| -count }
+      .to_h
+  end
+
+  def load_sector_distribution_monthly_data
+    quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+
+    @dashboard_title = "Distribuição por Setor por Mês"
+
+    @monthly_sector_cards = quarter_months.map do |month|
+      trips_in_month = quarter_long_trips.select { |trip| trip.travel_date.month == month }
+
+      data = trips_in_month
+        .select { |trip| trip.traveler_sector.present? }
+        .group_by(&:traveler_sector)
+        .transform_values(&:count)
+        .sort_by { |_sector, count| -count }
+        .to_h
+
+      {
+        title: monthly_labels[month],
+        data: data
+      }
+    end
   end
 
   def load_destination_cities_data
