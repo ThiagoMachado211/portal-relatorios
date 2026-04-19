@@ -17,7 +17,6 @@
     <% end %>
 
     <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "dashboard-nav__button" %>
-    <%= link_to "Desativar Exibição", long_trips_path, class: "dashboard-nav__button dashboard-nav__button--danger" %>
 
     <% if next_page %>
       <%= link_to "Próxima →", dashboard_long_trips_path(page: next_page), class: "dashboard-nav__button" %>
