@@ -251,7 +251,7 @@ class LongTripsController < ApplicationController
     quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
 
     @dashboard_title = "Distribuição por Setor"
-    @pie_title = "Distribuição por Setor das Passagens"
+    @pie_title = "Distribuição das Passagens por Setor"
     @pie_data = quarter_long_trips
       .select { |trip| trip.traveler_sector.present? }
       .group_by(&:traveler_sector)
