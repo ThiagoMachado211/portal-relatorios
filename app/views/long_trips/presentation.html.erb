@@ -16,7 +16,7 @@
 
     setInterval(() => {
       current = (current + 1) % pages.length;
-      frame.src = "/long_trips/dashboard?page=" + encodeURIComponent(pages[current]);
+      frame.src = "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(pages[current]);
     }, 8000);
   });
 </script>
