@@ -1303,3 +1303,37 @@ a {
   min-width: 48px;
   text-align: right;
 }
+
+
+
+.dashboard-nav__button--danger {
+  background: #ef4444;
+}
+
+.dashboard-chart-panel--centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboard-chart-panel--wide {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.pie-chart-wrapper--xl {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.monthly-city-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1200px) {
+  .monthly-city-grid {
+    grid-template-columns: 1fr;
+  }
+}

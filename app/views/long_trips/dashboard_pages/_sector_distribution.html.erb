@@ -1,4 +1,4 @@
-<% pages = ["overview", "air_quantity", "land_quantity", "air_mileage", "land_mileage", "lead_time", "sector_distribution", "destination_cities"] %>
+<% pages = ["overview", "air_quantity", "land_quantity", "air_mileage", "land_mileage", "lead_time", "sector_distribution", "destination_cities", "destination_cities_monthly"] %>
 <% current_index = pages.index(@page) || 0 %>
 <% previous_page = current_index.positive? ? pages[current_index - 1] : nil %>
 <% next_page = current_index < pages.length - 1 ? pages[current_index + 1] : nil %>
@@ -17,6 +17,7 @@
     <% end %>
 
     <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "dashboard-nav__button" %>
+    <%= link_to "Desativar Exibição", long_trips_path, class: "dashboard-nav__button dashboard-nav__button--danger" %>
 
     <% if next_page %>
       <%= link_to "Próxima →", dashboard_long_trips_path(page: next_page), class: "dashboard-nav__button" %>
@@ -26,13 +27,13 @@
   </div>
 
   <div class="dashboard-chart-grid dashboard-chart-grid--single">
-    <section class="dashboard-chart-panel">
+    <section class="dashboard-chart-panel dashboard-chart-panel--centered dashboard-chart-panel--wide">
       <div class="dashboard-chart-panel__header">
         <h2 class="dashboard-chart-panel__title"><%= @pie_title %></h2>
       </div>
 
       <% if @pie_data.any? %>
-        <div class="pie-chart-wrapper pie-chart-wrapper--large">
+        <div class="pie-chart-wrapper pie-chart-wrapper--xl">
           <canvas id="sectorPieChart"></canvas>
         </div>
       <% else %>
@@ -43,6 +44,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const canvas = document.getElementById("sectorPieChart");
@@ -62,10 +64,27 @@
           responsive: true,
           plugins: {
             legend: {
-              position: "bottom"
+              position: "right",
+              labels: {
+                boxWidth: 18,
+                padding: 16
+              }
+            },
+            datalabels: {
+              color: "#ffffff",
+              font: {
+                weight: "bold",
+                size: 13
+              },
+              formatter: (value, context) => {
+                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : "0.00";
+                return percentage + "%";
+              }
             }
           }
-        }
+        },
+        plugins: [ChartDataLabels]
       });
     }
   });
