@@ -1337,3 +1337,14 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+
+.presentation-controls {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}

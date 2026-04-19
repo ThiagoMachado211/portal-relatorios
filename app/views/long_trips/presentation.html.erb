@@ -1,3 +1,13 @@
+<div class="presentation-controls">
+  <button id="togglePresentation" class="dashboard-nav__button">
+    Pausar apresentação
+  </button>
+
+  <a href="<%= long_trips_path %>" class="dashboard-nav__button dashboard-nav__button--danger">
+    Sair da apresentação
+  </a>
+</div>
+
 <div class="presentation-wrapper">
   <iframe
     id="presentationFrame"
@@ -10,13 +20,40 @@
   document.addEventListener("DOMContentLoaded", function () {
     const pages = <%= raw @pages.to_json %>;
     const frame = document.getElementById("presentationFrame");
+    const toggleButton = document.getElementById("togglePresentation");
+
     let current = 0;
+    let isPaused = false;
+    let intervalId = null;
 
     if (!frame || pages.length === 0) return;
 
-    setInterval(() => {
-      current = (current + 1) % pages.length;
-      frame.src = "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(pages[current]);
-    }, 8000);
+    function startPresentation() {
+      intervalId = setInterval(() => {
+        if (isPaused) return;
+
+        current = (current + 1) % pages.length;
+        frame.src = "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(pages[current]);
+      }, 8000);
+    }
+
+    function stopPresentation() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    toggleButton.addEventListener("click", function () {
+      isPaused = !isPaused;
+
+      if (isPaused) {
+        toggleButton.textContent = "Retomar apresentação";
+      } else {
+        toggleButton.textContent = "Pausar apresentação";
+      }
+    });
+
+    startPresentation();
   });
 </script>
