@@ -10,6 +10,7 @@
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <%= link_to "Novo Trecho Longo", new_long_trip_path, class: "btn-primary" %>
+        <%= link_to "Importar Dados", import_long_trips_path, class: "btn-primary" %>
         <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "btn-primary" %>
         <%= link_to "Qtd. Aéreas", dashboard_long_trips_path(page: "air_quantity"), class: "btn-primary" %>
         <%= link_to "Qtd. Terrestres", dashboard_long_trips_path(page: "land_quantity"), class: "btn-primary" %>

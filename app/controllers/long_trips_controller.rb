@@ -50,6 +50,28 @@ class LongTripsController < ApplicationController
     @pages = presentation_pages
   end
 
+  def import
+  end
+
+  def import_file
+    if params[:file].blank?
+      redirect_to import_long_trips_path, alert: "Selecione um arquivo."
+      return
+    end
+
+    file = params[:file]
+
+    importer = LongTripsImporter.new(file.path).call
+
+    if importer.errors.any?
+      flash[:alert] = "Importação concluída com erros."
+    else
+      flash[:notice] = "Importação concluída com sucesso."
+    end
+
+    redirect_to long_trips_path
+  end
+
   private
 
   def long_trip_params

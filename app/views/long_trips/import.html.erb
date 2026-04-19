@@ -1,0 +1,24 @@
+<div class="subsection-page">
+  <div class="subsection-card">
+    <div class="card-title">Importar Trechos Longos</div>
+
+    <div class="card-subtitle">
+      Faça upload da planilha para importar os dados.
+    </div>
+
+    <div style="margin-top:20px;">
+      <%= form_with url: import_file_long_trips_path, local: true, multipart: true do |f| %>
+
+        <div style="margin-bottom:15px;">
+          <%= f.file_field :file, accept: ".xlsx,.csv", class: "input" %>
+        </div>
+
+        <div>
+          <%= f.submit "Importar", class: "btn-primary" %>
+          <%= link_to "Voltar", long_trips_path, class: "btn-secondary" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>

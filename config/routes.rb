@@ -36,6 +36,8 @@ Rails.application.routes.draw do
     collection do
       get :dashboard
       get :presentation
+      get :import
+      post :import_file
     end
   end
 
