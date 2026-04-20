@@ -14,20 +14,29 @@
       </div>
 
       <div class="travel-bar-chart">
-        <% max_value = @monthly_series.map { |item| item[:value].to_f }.max.to_f %>
+        <% @monthly_series ||= [] %>
+        <% max_value = @monthly_series.any? ? @monthly_series.map { |item| item[:value].to_f }.max.to_f : 1 %>
         <% max_value = 1 if max_value <= 0 %>
 
-        <% @monthly_series.each do |item| %>
-          <% width_percent = item[:value].to_f > 0 ? (item[:value].to_f / max_value) * 100 : 0 %>
+        <% if @monthly_series.any? %>
+          <% @monthly_series.each do |item| %>
+            <% width_percent = item[:value].to_f > 0 ? (item[:value].to_f / max_value) * 100 : 0 %>
 
-          <div class="travel-bar-row">
-            <div class="travel-bar-row__label"><%= item[:label] %></div>
+            <div class="travel-bar-row">
+              <div class="travel-bar-row__label"><%= item[:label] %></div>
 
-            <div class="travel-bar-row__track">
-              <div class="travel-bar-row__bar <%= 'travel-bar-row__bar--zero' if item[:value].to_f <= 0 %>" style="width: <%= width_percent %>%;">
-                <span class="travel-bar-row__value"><%= item[:value] %></span>
+              <div class="travel-bar-row__track">
+                <div
+                  class="travel-bar-row__bar <%= 'travel-bar-row__bar--zero' if item[:value].to_f <= 0 %>"
+                  style="width: <%= width_percent %>%;">
+                  <span class="travel-bar-row__value"><%= item[:value] %></span>
+                </div>
               </div>
             </div>
+          <% end %>
+        <% else %>
+          <div class="travel-empty-state">
+            Nenhum dado encontrado para esta visualização.
           </div>
         <% end %>
       </div>
