@@ -3,6 +3,7 @@
 <% previous_page = current_index.positive? ? pages[current_index - 1] : nil %>
 <% next_page = current_index < pages.length - 1 ? pages[current_index + 1] : nil %>
 
+
 <div class="travel-dashboard-page">
   <div class="travel-dashboard-header">
     <h1>GESTÃO DE VIAGENS</h1>
@@ -23,6 +24,13 @@
     <% else %>
       <span class="dashboard-nav__button dashboard-nav__button--disabled">Próxima →</span>
     <% end %>
+
+    <!-- NOVOS BOTÕES -->
+    <button id="togglePresentationInline" class="dashboard-nav__button dashboard-nav__button--success">
+      Retomar apresentação
+    </button>
+
+    <%= link_to "Sair da apresentação", long_trips_path, class: "dashboard-nav__button dashboard-nav__button--danger" %>
   </div>
 
   <section class="travel-dashboard-main travel-dashboard-main--full">
@@ -53,3 +61,18 @@
     </div>
   </section>
 </div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("togglePresentationInline");
+
+    if (!btn) return;
+
+    btn.addEventListener("click", function () {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ action: "togglePresentation" }, "*");
+      }
+    });
+  });
+</script>

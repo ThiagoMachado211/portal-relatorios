@@ -1348,3 +1348,13 @@ a {
   gap: 10px;
   flex-wrap: wrap;
 }
+
+
+.dashboard-nav__button--success {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.dashboard-nav__button--success:hover {
+  opacity: 0.9;
+}

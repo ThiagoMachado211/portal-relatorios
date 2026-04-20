@@ -56,4 +56,19 @@
 
     startPresentation();
   });
+
+  window.addEventListener("message", function (event) {
+    if (event.data.action === "togglePresentation") {
+      isPaused = !isPaused;
+
+      const toggleButton = document.getElementById("togglePresentation");
+
+      if (toggleButton) {
+        toggleButton.textContent = isPaused
+          ? "Retomar apresentação"
+          : "Pausar apresentação";
+      }
+    }
+  });
+
 </script>
