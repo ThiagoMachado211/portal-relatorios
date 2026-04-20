@@ -7,35 +7,39 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  (() => {
     const pages = <%= raw @pages.to_json %>;
     const frame = document.getElementById("presentationFrame");
 
     let current = 0;
-    let isAutoMode = true;
     let intervalId = null;
+    let isAutoMode = true;
 
     if (!frame || pages.length === 0) return;
 
+    function currentDashboardUrl(page) {
+      return "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(page);
+    }
+
     function nextPage() {
       current = (current + 1) % pages.length;
-      frame.src = "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(pages[current]);
+      frame.src = currentDashboardUrl(pages[current]);
     }
 
     function startAutoMode() {
       stopAutoMode();
       isAutoMode = true;
-      intervalId = setInterval(() => {
-        nextPage();
-      }, 8000);
+      intervalId = setInterval(nextPage, 8000);
+      console.log("Apresentação automática ativada");
     }
 
     function stopAutoMode() {
-      isAutoMode = false;
       if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
       }
+      isAutoMode = false;
+      console.log("Apresentação automática pausada");
     }
 
     function toggleFullscreen() {
@@ -71,5 +75,5 @@
     });
 
     startAutoMode();
-  });
+  })();
 </script>

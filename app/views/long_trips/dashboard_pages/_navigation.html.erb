@@ -31,33 +31,20 @@
   </button>
 </div>
 
+
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  (() => {
     const manualButton = document.getElementById("manualNavigationButton");
     const autoButton = document.getElementById("autoNavigationButton");
     const fullscreenButton = document.getElementById("fullscreenButton");
 
-    if (manualButton) {
-      manualButton.addEventListener("click", function () {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ action: "manualNavigation" }, "*");
-        }
-      });
-    }
+    function sendToParent(action) {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ action: action }, "*");
+      } else {
+        console.log("Ação disponível apenas no modo apresentação:", action);
 
-    if (autoButton) {
-      autoButton.addEventListener("click", function () {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ action: "autoNavigation" }, "*");
-        }
-      });
-    }
-
-    if (fullscreenButton) {
-      fullscreenButton.addEventListener("click", function () {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ action: "fullscreen" }, "*");
-        } else {
+        if (action === "fullscreen") {
           const elem = document.documentElement;
 
           if (!document.fullscreenElement) {
@@ -70,7 +57,25 @@
             }
           }
         }
-      });
+      }
     }
-  });
+
+    if (manualButton) {
+      manualButton.onclick = function () {
+        sendToParent("manualNavigation");
+      };
+    }
+
+    if (autoButton) {
+      autoButton.onclick = function () {
+        sendToParent("autoNavigation");
+      };
+    }
+
+    if (fullscreenButton) {
+      fullscreenButton.onclick = function () {
+        sendToParent("fullscreen");
+      };
+    }
+  })();
 </script>
