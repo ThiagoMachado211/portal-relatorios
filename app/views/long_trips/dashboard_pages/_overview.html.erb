@@ -1,1 +1,21 @@
-<%= render "long_trips/dashboard_pages/navigation" %>
+<div class="travel-dashboard-page">
+  <div class="travel-dashboard-header">
+    <h1>GESTÃO DE VIAGENS</h1>
+    <h2><%= @dashboard_title %></h2>
+  </div>
+
+  <%= render "long_trips/dashboard_pages/navigation" %>
+
+  <section class="travel-dashboard-main">
+    <div class="travel-chart-card">
+      <div class="travel-chart-card__header">
+        <div class="travel-chart-card__title">Visão Geral</div>
+        <div class="travel-chart-card__subtitle">Selecione uma métrica usando a navegação</div>
+      </div>
+
+      <div class="travel-empty-state">
+        Escolha uma das páginas do dashboard para visualizar os indicadores.
+      </div>
+    </div>
+  </section>
+</div>

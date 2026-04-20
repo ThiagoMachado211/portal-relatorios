@@ -1,5 +1,19 @@
 class LongTripsController < ApplicationController
+  def index
+    redirect_to dashboard_long_trips_path
+  end
+
   def dashboard
+    load_dashboard_page
+  end
+
+  def presentation
+    load_dashboard_page
+  end
+
+  private
+
+  def load_dashboard_page
     @page = params[:page].presence || "overview"
     @dashboard_title = "Gestão de Viagens"
     @monthly_series = []
@@ -39,5 +53,7 @@ class LongTripsController < ApplicationController
       @page = "overview"
       @dashboard_title = "Visão Geral"
     end
+
+    render action_name
   end
 end

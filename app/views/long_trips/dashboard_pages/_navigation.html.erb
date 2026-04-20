@@ -78,42 +78,30 @@
 
 <script>
   (() => {
-    if (window.__travelDashboardNavigationInitialized__) return;
-    window.__travelDashboardNavigationInitialized__ = true;
-
     const STORAGE_KEY = "travel_dashboard_navigation_mode";
 
-    function getManualButton() {
-      return document.getElementById("manualNavigationButton");
-    }
+    const manualButton = document.getElementById("manualNavigationButton");
+    const autoButton = document.getElementById("autoNavigationButton");
+    const fullscreenButton = document.getElementById("fullscreenButton");
 
-    function getAutoButton() {
-      return document.getElementById("autoNavigationButton");
-    }
-
-    function getFullscreenButton() {
-      return document.getElementById("fullscreenButton");
+    function saveMode(mode) {
+      localStorage.setItem(STORAGE_KEY, mode);
     }
 
     function getSavedMode() {
       return localStorage.getItem(STORAGE_KEY) || "manual";
     }
 
-    function saveMode(mode) {
-      localStorage.setItem(STORAGE_KEY, mode);
-    }
-
     function updateModeButtons(mode) {
-      const manualButton = getManualButton();
-      const autoButton = getAutoButton();
+      if (manualButton) {
+        manualButton.classList.toggle("dashboard-nav__button--active-mode", mode === "manual");
+        manualButton.setAttribute("aria-pressed", mode === "manual" ? "true" : "false");
+      }
 
-      if (!manualButton || !autoButton) return;
-
-      manualButton.classList.toggle("dashboard-nav__button--active-mode", mode === "manual");
-      autoButton.classList.toggle("dashboard-nav__button--active-mode", mode === "automatic");
-
-      manualButton.setAttribute("aria-pressed", mode === "manual" ? "true" : "false");
-      autoButton.setAttribute("aria-pressed", mode === "automatic" ? "true" : "false");
+      if (autoButton) {
+        autoButton.classList.toggle("dashboard-nav__button--active-mode", mode === "automatic");
+        autoButton.setAttribute("aria-pressed", mode === "automatic" ? "true" : "false");
+      }
     }
 
     function sendToParent(action) {
@@ -121,8 +109,6 @@
         window.parent.postMessage({ action: action }, "*");
         return;
       }
-
-      console.log("Ação disponível apenas no modo apresentação:", action);
 
       if (action === "fullscreen") {
         const elem = document.documentElement;
@@ -150,35 +136,21 @@
       }
     }
 
-    function bindButtons() {
-      const manualButton = getManualButton();
-      const autoButton = getAutoButton();
-      const fullscreenButton = getFullscreenButton();
-
-      if (manualButton) {
-        manualButton.addEventListener("click", () => {
-          setMode("manual");
-        });
-      }
-
-      if (autoButton) {
-        autoButton.addEventListener("click", () => {
-          setMode("automatic");
-        });
-      }
-
-      if (fullscreenButton) {
-        fullscreenButton.addEventListener("click", () => {
-          sendToParent("fullscreen");
-        });
-      }
+    if (manualButton) {
+      manualButton.addEventListener("click", () => setMode("manual"));
     }
 
-    function syncFromStorage() {
-      updateModeButtons(getSavedMode());
+    if (autoButton) {
+      autoButton.addEventListener("click", () => setMode("automatic"));
     }
 
-    function syncFromMessage(event) {
+    if (fullscreenButton) {
+      fullscreenButton.addEventListener("click", () => sendToParent("fullscreen"));
+    }
+
+    updateModeButtons(getSavedMode());
+
+    window.addEventListener("message", (event) => {
       if (!event || !event.data) return;
 
       if (event.data.navigationMode === "manual" || event.data.action === "manualNavigationActive") {
@@ -190,18 +162,6 @@
         saveMode("automatic");
         updateModeButtons("automatic");
       }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      bindButtons();
-      syncFromStorage();
     });
-
-    if (document.readyState !== "loading") {
-      bindButtons();
-      syncFromStorage();
-    }
-
-    window.addEventListener("message", syncFromMessage);
   })();
 </script>
