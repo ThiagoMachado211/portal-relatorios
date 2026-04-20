@@ -5,77 +5,203 @@
 
 <div class="dashboard-nav">
   <% if previous_page %>
-    <%= link_to "← Anterior", dashboard_long_trips_path(page: previous_page), class: "dashboard-nav__button" %>
+    <%= link_to "← Anterior",
+                dashboard_long_trips_path(page: previous_page),
+                class: "dashboard-nav__button" %>
   <% else %>
     <span class="dashboard-nav__button dashboard-nav__button--disabled">← Anterior</span>
   <% end %>
 
-  <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "dashboard-nav__button" %>
+  <%= link_to "Visão Geral",
+              dashboard_long_trips_path(page: "overview"),
+              class: "dashboard-nav__button #{'dashboard-nav__button--active' if @page == 'overview'}" %>
 
   <% if next_page %>
-    <%= link_to "Próxima →", dashboard_long_trips_path(page: next_page), class: "dashboard-nav__button" %>
+    <%= link_to "Próxima →",
+                dashboard_long_trips_path(page: next_page),
+                class: "dashboard-nav__button" %>
   <% else %>
     <span class="dashboard-nav__button dashboard-nav__button--disabled">Próxima →</span>
   <% end %>
 
-  <button type="button" id="manualNavigationButton" class="dashboard-nav__button dashboard-nav__button--danger">
+  <button
+    type="button"
+    id="manualNavigationButton"
+    class="dashboard-nav__button dashboard-nav__button--danger"
+    data-navigation-mode="manual">
     Navegação manual
   </button>
 
-  <button type="button" id="autoNavigationButton" class="dashboard-nav__button dashboard-nav__button--success">
+  <button
+    type="button"
+    id="autoNavigationButton"
+    class="dashboard-nav__button dashboard-nav__button--success"
+    data-navigation-mode="automatic">
     Navegação automática
   </button>
 
-  <button type="button" id="fullscreenButton" class="dashboard-nav__button dashboard-nav__button--dark">
+  <button
+    type="button"
+    id="fullscreenButton"
+    class="dashboard-nav__button dashboard-nav__button--dark">
     Modo tela cheia
   </button>
 </div>
 
+<style>
+  .dashboard-nav__button--active-mode {
+    position: relative;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 8px 18px rgba(0, 0, 0, 0.28);
+    transform: translateY(-1px);
+  }
+
+  .dashboard-nav__button--active-mode::after {
+    content: "✓";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  .dashboard-nav__button--active {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.22), 0 8px 18px rgba(0, 0, 0, 0.22);
+  }
+</style>
 
 <script>
   (() => {
-    const manualButton = document.getElementById("manualNavigationButton");
-    const autoButton = document.getElementById("autoNavigationButton");
-    const fullscreenButton = document.getElementById("fullscreenButton");
+    if (window.__travelDashboardNavigationInitialized__) return;
+    window.__travelDashboardNavigationInitialized__ = true;
+
+    const STORAGE_KEY = "travel_dashboard_navigation_mode";
+
+    function getManualButton() {
+      return document.getElementById("manualNavigationButton");
+    }
+
+    function getAutoButton() {
+      return document.getElementById("autoNavigationButton");
+    }
+
+    function getFullscreenButton() {
+      return document.getElementById("fullscreenButton");
+    }
+
+    function getSavedMode() {
+      return localStorage.getItem(STORAGE_KEY) || "manual";
+    }
+
+    function saveMode(mode) {
+      localStorage.setItem(STORAGE_KEY, mode);
+    }
+
+    function updateModeButtons(mode) {
+      const manualButton = getManualButton();
+      const autoButton = getAutoButton();
+
+      if (!manualButton || !autoButton) return;
+
+      manualButton.classList.toggle("dashboard-nav__button--active-mode", mode === "manual");
+      autoButton.classList.toggle("dashboard-nav__button--active-mode", mode === "automatic");
+
+      manualButton.setAttribute("aria-pressed", mode === "manual" ? "true" : "false");
+      autoButton.setAttribute("aria-pressed", mode === "automatic" ? "true" : "false");
+    }
 
     function sendToParent(action) {
       if (window.parent && window.parent !== window) {
         window.parent.postMessage({ action: action }, "*");
-      } else {
-        console.log("Ação disponível apenas no modo apresentação:", action);
+        return;
+      }
 
-        if (action === "fullscreen") {
-          const elem = document.documentElement;
+      console.log("Ação disponível apenas no modo apresentação:", action);
 
-          if (!document.fullscreenElement) {
-            if (elem.requestFullscreen) {
-              elem.requestFullscreen();
-            }
-          } else {
-            if (document.exitFullscreen) {
-              document.exitFullscreen();
-            }
+      if (action === "fullscreen") {
+        const elem = document.documentElement;
+
+        if (!document.fullscreenElement) {
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
           }
         }
       }
     }
 
-    if (manualButton) {
-      manualButton.onclick = function () {
+    function setMode(mode) {
+      saveMode(mode);
+      updateModeButtons(mode);
+
+      if (mode === "manual") {
         sendToParent("manualNavigation");
-      };
-    }
-
-    if (autoButton) {
-      autoButton.onclick = function () {
+      } else if (mode === "automatic") {
         sendToParent("autoNavigation");
-      };
+      }
     }
 
-    if (fullscreenButton) {
-      fullscreenButton.onclick = function () {
-        sendToParent("fullscreen");
-      };
+    function bindButtons() {
+      const manualButton = getManualButton();
+      const autoButton = getAutoButton();
+      const fullscreenButton = getFullscreenButton();
+
+      if (manualButton) {
+        manualButton.addEventListener("click", () => {
+          setMode("manual");
+        });
+      }
+
+      if (autoButton) {
+        autoButton.addEventListener("click", () => {
+          setMode("automatic");
+        });
+      }
+
+      if (fullscreenButton) {
+        fullscreenButton.addEventListener("click", () => {
+          sendToParent("fullscreen");
+        });
+      }
     }
+
+    function syncFromStorage() {
+      updateModeButtons(getSavedMode());
+    }
+
+    function syncFromMessage(event) {
+      if (!event || !event.data) return;
+
+      if (event.data.navigationMode === "manual" || event.data.action === "manualNavigationActive") {
+        saveMode("manual");
+        updateModeButtons("manual");
+      }
+
+      if (event.data.navigationMode === "automatic" || event.data.action === "autoNavigationActive") {
+        saveMode("automatic");
+        updateModeButtons("automatic");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      bindButtons();
+      syncFromStorage();
+    });
+
+    if (document.readyState !== "loading") {
+      bindButtons();
+      syncFromStorage();
+    }
+
+    window.addEventListener("message", syncFromMessage);
   })();
 </script>
