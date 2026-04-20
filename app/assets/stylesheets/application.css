@@ -1358,3 +1358,31 @@ a {
 .dashboard-nav__button--success:hover {
   opacity: 0.9;
 }
+
+
+.dashboard-nav__button--success {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.dashboard-nav__button--success:hover {
+  opacity: 0.92;
+}
+
+.dashboard-nav__button--danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.dashboard-nav__button--danger:hover {
+  opacity: 0.92;
+}
+
+.dashboard-nav__button--dark {
+  background: #000000;
+  color: #ffffff;
+}
+
+.dashboard-nav__button--dark:hover {
+  opacity: 0.92;
+}

@@ -1,37 +1,10 @@
-<% pages = ["overview", "air_quantity", "land_quantity", "air_mileage", "land_mileage", "lead_time", "sector_distribution", "destination_cities", "destination_cities_monthly"] %>
-<% current_index = pages.index(@page) || 0 %>
-<% previous_page = current_index.positive? ? pages[current_index - 1] : nil %>
-<% next_page = current_index < pages.length - 1 ? pages[current_index + 1] : nil %>
-
-
 <div class="travel-dashboard-page">
   <div class="travel-dashboard-header">
     <h1>GESTÃO DE VIAGENS</h1>
     <h2><%= @dashboard_title %></h2>
   </div>
 
-  <div class="dashboard-nav">
-    <% if previous_page %>
-      <%= link_to "← Anterior", dashboard_long_trips_path(page: previous_page), class: "dashboard-nav__button" %>
-    <% else %>
-      <span class="dashboard-nav__button dashboard-nav__button--disabled">← Anterior</span>
-    <% end %>
-
-    <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "dashboard-nav__button" %>
-
-    <% if next_page %>
-      <%= link_to "Próxima →", dashboard_long_trips_path(page: next_page), class: "dashboard-nav__button" %>
-    <% else %>
-      <span class="dashboard-nav__button dashboard-nav__button--disabled">Próxima →</span>
-    <% end %>
-
-    <!-- NOVOS BOTÕES -->
-    <button id="togglePresentationInline" class="dashboard-nav__button dashboard-nav__button--success">
-      Retomar apresentação
-    </button>
-
-    <%= link_to "Sair da apresentação", long_trips_path, class: "dashboard-nav__button dashboard-nav__button--danger" %>
-  </div>
+  <%= render "long_trips/dashboard_pages/navigation" %>
 
   <section class="travel-dashboard-main travel-dashboard-main--full">
     <div class="travel-chart-card">
@@ -61,18 +34,3 @@
     </div>
   </section>
 </div>
-
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const btn = document.getElementById("togglePresentationInline");
-
-    if (!btn) return;
-
-    btn.addEventListener("click", function () {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ action: "togglePresentation" }, "*");
-      }
-    });
-  });
-</script>

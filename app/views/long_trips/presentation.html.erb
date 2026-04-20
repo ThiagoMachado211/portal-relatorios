@@ -1,13 +1,3 @@
-<div class="presentation-controls">
-  <button id="togglePresentation" class="dashboard-nav__button">
-    Pausar apresentação
-  </button>
-
-  <a href="<%= long_trips_path %>" class="dashboard-nav__button dashboard-nav__button--danger">
-    Sair da apresentação
-  </a>
-</div>
-
 <div class="presentation-wrapper">
   <iframe
     id="presentationFrame"
@@ -20,55 +10,66 @@
   document.addEventListener("DOMContentLoaded", function () {
     const pages = <%= raw @pages.to_json %>;
     const frame = document.getElementById("presentationFrame");
-    const toggleButton = document.getElementById("togglePresentation");
 
     let current = 0;
-    let isPaused = false;
+    let isAutoMode = true;
     let intervalId = null;
 
     if (!frame || pages.length === 0) return;
 
-    function startPresentation() {
-      intervalId = setInterval(() => {
-        if (isPaused) return;
+    function nextPage() {
+      current = (current + 1) % pages.length;
+      frame.src = "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(pages[current]);
+    }
 
-        current = (current + 1) % pages.length;
-        frame.src = "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(pages[current]);
+    function startAutoMode() {
+      stopAutoMode();
+      isAutoMode = true;
+      intervalId = setInterval(() => {
+        nextPage();
       }, 8000);
     }
 
-    function stopPresentation() {
+    function stopAutoMode() {
+      isAutoMode = false;
       if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
       }
     }
 
-    toggleButton.addEventListener("click", function () {
-      isPaused = !isPaused;
+    function toggleFullscreen() {
+      const elem = document.documentElement;
 
-      if (isPaused) {
-        toggleButton.textContent = "Retomar apresentação";
+      if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        }
       } else {
-        toggleButton.textContent = "Pausar apresentação";
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    window.addEventListener("message", function (event) {
+      if (!event.data || !event.data.action) return;
+
+      switch (event.data.action) {
+        case "manualNavigation":
+          stopAutoMode();
+          break;
+        case "autoNavigation":
+          startAutoMode();
+          break;
+        case "fullscreen":
+          toggleFullscreen();
+          break;
+        default:
+          break;
       }
     });
 
-    startPresentation();
+    startAutoMode();
   });
-
-  window.addEventListener("message", function (event) {
-    if (event.data.action === "togglePresentation") {
-      isPaused = !isPaused;
-
-      const toggleButton = document.getElementById("togglePresentation");
-
-      if (toggleButton) {
-        toggleButton.textContent = isPaused
-          ? "Retomar apresentação"
-          : "Pausar apresentação";
-      }
-    }
-  });
-
 </script>

@@ -1,0 +1,76 @@
+<% pages = ["overview", "air_quantity", "land_quantity", "air_mileage", "land_mileage", "lead_time", "sector_distribution", "sector_distribution_monthly", "destination_cities", "destination_cities_monthly"] %>
+<% current_index = pages.index(@page) || 0 %>
+<% previous_page = current_index.positive? ? pages[current_index - 1] : nil %>
+<% next_page = current_index < pages.length - 1 ? pages[current_index + 1] : nil %>
+
+<div class="dashboard-nav">
+  <% if previous_page %>
+    <%= link_to "← Anterior", dashboard_long_trips_path(page: previous_page), class: "dashboard-nav__button" %>
+  <% else %>
+    <span class="dashboard-nav__button dashboard-nav__button--disabled">← Anterior</span>
+  <% end %>
+
+  <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "dashboard-nav__button" %>
+
+  <% if next_page %>
+    <%= link_to "Próxima →", dashboard_long_trips_path(page: next_page), class: "dashboard-nav__button" %>
+  <% else %>
+    <span class="dashboard-nav__button dashboard-nav__button--disabled">Próxima →</span>
+  <% end %>
+
+  <button type="button" id="manualNavigationButton" class="dashboard-nav__button dashboard-nav__button--danger">
+    Navegação manual
+  </button>
+
+  <button type="button" id="autoNavigationButton" class="dashboard-nav__button dashboard-nav__button--success">
+    Navegação automática
+  </button>
+
+  <button type="button" id="fullscreenButton" class="dashboard-nav__button dashboard-nav__button--dark">
+    Modo tela cheia
+  </button>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const manualButton = document.getElementById("manualNavigationButton");
+    const autoButton = document.getElementById("autoNavigationButton");
+    const fullscreenButton = document.getElementById("fullscreenButton");
+
+    if (manualButton) {
+      manualButton.addEventListener("click", function () {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ action: "manualNavigation" }, "*");
+        }
+      });
+    }
+
+    if (autoButton) {
+      autoButton.addEventListener("click", function () {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ action: "autoNavigation" }, "*");
+        }
+      });
+    }
+
+    if (fullscreenButton) {
+      fullscreenButton.addEventListener("click", function () {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ action: "fullscreen" }, "*");
+        } else {
+          const elem = document.documentElement;
+
+          if (!document.fullscreenElement) {
+            if (elem.requestFullscreen) {
+              elem.requestFullscreen();
+            }
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
