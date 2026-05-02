@@ -559,9 +559,9 @@ a {
 }
 
 .subsection-card {
-  width: 70vw;
+  width: 75vw;
   min-width: 320px;
-  max-width: 70vw;
+  max-width: 75vw;
   background: white;
   border-radius: 20px;
   padding: 22px;
