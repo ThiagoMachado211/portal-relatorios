@@ -1374,3 +1374,37 @@ a {
 .dashboard-nav__button--dark:hover {
   opacity: 0.92;
 }
+
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.data-table tr:hover td {
+  background: #f8fafc;
+}

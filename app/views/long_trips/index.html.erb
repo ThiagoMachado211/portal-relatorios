@@ -19,48 +19,58 @@
     </div>
 
     <% if @long_trips.any? %>
-      <div class="profile-card">
-        <% @long_trips.each do |trip| %>
-          <div class="report-item-card">
-            <div class="report-item-header">
-              <div class="report-item-title">
-                <%= trip.traveler_name %>
-              </div>
-            </div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID Viagem</th>
+              <th>Viajante</th>
+              <th>Setor</th>
+              <th>Motivo</th>
+              <th>Data Compra</th>
+              <th>Data Viagem</th>
+              <th>Dias Antecedência</th>
+              <th>Transporte</th>
+              <th>Origem</th>
+              <th>Destino</th>
+              <th>Empresa</th>
+              <th>Km</th>
+              <th>Cumpriu Política?</th>
+              <th>Cancelada?</th>
+              <th>Valor Compra (R$)</th>
+              <th>Taxas (R$)</th>
+              <th>Reembolso (R$)</th>
+              <th>Valor Final (R$)</th>
+              <th>Valor Final (Pontos)</th>
+            </tr>
+          </thead>
 
-            <div class="report-item-description">
-              <strong>ID da viagem:</strong> <%= trip.travel_request_id %><br>
-              <strong>Setor:</strong> <%= trip.traveler_sector %><br>
-              <strong>Motivo:</strong> <%= trip.travel_reason %><br>
-              <strong>Data da compra:</strong> <%= l(trip.purchase_date) if trip.purchase_date.present? %><br>
-              <strong>Data da viagem:</strong> <%= l(trip.travel_date) if trip.travel_date.present? %><br>
-              <strong>Diferença entre compra e ida (dias):</strong> <%= trip.days_between_purchase_and_trip %><br>
-              <strong>Meio de transporte:</strong> <%= trip.transport_mode %><br>
-              <strong>Origem:</strong> <%= [trip.origin_city, trip.origin_state].compact.join(" / ") %><br>
-              <strong>Terminal origem:</strong> <%= trip.origin_terminal %><br>
-              <strong>Destino:</strong> <%= [trip.destination_city, trip.destination_state].compact.join(" / ") %><br>
-              <strong>Terminal destino:</strong> <%= trip.destination_terminal %><br>
-              <strong>Empresa de transporte:</strong> <%= trip.transport_company %><br>
-              <strong>Quilometragem:</strong> <%= trip.mileage %><br>
-              <strong>Cumpriu política?:</strong>
-              <%= trip.policy_compliant.nil? ? "-" : (trip.policy_compliant ? "Sim" : "Não") %><br>
-              <strong>Motivo do não-cumprimento:</strong> <%= trip.non_compliance_reason.presence || "-" %><br>
-              <strong>Passagem cancelada?:</strong>
-              <%= trip.canceled.nil? ? "-" : (trip.canceled ? "Sim" : "Não") %><br>
-              <strong>Valor da compra (R$):</strong>
-              <%= number_to_currency(trip.purchase_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %><br>
-              <strong>Valor da compra (Pontos):</strong> <%= trip.purchase_value_points || 0 %><br>
-              <strong>Taxas extras (R$):</strong>
-              <%= number_to_currency(trip.extra_fees_brl, unit: "R$ ", separator: ",", delimiter: ".") %><br>
-              <strong>Valor Reembolso (R$):</strong>
-              <%= number_to_currency(trip.refund_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %><br>
-              <strong>Valor Reembolso (Pontos):</strong> <%= trip.refund_value_points || 0 %><br>
-              <strong>Valor Final (R$):</strong>
-              <%= number_to_currency(trip.final_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %><br>
-              <strong>Valor Final (Pontos):</strong> <%= trip.final_value_points %>
-            </div>
-          </div>
-        <% end %>
+          <tbody>
+            <% @long_trips.each do |trip| %>
+              <tr>
+                <td><%= trip.travel_request_id %></td>
+                <td><%= trip.traveler_name %></td>
+                <td><%= trip.traveler_sector %></td>
+                <td><%= trip.travel_reason %></td>
+                <td><%= l(trip.purchase_date) if trip.purchase_date.present? %></td>
+                <td><%= l(trip.travel_date) if trip.travel_date.present? %></td>
+                <td><%= trip.days_between_purchase_and_trip %></td>
+                <td><%= trip.transport_mode %></td>
+                <td><%= [trip.origin_city, trip.origin_state].compact.join(" / ") %></td>
+                <td><%= [trip.destination_city, trip.destination_state].compact.join(" / ") %></td>
+                <td><%= trip.transport_company %></td>
+                <td><%= trip.mileage %></td>
+                <td><%= trip.policy_compliant.nil? ? "-" : (trip.policy_compliant ? "Sim" : "Não") %></td>
+                <td><%= trip.canceled.nil? ? "-" : (trip.canceled ? "Sim" : "Não") %></td>
+                <td><%= number_to_currency(trip.purchase_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= number_to_currency(trip.extra_fees_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= number_to_currency(trip.refund_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= number_to_currency(trip.final_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= trip.final_value_points %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
     <% else %>
       <div class="profile-line">
