@@ -11,6 +11,26 @@
         Conteúdos disponíveis nesta subseção
       </div>
 
+      <% if @section.slug == "setor-operacoes" && @subsection.slug == "logistica" %>
+        <div class="report-item-card" style="margin-bottom: 18px;">
+          <div class="report-item-header">
+            <div class="report-item-title">
+              Gestão de Trechos Longos
+            </div>
+
+            <div>
+              <%= link_to "Abrir Dashboard",
+                  long_trips_path,
+                  class: "btn-primary" %>
+            </div>
+          </div>
+
+          <div class="report-item-description">
+            Acesse o módulo de cadastro, importação, dashboards e apresentação de trechos longos.
+          </div>
+        </div>
+      <% end %>
+
       <% if @report_pages.present? && @report_pages.any? %>
         <div class="profile-card">
           <% @report_pages.each do |page| %>

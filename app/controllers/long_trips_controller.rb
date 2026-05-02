@@ -1,11 +1,8 @@
-require "csv"
-
 class LongTripsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_long_trip, only: []
 
   def index
-    redirect_to dashboard_long_trips_path
+    @long_trips = LongTrip.order(created_at: :desc)
   end
 
   def new
@@ -16,20 +13,45 @@ class LongTripsController < ApplicationController
     @long_trip = LongTrip.new(long_trip_params)
 
     if @long_trip.save
-      redirect_to dashboard_long_trips_path, notice: "Registro de viagem criado com sucesso."
+      redirect_to long_trips_path, notice: "Trecho longo criado com sucesso."
     else
       render :new, status: :unprocessable_entity
     end
   end
 
   def dashboard
-    load_dashboard_page
-    render :dashboard
+    @page = params[:page].presence || "overview"
+    @long_trips = LongTrip.all
+
+    case @page
+    when "overview"
+      load_overview_data
+    when "air_quantity"
+      load_air_quantity_data
+    when "land_quantity"
+      load_land_quantity_data
+    when "air_mileage"
+      load_air_mileage_data
+    when "land_mileage"
+      load_land_mileage_data
+    when "lead_time"
+      load_lead_time_data
+    when "sector_distribution"
+      load_sector_distribution_data
+    when "sector_distribution_monthly"
+      load_sector_distribution_monthly_data
+    when "destination_cities"
+      load_destination_cities_data
+    when "destination_cities_monthly"
+      load_destination_cities_monthly_data
+    else
+      @page = "overview"
+      load_overview_data
+    end
   end
 
   def presentation
-    load_dashboard_page
-    render :presentation
+    @pages = presentation_pages
   end
 
   def import
@@ -37,299 +59,23 @@ class LongTripsController < ApplicationController
 
   def import_file
     if params[:file].blank?
-      redirect_to import_long_trips_path, alert: "Selecione um arquivo CSV para importar."
+      redirect_to import_long_trips_path, alert: "Selecione um arquivo."
       return
     end
 
-    imported_count = 0
-    errors = []
+    file = params[:file]
+    importer = LongTripsImporter.new(file.path).call
 
-    begin
-      CSV.foreach(params[:file].path, headers: true, col_sep: detect_col_sep(params[:file].path), encoding: "bom|utf-8") do |row|
-        long_trip = LongTrip.new(
-          travel_request_id: integer_or_nil(row["travel_request_id"]),
-          traveler_name: row["traveler_name"],
-          traveler_sector: row["traveler_sector"],
-          travel_reason: row["travel_reason"],
-          purchase_date: date_or_nil(row["purchase_date"]),
-          travel_date: date_or_nil(row["travel_date"]),
-          transport_mode: row["transport_mode"],
-          origin_city: row["origin_city"],
-          origin_state: row["origin_state"],
-          origin_terminal: row["origin_terminal"],
-          destination_city: row["destination_city"],
-          destination_state: row["destination_state"],
-          destination_terminal: row["destination_terminal"],
-          transport_company: row["transport_company"],
-          mileage: decimal_or_nil(row["mileage"]),
-          policy_compliant: boolean_or_nil(row["policy_compliant"]),
-          non_compliance_reason: row["non_compliance_reason"],
-          canceled: boolean_or_nil(row["canceled"]),
-          purchase_value_brl: decimal_or_nil(row["purchase_value_brl"]),
-          purchase_value_points: decimal_or_nil(row["purchase_value_points"]),
-          extra_fees_brl: decimal_or_nil(row["extra_fees_brl"]),
-          refund_value_brl: decimal_or_nil(row["refund_value_brl"]),
-          refund_value_points: decimal_or_nil(row["refund_value_points"])
-        )
-
-        if long_trip.save
-          imported_count += 1
-        else
-          errors << "Linha #{row.to_h.inspect}: #{long_trip.errors.full_messages.join(', ')}"
-        end
-      end
-    rescue StandardError => e
-      redirect_to import_long_trips_path, alert: "Erro ao importar arquivo: #{e.message}"
-      return
-    end
-
-    if errors.any?
-      redirect_to import_long_trips_path,
-                  alert: "Importação concluída com #{imported_count} registros salvos, mas houve erros.",
-                  flash: { import_errors: errors.first(10) }
+    if importer.errors.any?
+      flash[:alert] = "Importação concluída com erros."
     else
-      redirect_to dashboard_long_trips_path, notice: "#{imported_count} registros importados com sucesso."
+      flash[:notice] = "Importação concluída com sucesso."
     end
+
+    redirect_to long_trips_path
   end
 
   private
-
-  def load_dashboard_page
-    @page = params[:page].presence || "overview"
-    @dashboard_title = "Gestão de Viagens"
-    @monthly_series = []
-    @summary_cards = build_summary_cards
-
-    case @page
-    when "overview"
-      @dashboard_title = "Visão Geral"
-
-    when "air_quantity"
-      @dashboard_title = "Passagens Aéreas: Quantidade"
-      @monthly_series = monthly_count_series(scope: air_scope)
-
-    when "land_quantity"
-      @dashboard_title = "Passagens Terrestres: Quantidade"
-      @monthly_series = monthly_count_series(scope: land_scope)
-
-    when "air_mileage"
-      @dashboard_title = "Passagens Aéreas: Quilometragem"
-      @monthly_series = monthly_sum_series(scope: air_scope, field: :mileage)
-
-    when "land_mileage"
-      @dashboard_title = "Passagens Terrestres: Quilometragem"
-      @monthly_series = monthly_sum_series(scope: land_scope, field: :mileage)
-
-    when "lead_time"
-      @dashboard_title = "Passagens Aéreas: Antecedência de Compra"
-      @monthly_series = monthly_lead_time_series(scope: air_scope)
-
-    when "sector_distribution"
-      @dashboard_title = "Distribuição por Setor"
-      @monthly_series = grouped_count_series(scope: base_scope, field: :traveler_sector)
-
-    when "sector_distribution_monthly"
-      @dashboard_title = "Distribuição por Setor: Evolução Mensal"
-      @monthly_series = monthly_top_group_series(scope: base_scope, field: :traveler_sector)
-
-    when "destination_cities"
-      @dashboard_title = "Cidades de Destino"
-      @monthly_series = grouped_count_series(scope: base_scope, field: :destination_city)
-
-    when "destination_cities_monthly"
-      @dashboard_title = "Cidades de Destino: Evolução Mensal"
-      @monthly_series = monthly_top_group_series(scope: base_scope, field: :destination_city)
-
-    else
-      @page = "overview"
-      @dashboard_title = "Visão Geral"
-    end
-  end
-
-  def build_summary_cards
-    [
-      {
-        title: "Total de viagens",
-        value: base_scope.count
-      },
-      {
-        title: "Viagens aéreas",
-        value: air_scope.count
-      },
-      {
-        title: "Viagens terrestres",
-        value: land_scope.count
-      },
-      {
-        title: "Quilometragem total",
-        value: format_number(base_scope.sum(:mileage))
-      }
-    ]
-  end
-
-  def base_scope
-    LongTrip.all
-  end
-
-  def air_scope
-    base_scope.where("LOWER(COALESCE(transport_mode, '')) IN (?)", air_modes)
-  end
-
-  def land_scope
-    base_scope.where("LOWER(COALESCE(transport_mode, '')) IN (?)", land_modes)
-  end
-
-  def air_modes
-    ["aéreo", "aereo", "aérea", "aerea", "air", "flight", "avião", "aviao"]
-  end
-
-  def land_modes
-    ["terrestre", "rodoviário", "rodoviario", "ground", "bus", "ônibus", "onibus", "carro"]
-  end
-
-  def monthly_count_series(scope:)
-    grouped_by_month(scope).map do |month_name, records|
-      { label: month_name, value: records.size }
-    end
-  end
-
-  def monthly_sum_series(scope:, field:)
-    grouped_by_month(scope).map do |month_name, records|
-      {
-        label: month_name,
-        value: records.sum { |record| numeric_value(record.public_send(field)) }.round(2)
-      }
-    end
-  end
-
-  def monthly_lead_time_series(scope:)
-    grouped_by_month(scope).map do |month_name, records|
-      lead_times = records.filter_map do |record|
-        next if record.purchase_date.blank? || record.travel_date.blank?
-
-        (record.travel_date - record.purchase_date).to_i
-      end
-
-      average = lead_times.any? ? (lead_times.sum.to_f / lead_times.size).round(2) : 0
-      { label: month_name, value: average }
-    end
-  end
-
-  def grouped_count_series(scope:, field:, limit: 10)
-    grouped = scope.to_a.group_by do |record|
-      value = record.public_send(field)
-      value.present? ? value.to_s.strip : "Não informado"
-    end
-
-    grouped
-      .map { |label, records| { label: label, value: records.size } }
-      .sort_by { |item| -item[:value] }
-      .first(limit)
-  end
-
-  def monthly_top_group_series(scope:, field:)
-    grouped_by_month(scope).map do |month_name, records|
-      monthly_group = records.group_by do |record|
-        value = record.public_send(field)
-        value.present? ? value.to_s.strip : "Não informado"
-      end
-
-      top_item = monthly_group
-        .map { |label, grouped_records| { label: label, value: grouped_records.size } }
-        .max_by { |item| item[:value] }
-
-      if top_item.present?
-        { label: "#{month_name} - #{top_item[:label]}", value: top_item[:value] }
-      else
-        { label: month_name, value: 0 }
-      end
-    end
-  end
-
-  def grouped_by_month(scope)
-    grouped = Hash.new { |hash, key| hash[key] = [] }
-
-    scope.find_each do |record|
-      date = reference_date_for(record)
-      next if date.blank?
-
-      grouped[month_name_pt_br(date.month)] << record
-    end
-
-    ordered_months = [
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    ]
-
-    ordered_months.each_with_object({}) do |month_name, result|
-      result[month_name] = grouped[month_name] if grouped.key?(month_name)
-    end
-  end
-
-  def reference_date_for(record)
-    record.travel_date || record.purchase_date || record.created_at&.to_date
-  end
-
-  def month_name_pt_br(month_number)
-    [
-      nil,
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    ][month_number]
-  end
-
-  def format_number(value)
-    numeric_value(value).round(2)
-  end
-
-  def numeric_value(value)
-    return 0 if value.blank?
-
-    value.to_d.to_f
-  rescue StandardError
-    0
-  end
-
-  def integer_or_nil(value)
-    return nil if value.blank?
-
-    value.to_i
-  end
-
-  def decimal_or_nil(value)
-    return nil if value.blank?
-
-    value.to_s.tr(",", ".").to_d
-  end
-
-  def date_or_nil(value)
-    return nil if value.blank?
-
-    Date.parse(value.to_s)
-  rescue StandardError
-    nil
-  end
-
-  def boolean_or_nil(value)
-    return nil if value.blank?
-
-    normalized = value.to_s.strip.downcase
-    return true if %w[true t 1 sim yes y].include?(normalized)
-    return false if %w[false f 0 nao não no n].include?(normalized)
-
-    nil
-  end
-
-  def detect_col_sep(path)
-    first_line = File.open(path, &:readline)
-    first_line.include?(";") ? ";" : ","
-  rescue StandardError
-    ","
-  end
-
-  def set_long_trip
-    @long_trip = LongTrip.find(params[:id])
-  end
 
   def long_trip_params
     params.require(:long_trip).permit(
@@ -357,5 +103,216 @@ class LongTripsController < ApplicationController
       :refund_value_brl,
       :refund_value_points
     )
+  end
+
+  def presentation_pages
+    [
+      "overview",
+      "air_quantity",
+      "land_quantity",
+      "air_mileage",
+      "land_mileage",
+      "lead_time",
+      "sector_distribution",
+      "sector_distribution_monthly",
+      "destination_cities",
+      "destination_cities_monthly"
+    ]
+  end
+
+  def normalized_transport_mode(trip)
+    trip.transport_mode.to_s.strip.downcase
+  end
+
+  def air_trips
+    @long_trips.select do |trip|
+      mode = normalized_transport_mode(trip)
+      ["aéreo", "aereo"].include?(mode)
+    end
+  end
+
+  def land_trips
+    @long_trips.select do |trip|
+      mode = normalized_transport_mode(trip)
+      ["rodoviário", "rodoviario", "terrestre", "carro"].include?(mode)
+    end
+  end
+
+  def quarter_months
+    [1, 2, 3]
+  end
+
+  def monthly_labels
+    {
+      1 => "Janeiro",
+      2 => "Fevereiro",
+      3 => "Março"
+    }
+  end
+
+  def trips_in_quarter(trips)
+    trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+  end
+
+  def build_monthly_count_data(trips)
+    counts = trips_in_quarter(trips)
+      .group_by { |trip| trip.travel_date.month }
+      .transform_values(&:count)
+
+    quarter_months.map do |month|
+      {
+        label: monthly_labels[month],
+        value: counts[month].to_i
+      }
+    end
+  end
+
+  def build_monthly_mileage_data(trips)
+    sums = trips_in_quarter(trips)
+      .group_by { |trip| trip.travel_date.month }
+      .transform_values { |items| items.sum { |trip| trip.mileage.to_f } }
+
+    quarter_months.map do |month|
+      {
+        label: monthly_labels[month],
+        value: sums[month].to_f.round(1)
+      }
+    end
+  end
+
+  def build_monthly_lead_time_data(trips)
+    grouped = trips
+      .select { |trip| trip.travel_date.present? && trip.purchase_date.present? && quarter_months.include?(trip.travel_date.month) }
+      .group_by { |trip| trip.travel_date.month }
+
+    quarter_months.map do |month|
+      values = (grouped[month] || []).map(&:days_between_purchase_and_trip).compact
+      avg = values.any? ? (values.sum.to_f / values.size).round(2) : 0
+
+      {
+        label: monthly_labels[month],
+        value: avg
+      }
+    end
+  end
+
+  def destination_frequency_scope(trips = @long_trips)
+    trips
+      .select { |trip| trip.destination_city.present? }
+      .reject { |trip| trip.destination_city.to_s.strip.casecmp("João Pessoa").zero? }
+      .group_by(&:destination_city)
+      .transform_values(&:count)
+  end
+
+  def load_overview_data
+    quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+    quarter_air_trips = air_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+    quarter_land_trips = land_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+
+    destination_frequency = destination_frequency_scope(quarter_long_trips)
+
+    air_days = quarter_air_trips.map(&:days_between_purchase_and_trip).compact
+
+    @overview_cards = [
+      { label: "Total de Passagens Aéreas", value: quarter_air_trips.count },
+      { label: "Total de Passagens Terrestres", value: quarter_land_trips.count },
+      { label: "Quilometragem Total (Aéreas)", value: quarter_air_trips.sum { |trip| trip.mileage.to_f }.round(1) },
+      { label: "Quilometragem Total (Terrestres)", value: quarter_land_trips.sum { |trip| trip.mileage.to_f }.round(1) },
+      { label: "Média Dias de Antecedência (Aéreas)", value: air_days.any? ? (air_days.sum.to_f / air_days.size).round(2) : 0 },
+      { label: "Total de Cancelamentos (Aéreas)", value: quarter_air_trips.count { |trip| trip.canceled == true } },
+      { label: "Total de Cancelamentos (Terrestres)", value: quarter_land_trips.count { |trip| trip.canceled == true } },
+      {
+        label: "Taxa de Cancelamento (Aéreas)",
+        value: if quarter_air_trips.any?
+                 (((quarter_air_trips.count { |trip| trip.canceled == true }.to_f / quarter_air_trips.count) * 100).round(2)).to_s + "%"
+               else
+                 "0%"
+               end
+      },
+      { label: "Destino mais frequente", value: destination_frequency.max_by { |_city, count| count }&.first || "-" }
+    ]
+  end
+
+  def load_air_quantity_data
+    @dashboard_title = "Passagens Aéreas: Quantidade"
+    @monthly_series = build_monthly_count_data(air_trips)
+  end
+
+  def load_land_quantity_data
+    @dashboard_title = "Passagens Terrestres: Quantidade"
+    @monthly_series = build_monthly_count_data(land_trips)
+  end
+
+  def load_air_mileage_data
+    @dashboard_title = "Passagens Aéreas: Quilometragem"
+    @monthly_series = build_monthly_mileage_data(air_trips)
+  end
+
+  def load_land_mileage_data
+    @dashboard_title = "Passagens Terrestres: Quilometragem"
+    @monthly_series = build_monthly_mileage_data(land_trips)
+  end
+
+  def load_lead_time_data
+    @dashboard_title = "Passagens Aéreas: Antecedência de Compra"
+    @monthly_series = build_monthly_lead_time_data(air_trips)
+  end
+
+  def load_sector_distribution_data
+    quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+
+    @dashboard_title = "Distribuição por Setor"
+    @bar_title = "Distribuição por Setor das Passagens"
+    @sector_data = quarter_long_trips
+      .select { |trip| trip.traveler_sector.present? }
+      .group_by(&:traveler_sector)
+      .transform_values(&:count)
+      .sort_by { |_sector, count| -count }
+      .to_h
+  end
+
+  def load_sector_distribution_monthly_data
+    quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+
+    @dashboard_title = "Distribuição por Setor por Mês"
+
+    @monthly_sector_cards = quarter_months.map do |month|
+      trips_in_month = quarter_long_trips.select { |trip| trip.travel_date.month == month }
+
+      data = trips_in_month
+        .select { |trip| trip.traveler_sector.present? }
+        .group_by(&:traveler_sector)
+        .transform_values(&:count)
+        .sort_by { |_sector, count| -count }
+        .to_h
+
+      { title: monthly_labels[month], data: data }
+    end
+  end
+
+  def load_destination_cities_data
+    quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+
+    @dashboard_title = "Cidades de Destino"
+    @bar_title = "Frequência de Cidades de Destino"
+    @city_data = destination_frequency_scope(quarter_long_trips)
+      .sort_by { |_city, count| -count }
+      .to_h
+  end
+
+  def load_destination_cities_monthly_data
+    quarter_long_trips = @long_trips.select { |trip| trip.travel_date.present? && quarter_months.include?(trip.travel_date.month) }
+
+    @dashboard_title = "Cidades de Destino por Mês"
+
+    @monthly_city_cards = quarter_months.map do |month|
+      trips_in_month = quarter_long_trips.select { |trip| trip.travel_date.month == month }
+
+      data = destination_frequency_scope(trips_in_month)
+        .sort_by { |_city, count| -count }
+        .to_h
+
+      { title: monthly_labels[month], data: data }
+    end
   end
 end
