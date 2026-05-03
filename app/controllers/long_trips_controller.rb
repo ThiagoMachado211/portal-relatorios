@@ -247,7 +247,7 @@ class LongTripsController < ApplicationController
     {
       1 => "Janeiro",
       2 => "Fevereiro",
-      3 => "Março"
+      3 => "Março",
       4 => "Abril"
     }
   end
