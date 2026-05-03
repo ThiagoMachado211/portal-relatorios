@@ -1,5 +1,6 @@
 class LongTripsController < ApplicationController
   before_action :authenticate_user!
+  skip_before_action :authenticate_user!, only: [:dashboard_data]
 
   def index
     @long_trips = LongTrip.order(created_at: :desc)

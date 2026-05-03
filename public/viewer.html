@@ -39,11 +39,11 @@
   </div>
 
   <script>
-    const BASE_URL = "https://portal-relatorios-ndlz.onrender.com";
-    const WS_URL = "wss://portal-relatorios-ndlz.onrender.com/cable";
+    const BASE_URL = window.location.origin;
+    const WS_URL = window.location.origin.replace("https://", "wss://").replace("http://", "ws://") + "/cable";
 
     async function loadData() {
-      const response = await fetch(`${BASE_URL}/long_trips/dashboard_data.json`);
+      const response = await fetch(`${BASE_URL}/long_trips/dashboard_data.json`, {credentials: "same-origin"});
       const data = await response.json();
 
       document.getElementById("total").textContent = data.total_records;
