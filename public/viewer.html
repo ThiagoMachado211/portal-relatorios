@@ -299,16 +299,10 @@
     <main class="viewer">
       <header class="viewer-header">
         <h1>GESTÃO DE VIAGENS</h1>
-        <h2 id="pageSubtitle">Carregando...</h2>
       </header>
 
       <nav class="viewer-nav">
-        <button class="nav-button" onclick="previousPage()">← Anterior</button>
-        <button class="nav-button" onclick="goToOverview()">Visão Geral</button>
-        <button class="nav-button" onclick="nextPage()">Próxima →</button>
-        <button class="nav-button nav-button--red" onclick="manualMode()">Navegação manual</button>
-        <button class="nav-button nav-button--green" onclick="autoMode()">Navegação automática</button>
-        <button class="nav-button nav-button--black" onclick="toggleFullscreen()">Modo tela cheia</button>
+        <button class="nav-button nav-button--black" onclick="toggleFullscreen()">Tela cheia</button>
       </nav>
 
       <section id="dashboard" class="panel">
@@ -535,7 +529,7 @@
 
       function normalizeMonthlySeries(series) {
         const data = Array.isArray(series) ? series : [];
-        const months = ["Janeiro", "Fevereiro", "Março"];
+        const months = ["Janeiro", "Fevereiro", "Março", "Abril"];
 
         return months.map(month => {
           const found = data.find(item => item.label === month);
