@@ -85,12 +85,46 @@ class LongTripsController < ApplicationController
   def dashboard_data
     @long_trips = LongTrip.all
 
+    quarter_long_trips = trips_in_quarter(@long_trips)
+    quarter_air_trips = trips_in_quarter(air_trips)
+    quarter_land_trips = trips_in_quarter(land_trips)
+
+    destination_frequency = destination_frequency_scope(quarter_long_trips)
+      .sort_by { |_city, count| -count }
+      .to_h
+
+    sector_distribution = quarter_long_trips
+      .select { |t| t.traveler_sector.present? }
+      .group_by(&:traveler_sector)
+      .transform_values(&:count)
+      .sort_by { |_sector, count| -count }
+      .to_h
+
     render json: {
       updated_at: Time.current.iso8601,
-      total_records: @long_trips.count
+      total_records: @long_trips.count,
+
+      overview: {
+        total_air: quarter_air_trips.count,
+        total_land: quarter_land_trips.count,
+        total_air_mileage: quarter_air_trips.sum { |t| t.mileage.to_f }.round(1),
+        total_land_mileage: quarter_land_trips.sum { |t| t.mileage.to_f }.round(1),
+        most_frequent_destination: destination_frequency.max_by { |_k, v| v }&.first
+      },
+
+      air_quantity: build_monthly_count_data(air_trips),
+      land_quantity: build_monthly_count_data(land_trips),
+      air_mileage: build_monthly_mileage_data(air_trips),
+      land_mileage: build_monthly_mileage_data(land_trips),
+      lead_time: build_monthly_lead_time_data(air_trips),
+
+      sector_distribution: sector_distribution,
+      sector_distribution_monthly: build_monthly_object_data(quarter_long_trips, :traveler_sector),
+
+      destination_cities: destination_frequency,
+      destination_cities_monthly: build_monthly_destination_data(quarter_long_trips)
     }
   end
-
 
 
 
@@ -100,6 +134,39 @@ class LongTripsController < ApplicationController
 
 
 
+
+  def build_monthly_object_data(trips, field)
+    quarter_months.map do |month|
+      trips_in_month = trips.select { |trip| trip.travel_date.present? && trip.travel_date.month == month }
+
+      data = trips_in_month
+        .select { |trip| trip.public_send(field).present? }
+        .group_by { |trip| trip.public_send(field) }
+        .transform_values(&:count)
+        .sort_by { |_label, count| -count }
+        .to_h
+
+      {
+        title: monthly_labels[month],
+        data: data
+      }
+    end
+  end
+
+  def build_monthly_destination_data(trips)
+    quarter_months.map do |month|
+      trips_in_month = trips.select { |trip| trip.travel_date.present? && trip.travel_date.month == month }
+
+      data = destination_frequency_scope(trips_in_month)
+        .sort_by { |_city, count| -count }
+        .to_h
+
+      {
+        title: monthly_labels[month],
+        data: data
+      }
+    end
+  end
 
   def broadcast_long_trips_update
     ActionCable.server.broadcast(

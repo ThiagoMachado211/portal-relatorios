@@ -1,87 +1,647 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <title>Exibição - Trechos Longos</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #63b8ea;
-      color: #061b9a;
-      display: grid;
-      place-items: center;
-      min-height: 100vh;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viewer - Gestão de Viagens</title>
 
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      min-width: 420px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,.2);
-    }
+    <style>
+      :root {
+        --bg: #63b8ea;
+        --panel: #3b82c9;
+        --header: #1c28ab;
+        --bar: #2430ad;
+        --text-blue: #061b9a;
+        --lime: #c7ff00;
+        --white: #ffffff;
+        --red: #ef4444;
+        --green: #22c55e;
+        --black: #000000;
+      }
 
-    .value {
-      font-size: 72px;
-      font-weight: 900;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Trechos Longos</h1>
-    <p>Total de registros</p>
-    <div id="total" class="value">...</div>
-    <p id="updatedAt">Aguardando dados...</p>
-    <p id="status">Conectando...</p>
-  </div>
+      * {
+        box-sizing: border-box;
+      }
 
-  <script>
-    const BASE_URL = window.location.origin;
-    const WS_URL = window.location.origin.replace("https://", "wss://").replace("http://", "ws://") + "/cable";
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--text-blue);
+        overflow: hidden;
+      }
 
-    async function loadData() {
-      const response = await fetch(`${BASE_URL}/long_trips/dashboard_data.json`, {credentials: "same-origin"});
-      const data = await response.json();
+      .viewer {
+        width: 100vw;
+        height: 100vh;
+        padding: 18px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
 
-      document.getElementById("total").textContent = data.total_records;
-      document.getElementById("updatedAt").textContent = `Atualizado em: ${data.updated_at}`;
-    }
+      .viewer-header {
+        text-align: center;
+      }
 
-    function connectCable() {
-      const socket = new WebSocket(WS_URL);
+      .viewer-header h1 {
+        margin: 0;
+        color: var(--text-blue);
+        font-size: 52px;
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: 1px;
+      }
 
-      socket.onopen = () => {
-        document.getElementById("status").textContent = "WebSocket conectado";
+      .viewer-header h2 {
+        margin: 8px 0 0;
+        color: var(--text-blue);
+        font-size: 26px;
+        font-weight: 500;
+      }
 
-        socket.send(JSON.stringify({
-          command: "subscribe",
-          identifier: JSON.stringify({ channel: "LongTripsChannel" })
-        }));
+      .viewer-nav {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-button {
+        border: none;
+        border-radius: 999px;
+        padding: 11px 18px;
+        font-weight: 800;
+        color: var(--white);
+        background: var(--header);
+        cursor: pointer;
+        box-shadow: 0 6px 14px rgba(0,0,0,.18);
+      }
+
+      .nav-button:hover {
+        opacity: .92;
+      }
+
+      .nav-button--red {
+        background: var(--red);
+      }
+
+      .nav-button--green {
+        background: var(--green);
+      }
+
+      .nav-button--black {
+        background: var(--black);
+      }
+
+      .status {
+        position: fixed;
+        left: 18px;
+        bottom: 14px;
+        font-size: 13px;
+        color: #ffffff;
+        background: rgba(0, 0, 0, .25);
+        padding: 8px 12px;
+        border-radius: 999px;
+        z-index: 20;
+      }
+
+      .panel {
+        flex: 1;
+        background: var(--panel);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px rgba(0,0,0,.15);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-title {
+        background: var(--header);
+        color: var(--lime);
+        text-align: center;
+        padding: 12px;
+        font-size: 22px;
+        font-weight: 900;
+      }
+
+      .panel-subtitle {
+        display: block;
+        font-size: 14px;
+        color: var(--lime);
+        margin-top: 3px;
+        font-weight: 800;
+      }
+
+      .panel-content {
+        flex: 1;
+        padding: 28px 48px;
+        overflow: hidden;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        padding: 28px;
+      }
+
+      .kpi-card {
+        background: white;
+        border-radius: 14px;
+        padding: 22px 24px;
+        min-height: 120px;
+        box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      }
+
+      .kpi-label {
+        font-size: 15px;
+        color: #0f172a;
+        margin-bottom: 12px;
+      }
+
+      .kpi-value {
+        font-size: 34px;
+        font-weight: 900;
+        color: #020617;
+      }
+
+      .bar-chart {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding: 30px 20px;
+      }
+
+      .bar-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .bar-label {
+        color: var(--lime);
+        font-weight: 900;
+        text-align: right;
+        font-size: 16px;
+      }
+
+      .bar-track {
+        height: 46px;
+        position: relative;
+      }
+
+      .bar {
+        height: 100%;
+        min-width: 3px;
+        background: var(--bar);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 8px;
+      }
+
+      .bar-value {
+        color: var(--lime);
+        font-size: 24px;
+        font-weight: 900;
+        transform: translateX(42px);
+      }
+
+      .monthly-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        height: 100%;
+      }
+
+      .mini-panel {
+        background: var(--panel);
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.25);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mini-panel-title {
+        background: var(--header);
+        color: var(--lime);
+        text-align: center;
+        font-size: 20px;
+        font-weight: 900;
+        padding: 10px;
+      }
+
+      .mini-panel-content {
+        flex: 1;
+        padding: 16px;
+      }
+
+      .column-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 18px;
+        height: 360px;
+        padding-top: 20px;
+      }
+
+      .column-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 95px;
+      }
+
+      .column-value {
+        color: var(--lime);
+        font-size: 20px;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+
+      .column-wrap {
+        height: 250px;
+        width: 48px;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .column-bar {
+        width: 100%;
+        min-height: 3px;
+        background: var(--bar);
+        border-radius: 6px 6px 0 0;
+      }
+
+      .column-label {
+        margin-top: 10px;
+        color: #00164f;
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+        line-height: 1.15;
+      }
+
+      .empty {
+        height: 100%;
+        display: grid;
+        place-items: center;
+        color: white;
+        font-size: 22px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="viewer">
+      <header class="viewer-header">
+        <h1>GESTÃO DE VIAGENS</h1>
+        <h2 id="pageSubtitle">Carregando...</h2>
+      </header>
+
+      <nav class="viewer-nav">
+        <button class="nav-button" onclick="previousPage()">← Anterior</button>
+        <button class="nav-button" onclick="goToOverview()">Visão Geral</button>
+        <button class="nav-button" onclick="nextPage()">Próxima →</button>
+        <button class="nav-button nav-button--red" onclick="manualMode()">Navegação manual</button>
+        <button class="nav-button nav-button--green" onclick="autoMode()">Navegação automática</button>
+        <button class="nav-button nav-button--black" onclick="toggleFullscreen()">Modo tela cheia</button>
+      </nav>
+
+      <section id="dashboard" class="panel">
+        <div class="empty">Carregando dados...</div>
+      </section>
+
+      <div id="status" class="status">Inicializando...</div>
+    </main>
+
+    <script>
+      const BASE_URL = window.location.origin;
+      const WS_URL = window.location.origin
+        .replace("https://", "wss://")
+        .replace("http://", "ws://") + "/cable";
+
+      const pages = [
+        "overview",
+        "air_quantity",
+        "land_quantity",
+        "air_mileage",
+        "land_mileage",
+        "lead_time",
+        "sector_distribution",
+        "sector_distribution_monthly",
+        "destination_cities",
+        "destination_cities_monthly"
+      ];
+
+      const titles = {
+        overview: "Visão Geral",
+        air_quantity: "Passagens Aéreas: Quantidade",
+        land_quantity: "Passagens Terrestres: Quantidade",
+        air_mileage: "Passagens Aéreas: Quilometragem",
+        land_mileage: "Passagens Terrestres: Quilometragem",
+        lead_time: "Passagens Aéreas: Antecedência de Compra",
+        sector_distribution: "Distribuição por Setor",
+        sector_distribution_monthly: "Distribuição por Setor por Mês",
+        destination_cities: "Cidades de Destino",
+        destination_cities_monthly: "Cidades de Destino por Mês"
       };
 
-      socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
+      let dashboardData = null;
+      let currentPageIndex = 0;
+      let autoNavigation = true;
+      let autoInterval = null;
 
-        if (message.type === "ping" || message.type === "welcome" || message.type === "confirm_subscription") {
-          return;
+      function setStatus(text) {
+        document.getElementById("status").textContent = text;
+      }
+
+      async function loadData() {
+        try {
+          const response = await fetch(`${BASE_URL}/long_trips/dashboard_data.json`, {
+            credentials: "same-origin"
+          });
+
+          dashboardData = await response.json();
+          renderPage();
+          setStatus(`Dados atualizados: ${new Date().toLocaleTimeString("pt-BR")}`);
+        } catch (error) {
+          setStatus("Erro ao carregar dados");
+          console.error(error);
+        }
+      }
+
+      function renderPage() {
+        if (!dashboardData) return;
+
+        const page = pages[currentPageIndex];
+        document.getElementById("pageSubtitle").textContent = titles[page];
+
+        if (page === "overview") renderOverview();
+        if (page === "air_quantity") renderMonthlyBars("Passagens Aéreas: Quantidade", dashboardData.air_quantity);
+        if (page === "land_quantity") renderMonthlyBars("Passagens Terrestres: Quantidade", dashboardData.land_quantity);
+        if (page === "air_mileage") renderMonthlyBars("Passagens Aéreas: Quilometragem", dashboardData.air_mileage);
+        if (page === "land_mileage") renderMonthlyBars("Passagens Terrestres: Quilometragem", dashboardData.land_mileage);
+        if (page === "lead_time") renderMonthlyBars("Passagens Aéreas: Antecedência de Compra", dashboardData.lead_time);
+        if (page === "sector_distribution") renderObjectBars("Distribuição por Setor", dashboardData.sector_distribution);
+        if (page === "sector_distribution_monthly") renderMonthlyColumns("Distribuição por Setor por Mês", dashboardData.sector_distribution_monthly);
+        if (page === "destination_cities") renderObjectBars("Frequência de Cidades de Destino", dashboardData.destination_cities);
+        if (page === "destination_cities_monthly") renderMonthlyBarsCards("Cidades de Destino por Mês", dashboardData.destination_cities_monthly);
+      }
+
+      function panel(title, content) {
+        document.getElementById("dashboard").innerHTML = `
+          <div class="panel-title">
+            ${title}
+            <span class="panel-subtitle">Evolução Mensal</span>
+          </div>
+          <div class="panel-content">
+            ${content}
+          </div>
+        `;
+      }
+
+      function renderOverview() {
+        const overview = dashboardData.overview || {};
+
+        const cards = [
+          ["Total de Passagens Aéreas", overview.total_air ?? 0],
+          ["Total de Passagens Terrestres", overview.total_land ?? 0],
+          ["Quilometragem Total (Aéreas)", overview.total_air_mileage ?? 0],
+          ["Quilometragem Total (Terrestres)", overview.total_land_mileage ?? 0],
+          ["Destino mais frequente", overview.most_frequent_destination ?? "-"],
+          ["Total de Registros", dashboardData.total_records ?? 0]
+        ];
+
+        const html = `
+          <div class="kpi-grid">
+            ${cards.map(([label, value]) => `
+              <div class="kpi-card">
+                <div class="kpi-label">${label}</div>
+                <div class="kpi-value">${value}</div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+
+        panel("Visão Geral", html);
+      }
+
+      function renderMonthlyBars(title, series) {
+        const data = normalizeMonthlySeries(series);
+        panel(title, renderBars(data));
+      }
+
+      function renderObjectBars(title, objectData) {
+        const data = objectToSeries(objectData);
+        panel(title, renderBars(data));
+      }
+
+      function renderMonthlyBarsCards(title, cards) {
+        const safeCards = cards || [];
+        const html = `
+          <div class="monthly-grid">
+            ${safeCards.map(card => `
+              <div class="mini-panel">
+                <div class="mini-panel-title">${card.title}</div>
+                <div class="mini-panel-content">
+                  ${renderBars(objectToSeries(card.data), true)}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+
+        panel(title, html);
+      }
+
+      function renderMonthlyColumns(title, cards) {
+        const safeCards = cards || [];
+        const html = `
+          <div class="monthly-grid">
+            ${safeCards.map(card => `
+              <div class="mini-panel">
+                <div class="mini-panel-title">${card.title}</div>
+                <div class="mini-panel-content">
+                  ${renderColumns(objectToSeries(card.data))}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+
+        panel(title, html);
+      }
+
+      function renderBars(series, compact = false) {
+        const data = series || [];
+        const max = Math.max(...data.map(item => Number(item.value) || 0), 1);
+
+        if (data.length === 0) {
+          return `<div class="empty">Nenhum dado encontrado.</div>`;
         }
 
-        if (message.message && message.message.event === "long_trips_updated") {
-          loadData();
+        return `
+          <div class="bar-chart" style="${compact ? "gap:14px;padding:10px 0;" : ""}">
+            ${data.map(item => {
+              const value = Number(item.value) || 0;
+              const width = value > 0 ? (value / max) * 100 : 0;
+
+              return `
+                <div class="bar-row" style="${compact ? "grid-template-columns:120px 1fr;" : ""}">
+                  <div class="bar-label">${item.label}</div>
+                  <div class="bar-track">
+                    <div class="bar" style="width:${width}%;">
+                      <span class="bar-value">${formatValue(value)}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      function renderColumns(series) {
+        const data = series || [];
+        const max = Math.max(...data.map(item => Number(item.value) || 0), 1);
+
+        if (data.length === 0) {
+          return `<div class="empty">Nenhum dado encontrado.</div>`;
         }
-      };
 
-      socket.onclose = () => {
-        document.getElementById("status").textContent = "WebSocket desconectado. Reconectando...";
-        setTimeout(connectCable, 3000);
-      };
-    }
+        return `
+          <div class="column-chart">
+            ${data.map(item => {
+              const value = Number(item.value) || 0;
+              const height = value > 0 ? (value / max) * 100 : 0;
 
-    loadData();
-    connectCable();
-  </script>
-</body>
+              return `
+                <div class="column-item">
+                  <div class="column-value">${formatValue(value)}</div>
+                  <div class="column-wrap">
+                    <div class="column-bar" style="height:${height}%;"></div>
+                  </div>
+                  <div class="column-label">${item.label}</div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      function normalizeMonthlySeries(series) {
+        const data = Array.isArray(series) ? series : [];
+        const months = ["Janeiro", "Fevereiro", "Março"];
+
+        return months.map(month => {
+          const found = data.find(item => item.label === month);
+          return {
+            label: month,
+            value: found ? found.value : 0
+          };
+        });
+      }
+
+      function objectToSeries(objectData) {
+        if (!objectData) return [];
+
+        return Object.entries(objectData)
+          .filter(([label]) => label !== "João Pessoa")
+          .map(([label, value]) => ({ label, value }))
+          .sort((a, b) => Number(b.value) - Number(a.value));
+      }
+
+      function formatValue(value) {
+        const number = Number(value) || 0;
+
+        if (Number.isInteger(number)) {
+          return number.toString();
+        }
+
+        return number.toFixed(2);
+      }
+
+      function nextPage() {
+        currentPageIndex = (currentPageIndex + 1) % pages.length;
+        renderPage();
+      }
+
+      function previousPage() {
+        currentPageIndex = (currentPageIndex - 1 + pages.length) % pages.length;
+        renderPage();
+      }
+
+      function goToOverview() {
+        currentPageIndex = 0;
+        renderPage();
+      }
+
+      function manualMode() {
+        autoNavigation = false;
+        clearInterval(autoInterval);
+        setStatus("Navegação manual ativada");
+      }
+
+      function autoMode() {
+        autoNavigation = true;
+        clearInterval(autoInterval);
+        autoInterval = setInterval(() => {
+          if (autoNavigation) nextPage();
+        }, 10000);
+        setStatus("Navegação automática ativada");
+      }
+
+      function toggleFullscreen() {
+        const elem = document.documentElement;
+
+        if (!document.fullscreenElement) {
+          elem.requestFullscreen?.();
+        } else {
+          document.exitFullscreen?.();
+        }
+      }
+
+      function connectCable() {
+        const socket = new WebSocket(WS_URL);
+
+        socket.onopen = () => {
+          setStatus("WebSocket conectado");
+
+          socket.send(JSON.stringify({
+            command: "subscribe",
+            identifier: JSON.stringify({ channel: "LongTripsChannel" })
+          }));
+        };
+
+        socket.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+
+          if (
+            message.type === "ping" ||
+            message.type === "welcome" ||
+            message.type === "confirm_subscription"
+          ) {
+            return;
+          }
+
+          if (message.message && message.message.event === "long_trips_updated") {
+            loadData();
+          }
+        };
+
+        socket.onclose = () => {
+          setStatus("WebSocket desconectado. Reconectando...");
+          setTimeout(connectCable, 3000);
+        };
+      }
+
+      loadData();
+      connectCable();
+      autoMode();
+    </script>
+  </body>
 </html>
