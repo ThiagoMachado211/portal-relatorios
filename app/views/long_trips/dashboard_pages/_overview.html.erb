@@ -1,21 +1,19 @@
 <div class="travel-dashboard-page <%= 'tv-mode' if @display_mode == 'tv' %>">
   <div class="travel-dashboard-header">
-    <h1>GESTÃO DE VIAGENS</h1>
-    <h2><%= @dashboard_title %></h2>
+    <h1>TRECHOS LONGOS</h1>
+    <h2>Visão Geral</h2>
   </div>
 
   <%= render "long_trips/dashboard_pages/navigation" %>
 
-  <section class="travel-dashboard-main">
-    <div class="travel-chart-card">
-      <div class="travel-chart-card__header">
-        <div class="travel-chart-card__title">Visão Geral</div>
-        <div class="travel-chart-card__subtitle">Selecione uma métrica usando a navegação</div>
+  <div class="dashboard-kpi-grid">
+    <% @overview_cards.each do |card| %>
+      <div class="dashboard-kpi-card">
+        <span class="dashboard-kpi-card__label"><%= card[:label] %></span>
+        <strong class="dashboard-kpi-card__value dashboard-kpi-card__value--text">
+          <%= card[:value] %>
+        </strong>
       </div>
-
-      <div class="travel-empty-state">
-        Escolha uma das páginas do dashboard para visualizar os indicadores.
-      </div>
-    </div>
-  </section>
+    <% end %>
+  </div>
 </div>

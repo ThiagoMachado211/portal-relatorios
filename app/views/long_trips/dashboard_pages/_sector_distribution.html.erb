@@ -1,1 +1,40 @@
-<%= render "long_trips/dashboard_pages/metric_page" %>
+<div class="travel-dashboard-page <%= 'tv-mode' if @display_mode == 'tv' %>">
+  <div class="travel-dashboard-header">
+    <h1>GESTÃO DE VIAGENS</h1>
+    <h2><%= @dashboard_title %></h2>
+  </div>
+
+  <%= render "long_trips/dashboard_pages/navigation" %>
+
+  <div class="dashboard-chart-grid dashboard-chart-grid--single">
+    <section class="dashboard-chart-panel dashboard-chart-panel--centered dashboard-chart-panel--wide">
+      <div class="dashboard-chart-panel__header">
+        <h2 class="dashboard-chart-panel__title"><%= @bar_title %></h2>
+      </div>
+
+      <div class="travel-bar-chart">
+        <% max_value = @sector_data.values.max.to_f %>
+        <% max_value = 1 if max_value <= 0 %>
+
+        <% if @sector_data.any? %>
+          <% @sector_data.each do |sector, value| %>
+            <% width_percent = value.to_f > 0 ? (value.to_f / max_value) * 100 : 0 %>
+
+            <div class="travel-bar-row">
+              <div class="travel-bar-row__label"><%= sector %></div>
+
+              <div class="travel-bar-row__track">
+                <div class="travel-bar-row__bar <%= 'travel-bar-row__bar--zero' if value.to_f <= 0 %>"
+                     style="width: <%= width_percent %>%;">
+                  <span class="travel-bar-row__value"><%= value %></span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="travel-empty-state">Nenhum dado disponível.</div>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</div>

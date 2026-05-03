@@ -1,3 +1,9 @@
+<div class="presentation-tv-controls">
+  <button id="fullscreenButton" class="presentation-tv-button">
+    Modo tela cheia
+  </button>
+</div>
+
 <div class="presentation-wrapper">
   <iframe
     id="presentationFrame"
@@ -10,6 +16,7 @@
   (() => {
     const pages = <%= raw (@pages.presence || ["overview"]).to_json %>;
     const frame = document.getElementById("presentationFrame");
+    const fullscreenButton = document.getElementById("fullscreenButton");
 
     let current = 0;
     let intervalId = null;
@@ -35,6 +42,18 @@
       }
     }
 
+    if (fullscreenButton) {
+      fullscreenButton.onclick = function () {
+        const elem = document.documentElement;
+
+        if (!document.fullscreenElement && elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      };
+    }
+
     window.addEventListener("message", function (event) {
       if (!event.data || !event.data.action) return;
 
@@ -44,16 +63,6 @@
 
       if (event.data.action === "autoNavigation") {
         startAutoMode();
-      }
-
-      if (event.data.action === "fullscreen") {
-        const elem = document.documentElement;
-
-        if (!document.fullscreenElement && elem.requestFullscreen) {
-          elem.requestFullscreen();
-        } else if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
       }
     });
 
