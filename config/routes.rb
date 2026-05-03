@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       get :presentation
       get :import
       post :import_file
+      get :dashboard_data
     end
   end
 

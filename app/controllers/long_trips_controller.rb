@@ -13,10 +13,13 @@ class LongTripsController < ApplicationController
     @long_trip = LongTrip.new(long_trip_params)
 
     if @long_trip.save
+      broadcast_long_trips_update
+
       redirect_to long_trips_path, notice: "Trecho longo criado com sucesso."
     else
       render :new, status: :unprocessable_entity
     end
+
   end
 
   def dashboard
@@ -73,18 +76,40 @@ class LongTripsController < ApplicationController
       flash[:notice] = "Importação concluída com sucesso."
     end
 
+    broadcast_long_trips_update if importer.imported_count.positive?
+
     redirect_to long_trips_path
+  end
+
+  def dashboard_data
+    @long_trips = LongTrip.all
+
+    render json: {
+      updated_at: Time.current.iso8601,
+      total_records: @long_trips.count
+    }
   end
 
 
 
-
+  
 
   private
 
 
 
 
+
+
+  def broadcast_long_trips_update
+    ActionCable.server.broadcast(
+      "long_trips_updates",
+      {
+        event: "long_trips_updated",
+        updated_at: Time.current.iso8601
+      }
+    )
+  end
 
   def long_trip_params
     params.require(:long_trip).permit(
