@@ -75,8 +75,16 @@ class LongTripsController < ApplicationController
     redirect_to long_trips_path
   end
 
+
+
+
+
   private
 
+
+
+
+  
   def long_trip_params
     params.require(:long_trip).permit(
       :travel_request_id,

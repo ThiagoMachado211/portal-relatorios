@@ -1,1 +1,62 @@
-<%= render "long_trips/dashboard_pages/#{@page}" %>
+<div class="presentation-wrapper">
+  <iframe
+    id="presentationFrame"
+    class="presentation-frame is-active"
+    src="<%= dashboard_long_trips_path(page: @pages.first || "overview") %>">
+  </iframe>
+</div>
+
+<script>
+  (() => {
+    const pages = <%= raw (@pages.presence || ["overview"]).to_json %>;
+    const frame = document.getElementById("presentationFrame");
+
+    let current = 0;
+    let intervalId = null;
+
+    function dashboardUrl(page) {
+      return "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(page);
+    }
+
+    function nextPage() {
+      current = (current + 1) % pages.length;
+      frame.src = dashboardUrl(pages[current]);
+    }
+
+    function startAutoMode() {
+      stopAutoMode();
+      intervalId = setInterval(nextPage, 8000);
+    }
+
+    function stopAutoMode() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    window.addEventListener("message", function (event) {
+      if (!event.data || !event.data.action) return;
+
+      if (event.data.action === "manualNavigation") {
+        stopAutoMode();
+      }
+
+      if (event.data.action === "autoNavigation") {
+        startAutoMode();
+      }
+
+      if (event.data.action === "fullscreen") {
+        const elem = document.documentElement;
+
+        if (!document.fullscreenElement && elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    startAutoMode();
+  })();
+</script>
