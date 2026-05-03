@@ -1,4 +1,4 @@
-<div class="travel-dashboard-page">
+<div class="travel-dashboard-page <%= 'tv-mode' if @display_mode == 'tv' %>">
   <div class="travel-dashboard-header">
     <h1>GESTÃO DE VIAGENS</h1>
     <h2><%= @category %>: <%= @metric_type %></h2>

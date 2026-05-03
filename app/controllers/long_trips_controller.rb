@@ -21,6 +21,7 @@ class LongTripsController < ApplicationController
 
   def dashboard
     @page = params[:page].presence || "overview"
+    @display_mode = params[:display]
     @long_trips = LongTrip.all
 
     case @page
@@ -84,7 +85,7 @@ class LongTripsController < ApplicationController
 
 
 
-  
+
   def long_trip_params
     params.require(:long_trip).permit(
       :travel_request_id,

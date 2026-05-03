@@ -1,14 +1,8 @@
-<div class="presentation-fullscreen-control" style="display:flex; flex:center;">
-  <button id="fullscreenButton" class="presentation-fullscreen-button">
-    Modo tela cheia
-  </button>
-</div>
-
 <div class="presentation-wrapper">
   <iframe
     id="presentationFrame"
     class="presentation-frame is-active"
-    src="<%= dashboard_long_trips_path(page: @pages.first || "overview") %>">
+    src="<%= dashboard_long_trips_path(page: @pages.first || "overview", display: "tv") %>">
   </iframe>
 </div>
 
@@ -16,13 +10,12 @@
   (() => {
     const pages = <%= raw (@pages.presence || ["overview"]).to_json %>;
     const frame = document.getElementById("presentationFrame");
-    const fullscreenButton = document.getElementById("fullscreenButton");
 
     let current = 0;
     let intervalId = null;
 
     function dashboardUrl(page) {
-      return "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(page);
+      return "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(page) + "&display=tv";
     }
 
     function nextPage() {
@@ -32,7 +25,7 @@
 
     function startAutoMode() {
       stopAutoMode();
-      intervalId = setInterval(nextPage, 8000);
+      intervalId = setInterval(nextPage, 12000);
     }
 
     function stopAutoMode() {
@@ -40,22 +33,6 @@
         clearInterval(intervalId);
         intervalId = null;
       }
-    }
-
-    if (fullscreenButton) {
-      fullscreenButton.onclick = function () {
-        const elem = document.documentElement;
-
-        if (!document.fullscreenElement) {
-          if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-          }
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          }
-        }
-      };
     }
 
     window.addEventListener("message", function (event) {
@@ -67,6 +44,16 @@
 
       if (event.data.action === "autoNavigation") {
         startAutoMode();
+      }
+
+      if (event.data.action === "fullscreen") {
+        const elem = document.documentElement;
+
+        if (!document.fullscreenElement && elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
       }
     });
 

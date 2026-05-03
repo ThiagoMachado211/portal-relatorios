@@ -1410,20 +1410,57 @@ a {
 }
 
 
-.presentation-fullscreen-control {
+.presentation-wrapper {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
+  inset: 0;
+  background: #63b8ea;
+  overflow: hidden;
 }
 
-.presentation-fullscreen-button {
-  background: #000000;
-  color: #ffffff;
-  padding: 10px 18px;
-  border-radius: 10px;
+.presentation-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   border: none;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.travel-dashboard-page:has(.dashboard-nav) {
+  box-sizing: border-box;
+}
+
+body:has(.travel-dashboard-page) {
+  margin: 0;
+}
+
+.travel-dashboard-page {
+  min-height: 100vh;
+}
+
+.travel-dashboard-page .travel-dashboard-header {
+  margin-bottom: 12px;
+}
+
+body .travel-dashboard-page.tv-mode {
+  padding: 0;
+}
+
+
+.travel-dashboard-page.tv-mode .travel-dashboard-header {
+  display: none;
+}
+
+.travel-dashboard-page.tv-mode {
+  padding: 0;
+}
+
+.travel-dashboard-page.tv-mode .travel-chart-card,
+.travel-dashboard-page.tv-mode .dashboard-chart-panel {
+  min-height: 100vh;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.travel-dashboard-page.tv-mode .dashboard-kpi-grid {
+  padding: 24px;
 }
