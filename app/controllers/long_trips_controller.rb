@@ -240,7 +240,7 @@ class LongTripsController < ApplicationController
   end
 
   def quarter_months
-    [1, 2, 3]
+    [1, 2, 3, 4]
   end
 
   def monthly_labels
@@ -248,6 +248,7 @@ class LongTripsController < ApplicationController
       1 => "Janeiro",
       2 => "Fevereiro",
       3 => "Março"
+      4 => "Abril"
     }
   end
 
