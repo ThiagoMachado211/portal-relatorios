@@ -92,10 +92,9 @@ class LongTripsController < ApplicationController
 
 
 
-  
+
 
   private
-
 
 
 
