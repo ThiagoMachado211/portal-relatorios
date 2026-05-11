@@ -261,15 +261,14 @@ class LongTripsController < ApplicationController
   end
 
   def quarter_months
-    [1, 2, 3, 4]
+    [1, 2, 3]
   end
 
   def monthly_labels
     {
       1 => "Janeiro",
       2 => "Fevereiro",
-      3 => "Março",
-      4 => "Abril"
+      3 => "Março"
     }
   end
 
