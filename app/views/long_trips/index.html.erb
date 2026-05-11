@@ -67,6 +67,7 @@
                 <td><%= number_to_currency(trip.refund_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
                 <td><%= number_to_currency(trip.final_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
                 <td><%= trip.final_value_points %></td>
+<<<<<<< HEAD
                 <td>
                   <%= link_to "Editar", edit_long_trip_path(long_trip), class: "btn-edit" %>
                 </td>
@@ -78,6 +79,8 @@
                       class: "btn-delete",
                       form: { data: { turbo_confirm: "Tem certeza que deseja remover este registro?" } } %>
                 </td>
+=======
+>>>>>>> 04c037ae56b72526afb4d52b1538e86011645d24
               </tr>
             <% end %>
           </tbody>
