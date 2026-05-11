@@ -68,12 +68,12 @@
                 <td><%= number_to_currency(trip.final_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
                 <td><%= trip.final_value_points %></td>
                 <td>
-                  <%= link_to "Editar", edit_long_trip_path(long_trip), class: "btn-edit" %>
+                  <%= link_to "Editar", edit_long_trip_path(trip), class: "btn-edit" %>
                 </td>
 
                 <td>
                   <%= button_to "Remover",
-                      long_trip_path(long_trip),
+                      long_trip_path(trip),
                       method: :delete,
                       class: "btn-delete",
                       form: { data: { turbo_confirm: "Tem certeza que deseja remover este registro?" } } %>
