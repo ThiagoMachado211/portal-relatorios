@@ -532,7 +532,7 @@
 
       function normalizeMonthlySeries(series) {
         const data = Array.isArray(series) ? series : [];
-        const months = ["Janeiro", "Fevereiro", "Março", "Abril"];
+        const months = ["Janeiro", "Fevereiro", "Março"];
 
         return months.map(month => {
           const found = data.find(item => item.label === month);
