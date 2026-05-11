@@ -12,16 +12,21 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#index"
 
   get "/relatorios/:slug", to: "report_pages#show", as: :report_page
-  get "/relatorios/:section_slug/:subsection_slug", to: "report_pages#subsection", as: :report_subsection
+  get "/relatorios/:section_slug/:subsection_slug",
+      to: "report_pages#subsection",
+      as: :report_subsection
 
   namespace :admin do
     resources :users
+
     resources :sidebar_sections
+
     resources :sidebar_subsections do
       collection do
         get :by_section
       end
     end
+
     resources :report_pages
   end
 
@@ -32,7 +37,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :long_trips, only: [:index, :new, :create] do
+  resources :long_trips do
     collection do
       get :dashboard
       get :presentation
@@ -44,5 +49,4 @@ Rails.application.routes.draw do
   end
 
   mount ActionCable.server => "/cable"
-
 end
