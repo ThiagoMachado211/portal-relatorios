@@ -1,0 +1,82 @@
+<div class="card">
+  <%= form_with(model: [:admin, @report_page], local: true) do |form| %>
+
+    <div class="form-group">
+      <%= form.label :title, "Título" %>
+      <%= form.text_field :title, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :slug, "Slug" %>
+      <%= form.text_field :slug, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :description, "Descrição" %>
+      <%= form.text_area :description, class: "form-input" %>
+    </div>
+
+    <!-- SEÇÃO -->
+    <div class="form-group">
+      <%= form.label :sidebar_section_id, "Seção" %>
+      <%= form.collection_select :sidebar_section_id,
+          SidebarSection.active.ordered,
+          :id,
+          :title,
+          { prompt: "Selecione uma seção" },
+          { class: "form-input" } %>
+    </div>
+
+    <!-- SUBSEÇÃO -->
+    <div class="form-group">
+      <%= form.label :sidebar_subsection_id, "Subseção" %>
+      <%= form.collection_select :sidebar_subsection_id,
+          SidebarSubsection.active.ordered,
+          :id,
+          :title,
+          { prompt: "Selecione uma subseção" },
+          { class: "form-input" } %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :content_type, "Tipo de conteúdo" %>
+      <%= form.select :content_type,
+          ReportPage.content_types.keys.map { |k| [k.humanize, k] },
+          {},
+          class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :visible_for, "Visível para" %>
+      <%= form.select :visible_for,
+          ReportPage.visible_fors.keys.map { |k| [k.humanize, k] },
+          {},
+          class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :embed_url, "Link do conteúdo (Drive, dashboard, site externo)" %>
+      <%= form.text_field :embed_url, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :file, "Arquivo (PDF, imagem, etc)" %>
+      <%= form.file_field :file, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :position, "Posição" %>
+      <%= form.number_field :position, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :active, "Ativo" %>
+      <%= form.check_box :active %>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "Salvar", class: "btn-primary" %>
+    </div>
+
+  <% end %>
+</div>

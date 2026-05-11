@@ -1,0 +1,43 @@
+<div class="subsection-page">
+  <div class="subsection-card">
+
+    <div class="report-item-header">
+      <div>
+        <div class="card-title">Métricas</div>
+        <div class="card-subtitle">Registros lançados pelos managers.</div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <%= link_to "Nova Métrica", new_travel_metric_path, class: "btn-primary" %>
+        <%= link_to "Dashboard", dashboard_travel_metrics_path, class: "btn-primary" %>
+        <%= link_to "Apresentação", presentation_travel_metrics_path, class: "btn-primary" %>
+      </div>
+    </div>
+
+    <% if @travel_metrics.any? %>
+      <div class="profile-card">
+        <% @travel_metrics.each do |m| %>
+          <div class="report-item-card">
+            <div class="report-item-title">
+              <%= m.category %> - <%= m.metric_type %>
+            </div>
+
+            <div class="report-item-description">
+              <strong>Estado:</strong> <%= m.state %><br>
+              <strong>Mês/Ano:</strong> <%= I18n.t("date.month_names")[m.month] %>/<%= m.year %><br>
+              <strong>Valor:</strong> <%= m.value %>
+              <% if m.notes.present? %>
+                <br><strong>Observações:</strong> <%= m.notes %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="profile-line">
+        <div class="profile-value">Nenhum registro ainda.</div>
+      </div>
+    <% end %>
+
+  </div>
+</div>

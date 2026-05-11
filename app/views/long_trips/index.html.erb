@@ -1,0 +1,94 @@
+<div class="subsection-page">
+  <div class="subsection-card">
+    <div class="report-item-header">
+      <div>
+        <div class="card-title">Trechos Longos</div>
+        <div class="card-subtitle">
+          Registros cadastrados e campos calculados automaticamente.
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <%= link_to "Novo Registro", new_long_trip_path, class: "btn-primary" %>
+        <%= link_to "Importar Dados", import_long_trips_path, class: "btn-primary" %>
+        <%= link_to "Visão Geral", dashboard_long_trips_path(page: "overview"), class: "btn-primary" %>
+        <%= link_to "Apresentação", presentation_long_trips_path, class: "btn-primary", target: "_blank", rel: "noopener" %>
+      </div>
+    </div>
+
+    <% if @long_trips.any? %>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID Viagem</th>
+              <th>Viajante</th>
+              <th>Setor</th>
+              <th>Motivo</th>
+              <th>Data Compra</th>
+              <th>Data Viagem</th>
+              <th>Dias Antecedência</th>
+              <th>Transporte</th>
+              <th>Origem</th>
+              <th>Destino</th>
+              <th>Empresa</th>
+              <th>Km</th>
+              <th>Cumpriu Política?</th>
+              <th>Cancelada?</th>
+              <th>Valor Compra (R$)</th>
+              <th>Taxas (R$)</th>
+              <th>Reembolso (R$)</th>
+              <th>Valor Final (R$)</th>
+              <th>Valor Final (Pontos)</th>
+              <th>Editar</th>
+              <th>Remover</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @long_trips.each do |trip| %>
+              <tr>
+                <td><%= trip.travel_request_id %></td>
+                <td><%= trip.traveler_name %></td>
+                <td><%= trip.traveler_sector %></td>
+                <td><%= trip.travel_reason %></td>
+                <td><%= l(trip.purchase_date) if trip.purchase_date.present? %></td>
+                <td><%= l(trip.travel_date) if trip.travel_date.present? %></td>
+                <td><%= trip.days_between_purchase_and_trip %></td>
+                <td><%= trip.transport_mode %></td>
+                <td><%= [trip.origin_city, trip.origin_state].compact.join(" / ") %></td>
+                <td><%= [trip.destination_city, trip.destination_state].compact.join(" / ") %></td>
+                <td><%= trip.transport_company %></td>
+                <td><%= trip.mileage %></td>
+                <td><%= trip.policy_compliant.nil? ? "-" : (trip.policy_compliant ? "Sim" : "Não") %></td>
+                <td><%= trip.canceled.nil? ? "-" : (trip.canceled ? "Sim" : "Não") %></td>
+                <td><%= number_to_currency(trip.purchase_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= number_to_currency(trip.extra_fees_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= number_to_currency(trip.refund_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= number_to_currency(trip.final_value_brl, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><%= trip.final_value_points %></td>
+                <td>
+                  <%= link_to "Editar", edit_long_trip_path(long_trip), class: "btn-edit" %>
+                </td>
+
+                <td>
+                  <%= button_to "Remover",
+                      long_trip_path(long_trip),
+                      method: :delete,
+                      class: "btn-delete",
+                      form: { data: { turbo_confirm: "Tem certeza que deseja remover este registro?" } } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="profile-line">
+        <div class="profile-value">
+          Nenhum trecho longo cadastrado ainda.
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

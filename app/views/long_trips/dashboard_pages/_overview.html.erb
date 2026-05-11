@@ -1,0 +1,19 @@
+<div class="travel-dashboard-page <%= 'tv-mode' if @display_mode == 'tv' %>">
+  <div class="travel-dashboard-header">
+    <h1>TRECHOS LONGOS</h1>
+    <h2>Visão Geral</h2>
+  </div>
+
+  <%= render "long_trips/dashboard_pages/navigation" %>
+
+  <div class="dashboard-kpi-grid">
+    <% @overview_cards.each do |card| %>
+      <div class="dashboard-kpi-card">
+        <span class="dashboard-kpi-card__label"><%= card[:label] %></span>
+        <strong class="dashboard-kpi-card__value dashboard-kpi-card__value--text">
+          <%= card[:value] %>
+        </strong>
+      </div>
+    <% end %>
+  </div>
+</div>

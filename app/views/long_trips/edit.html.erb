@@ -1,0 +1,84 @@
+<h1>Editar Trecho Longo</h1>
+
+<%= form_with model: @long_trip, local: true do |form| %>
+
+  <div>
+    <%= form.label :travel_request_id, "ID Viagem" %>
+    <%= form.text_field :travel_request_id %>
+  </div>
+
+  <div>
+    <%= form.label :traveler_name, "Viajante" %>
+    <%= form.text_field :traveler_name %>
+  </div>
+
+  <div>
+    <%= form.label :traveler_sector, "Setor" %>
+    <%= form.text_field :traveler_sector %>
+  </div>
+
+  <div>
+    <%= form.label :travel_reason, "Motivo" %>
+    <%= form.text_field :travel_reason %>
+  </div>
+
+  <div>
+    <%= form.label :purchase_date, "Data Compra" %>
+    <%= form.date_field :purchase_date %>
+  </div>
+
+  <div>
+    <%= form.label :travel_date, "Data Viagem" %>
+    <%= form.date_field :travel_date %>
+  </div>
+
+  <div>
+    <%= form.label :transport_mode, "Transporte" %>
+    <%= form.text_field :transport_mode %>
+  </div>
+
+  <div>
+    <%= form.label :origin_city, "Origem" %>
+    <%= form.text_field :origin_city %>
+  </div>
+
+  <div>
+    <%= form.label :destination_city, "Destino" %>
+    <%= form.text_field :destination_city %>
+  </div>
+
+  <div>
+    <%= form.label :transport_company, "Empresa" %>
+    <%= form.text_field :transport_company %>
+  </div>
+
+  <div>
+    <%= form.label :mileage, "Km" %>
+    <%= form.number_field :mileage, step: 0.1 %>
+  </div>
+
+  <div>
+    <%= form.label :canceled, "Cancelada?" %>
+    <%= form.check_box :canceled %>
+  </div>
+
+  <div>
+    <%= form.label :purchase_value_brl, "Valor Compra" %>
+    <%= form.number_field :purchase_value_brl, step: 0.01 %>
+  </div>
+
+  <div>
+    <%= form.label :extra_fees_brl, "Taxas" %>
+    <%= form.number_field :extra_fees_brl, step: 0.01 %>
+  </div>
+
+  <div>
+    <%= form.label :refund_value_brl, "Reembolso" %>
+    <%= form.number_field :refund_value_brl, step: 0.01 %>
+  </div>
+
+  <%= form.submit "Salvar alterações" %>
+
+<% end %>
+
+<%= link_to "Voltar", long_trips_path %>

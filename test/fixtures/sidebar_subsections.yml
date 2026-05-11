@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sidebar_section: one
+  title: MyString
+  slug: MyString
+  position: 1
+  active: false
+
+two:
+  sidebar_section: two
+  title: MyString
+  slug: MyString
+  position: 1
+  active: false

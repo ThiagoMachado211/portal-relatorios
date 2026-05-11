@@ -1,0 +1,71 @@
+<div class="presentation-tv-controls">
+  <button id="fullscreenButton" class="presentation-tv-button">
+    Modo tela cheia
+  </button>
+</div>
+
+<div class="presentation-wrapper">
+  <iframe
+    id="presentationFrame"
+    class="presentation-frame is-active"
+    src="<%= dashboard_long_trips_path(page: @pages.first || "overview", display: "tv") %>">
+  </iframe>
+</div>
+
+<script>
+  (() => {
+    const pages = <%= raw (@pages.presence || ["overview"]).to_json %>;
+    const frame = document.getElementById("presentationFrame");
+    const fullscreenButton = document.getElementById("fullscreenButton");
+
+    let current = 0;
+    let intervalId = null;
+
+    function dashboardUrl(page) {
+      return "<%= dashboard_long_trips_path %>?page=" + encodeURIComponent(page) + "&display=tv";
+    }
+
+    function nextPage() {
+      current = (current + 1) % pages.length;
+      frame.src = dashboardUrl(pages[current]);
+    }
+
+    function startAutoMode() {
+      stopAutoMode();
+      intervalId = setInterval(nextPage, 12000);
+    }
+
+    function stopAutoMode() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    if (fullscreenButton) {
+      fullscreenButton.onclick = function () {
+        const elem = document.documentElement;
+
+        if (!document.fullscreenElement && elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      };
+    }
+
+    window.addEventListener("message", function (event) {
+      if (!event.data || !event.data.action) return;
+
+      if (event.data.action === "manualNavigation") {
+        stopAutoMode();
+      }
+
+      if (event.data.action === "autoNavigation") {
+        startAutoMode();
+      }
+    });
+
+    startAutoMode();
+  })();
+</script>

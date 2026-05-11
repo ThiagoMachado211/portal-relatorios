@@ -1,0 +1,51 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  travel_request_id: 1
+  traveler_name: MyString
+  traveler_sector: MyString
+  travel_reason: MyString
+  purchase_date: 2026-04-17
+  travel_date: 2026-04-17
+  transport_mode: MyString
+  origin_city: MyString
+  origin_state: MyString
+  origin_terminal: MyString
+  destination_city: MyString
+  destination_state: MyString
+  destination_terminal: MyString
+  transport_company: MyString
+  mileage: 9.99
+  policy_compliant: false
+  non_compliance_reason: MyText
+  canceled: false
+  purchase_value_brl: 9.99
+  purchase_value_points: 9.99
+  extra_fees_brl: 9.99
+  refund_value_brl: 9.99
+  refund_value_points: 9.99
+
+two:
+  travel_request_id: 1
+  traveler_name: MyString
+  traveler_sector: MyString
+  travel_reason: MyString
+  purchase_date: 2026-04-17
+  travel_date: 2026-04-17
+  transport_mode: MyString
+  origin_city: MyString
+  origin_state: MyString
+  origin_terminal: MyString
+  destination_city: MyString
+  destination_state: MyString
+  destination_terminal: MyString
+  transport_company: MyString
+  mileage: 9.99
+  policy_compliant: false
+  non_compliance_reason: MyText
+  canceled: false
+  purchase_value_brl: 9.99
+  purchase_value_points: 9.99
+  extra_fees_brl: 9.99
+  refund_value_brl: 9.99
+  refund_value_points: 9.99

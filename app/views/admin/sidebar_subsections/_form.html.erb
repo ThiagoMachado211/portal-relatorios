@@ -1,0 +1,32 @@
+<%= form_with model: [:admin, @sidebar_subsection], local: true do |f| %>
+  <div style="display:grid;gap:16px;">
+    <div>
+      <%= f.label :sidebar_section_id, "Seção" %><br>
+      <%= f.collection_select :sidebar_section_id, @sidebar_sections, :id, :title, { prompt: "Selecione uma seção" }, { style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" } %>
+    </div>
+
+    <div>
+      <%= f.label :title, "Título" %><br>
+      <%= f.text_field :title, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :slug, "Slug" %><br>
+      <%= f.text_field :slug, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.label :position, "Posição" %><br>
+      <%= f.number_field :position, style: "width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;" %>
+    </div>
+
+    <div>
+      <%= f.check_box :active %>
+      <%= f.label :active, "Ativa" %>
+    </div>
+
+    <div>
+      <%= f.submit "Salvar", class: "logout-button", style: "background:#2563eb;" %>
+    </div>
+  </div>
+<% end %>

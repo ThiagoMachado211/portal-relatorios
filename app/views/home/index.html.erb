@@ -1,0 +1,13 @@
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, #0f172a, #1e3a8a);padding:20px;">
+  <div style="max-width:900px;text-align:center;color:white;">
+    <h1 style="font-size:54px;margin-bottom:46px;">Relatórios - EstudoPlay</h1>
+
+    <% if user_signed_in? %>
+      <%= link_to "Ir para o Dashboard", dashboard_path,
+          style: "display:inline-block;background:white;color:#1d4ed8;padding:16px 28px;border-radius:14px;text-decoration:none;font-size:22px;font-weight:bold;" %>
+    <% else %>
+      <%= link_to "Fazer Login", new_user_session_path,
+          style: "display:inline-block;background:white;color:#1d4ed8;padding:16px 28px;border-radius:14px;text-decoration:none;font-size:22px;font-weight:bold;" %>
+    <% end %>
+  </div>
+</div>

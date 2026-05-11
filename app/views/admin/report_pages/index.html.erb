@@ -1,0 +1,53 @@
+<div class="card admin-list">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div>
+      <div class="card-title">Relatórios / Conteúdos</div>
+      <div class="card-subtitle">
+        Gerencie os conteúdos exibidos para client e manager
+      </div>
+    </div>
+
+    <%= link_to "Novo Conteúdo",
+        new_admin_report_page_path,
+        class: "btn-primary" %>
+  </div>
+
+  <table class="admin-table" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Seção</th>
+        <th>Subseção</th>
+        <th>Tipo</th>
+        <th>Visibilidade</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @report_pages.each do |page| %>
+        <tr style="border-top:1px solid #e5e7eb;">
+          <td><%= page.title %></td>
+          <td><%= page.sidebar_section&.title %></td>
+          <td><%= page.sidebar_subsection&.title || "-" %></td>
+          <td><%= page.content_type %></td>
+          <td><%= page.visible_for %></td>
+
+          <td>
+            <%= link_to "Editar",
+                edit_admin_report_page_path(page),
+                class: "btn-secondary" %>
+
+            <%= link_to "Excluir",
+                admin_report_page_path(page),
+                method: :delete,
+                data: { confirm: "Tem certeza?" },
+                class: "btn-danger" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+</div>

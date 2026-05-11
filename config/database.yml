@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+
+development:
+  <<: *default
+  database: portal_relatorios_development
+  username: postgres
+  password: 10510788
+  host: localhost
+
+test:
+  <<: *default
+  database: portal_relatorios_test
+  username: postgres
+  password: 10510788
+  host: localhost
+
+production:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>

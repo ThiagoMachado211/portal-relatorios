@@ -1,0 +1,45 @@
+<div class="travel-dashboard-page <%= 'tv-mode' if @display_mode == 'tv' %>">
+  <div class="travel-dashboard-header">
+    <h1>GESTÃO DE VIAGENS</h1>
+    <h2><%= @dashboard_title %></h2>
+  </div>
+
+  <%= render "long_trips/dashboard_pages/navigation" %>
+
+  <section class="travel-dashboard-main travel-dashboard-main--full">
+    <div class="travel-chart-card">
+      <div class="travel-chart-card__header">
+        <div class="travel-chart-card__title"><%= @dashboard_title %></div>
+        <div class="travel-chart-card__subtitle">Evolução Mensal</div>
+      </div>
+
+      <div class="travel-bar-chart">
+        <% @monthly_series ||= [] %>
+        <% max_value = @monthly_series.any? ? @monthly_series.map { |item| item[:value].to_f }.max.to_f : 1 %>
+        <% max_value = 1 if max_value <= 0 %>
+
+        <% if @monthly_series.any? %>
+          <% @monthly_series.each do |item| %>
+            <% width_percent = item[:value].to_f > 0 ? (item[:value].to_f / max_value) * 100 : 0 %>
+
+            <div class="travel-bar-row">
+              <div class="travel-bar-row__label"><%= item[:label] %></div>
+
+              <div class="travel-bar-row__track">
+                <div
+                  class="travel-bar-row__bar <%= 'travel-bar-row__bar--zero' if item[:value].to_f <= 0 %>"
+                  style="width: <%= width_percent %>%;">
+                  <span class="travel-bar-row__value"><%= item[:value] %></span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="travel-empty-state">
+            Nenhum dado encontrado para esta visualização.
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</div>
