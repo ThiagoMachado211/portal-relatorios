@@ -210,17 +210,6 @@ class LongTripsController < ApplicationController
       :transport_mode,
       :origin_city,
       :origin_state,
-<<<<<<< HEAD
-      :destination_city,
-      :destination_state,
-      :transport_company,
-      :mileage,
-      :policy_compliant,
-      :canceled,
-      :purchase_value_brl,
-      :extra_fees_brl,
-      :refund_value_brl
-=======
       :origin_terminal,
       :destination_city,
       :destination_state,
@@ -235,7 +224,6 @@ class LongTripsController < ApplicationController
       :extra_fees_brl,
       :refund_value_brl,
       :refund_value_points
->>>>>>> 04c037ae56b72526afb4d52b1538e86011645d24
     )
   end
 
