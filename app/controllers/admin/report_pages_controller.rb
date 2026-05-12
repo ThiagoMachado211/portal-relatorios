@@ -41,11 +41,23 @@ class Admin::ReportPagesController < Admin::BaseController
   end
 
   def destroy
-    @report_page.destroy
-    redirect_to admin_report_pages_path, notice: "Relatório removido com sucesso."
+    @report_page = ReportPage.find(params[:id])
+    @report_page.destroy!
+
+    redirect_to admin_report_pages_path, notice: "Conteúdo excluído com sucesso."
+  rescue ActiveRecord::InvalidForeignKey
+    redirect_to admin_report_pages_path, alert: "Não foi possível excluir: este conteúdo está vinculado a outros registros."
+  rescue => e
+    Rails.logger.error "Erro ao excluir conteúdo: #{e.class} - #{e.message}"
+    redirect_to admin_report_pages_path, alert: "Erro ao excluir conteúdo."
   end
 
+
+
   private
+
+
+
 
   def set_report_page
     @report_page = ReportPage.find(params[:id])
