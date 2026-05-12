@@ -6,40 +6,6 @@
 
   <section class="metrics-grid">
 
-    <div class="metric-card primary">
-      <div class="metric-label">Último acesso do usuário</div>
-      <div class="metric-value" style="font-size: 22px;">
-        <%= current_user.last_access_at&.strftime("%d/%m/%Y %H:%M") || "Sem registro" %>
-      </div>
-      <div class="metric-sub">Registro mais recente</div>
-    </div>
-
-    <div class="metric-card success">
-      <div class="metric-label">Contador de acessos</div>
-      <div class="metric-value">
-        <%= current_user.access_count || 0 %>
-      </div>
-      <div class="metric-sub">Total de acessos do usuário</div>
-    </div>
-
-    <div class="metric-card">
-      <div class="metric-label">Última atualização dos dados</div>
-      <div class="metric-value" style="font-size: 22px;">
-        Sem dados
-      </div>
-      <div class="metric-sub">Com base nos conteúdos visíveis</div>
-    </div>
-
-    <div class="metric-card">
-      <div class="metric-label">Conteúdos disponíveis</div>
-      <div class="metric-value">
-        <%= ReportPage.active
-              .where(visible_for: ["shared", current_user.user_type])
-              .count %>
-      </div>
-      <div class="metric-sub">Itens liberados para seu perfil</div>
-    </div>
-
   </section>
 
 
