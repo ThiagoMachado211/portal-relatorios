@@ -1795,3 +1795,100 @@ body .travel-dashboard-page.tv-mode {
 .viewer-card__button:hover {
   background: #1d4ed8;
 }
+
+
+
+.portal-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topbar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;
+  padding: 0 15px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #ffffff;
+
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.topbar-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.topbar-button {
+  appearance: none;
+}
+
+.topbar-dropdown {
+  position: relative;
+
+  /*
+    Essa pequena área inferior evita que o dropdown
+    desapareça quando o mouse sai do botão.
+  */
+  padding-bottom: 6px;
+  margin-bottom: -6px;
+}
+
+.topbar-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+
+  display: none;
+
+  min-width: 230px;
+  padding: 8px;
+
+  background: #ffffff;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.24);
+
+  z-index: 5000;
+}
+
+.topbar-dropdown:hover .topbar-dropdown-menu,
+.topbar-dropdown:focus-within .topbar-dropdown-menu {
+  display: block;
+}
+
+.topbar-dropdown-link {
+  display: block;
+
+  padding: 11px 13px;
+
+  border-radius: 8px;
+
+  color: #12245f;
+  background: transparent;
+
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.topbar-dropdown-link:hover {
+  background: #eef3ff;
+  color: #1234b5;
+}
