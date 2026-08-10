@@ -1717,3 +1717,81 @@ body .travel-dashboard-page.tv-mode {
 
   user-select: none;
 }
+
+
+
+.dashboard-home {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-viewers-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-home-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.dashboard-home-subtitle {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.viewer-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.viewer-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 20px;
+
+  padding: 20px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.viewer-card__title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.viewer-card__description {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.viewer-card__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 11px 20px;
+
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.viewer-card__button:hover {
+  background: #1d4ed8;
+}

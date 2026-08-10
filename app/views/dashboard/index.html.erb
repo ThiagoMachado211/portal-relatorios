@@ -1,88 +1,37 @@
-<div class="dashboard-grid">
+<div class="dashboard-home">
 
-  <!-- ========================= -->
-  <!-- MÉTRICAS -->
-  <!-- ========================= -->
-
-  <section class="metrics-grid">
-
-  </section>
-
-
-  <!-- ========================= -->
-  <!-- GRID PRINCIPAL -->
-  <!-- ========================= -->
-
-  <section class="main-grid">
-
-    <!-- ATIVIDADES RECENTES -->
-    <div class="card">
-      <div class="card-title">Atividades Recentes</div>
-      <div class="card-subtitle">Resumo das informações do seu acesso</div>
-
-      <div class="activity-list">
-
-        <div class="activity-item">
-          <div class="activity-left">
-            <div class="activity-title">Último acesso</div>
-            <div class="activity-meta">
-              <%= current_user.last_access_at&.strftime("%d/%m/%Y às %H:%M") || "Sem registro" %>
-            </div>
-          </div>
-          <div class="activity-value positive">Acesso</div>
-        </div>
-
-        <div class="activity-item">
-          <div class="activity-left">
-            <div class="activity-title">Contador de acessos</div>
-            <div class="activity-meta">Histórico acumulado do usuário</div>
-          </div>
-          <div class="activity-value positive">
-            <%= current_user.access_count || 0 %>
-          </div>
-        </div>
-
-        <div class="activity-item">
-          <div class="activity-left">
-            <div class="activity-title">Última atualização dos dados</div>
-            <div class="activity-meta">Status atual</div>
-          </div>
-          <div class="activity-value negative">Sem atualização</div>
-        </div>
-
-      </div>
+  <section class="dashboard-viewers-card">
+    <div class="dashboard-home-title">
+      Painéis Disponíveis
     </div>
 
+    <div class="dashboard-home-subtitle">
+      Acesse os painéis disponíveis para exibição.
+    </div>
 
-    <!-- PERFIL DO USUÁRIO -->
-    <div class="card">
-      <div class="card-title">Seu Acesso</div>
-      <div class="card-subtitle">Informações da sua conta</div>
+    <div class="viewer-grid">
 
-      <div class="profile-card">
+      <div class="viewer-card">
+        <div class="viewer-card__content">
+          <div class="viewer-card__title">
+            Gestão de Viagens
+          </div>
 
-        <div class="profile-line">
-          <div class="profile-key">Nome</div>
-          <div class="profile-value"><%= current_user.name %></div>
-        </div>
-
-        <div class="profile-line">
-          <div class="profile-key">E-mail</div>
-          <div class="profile-value"><%= current_user.email %></div>
-        </div>
-
-        <div class="profile-line">
-          <div class="profile-key">Perfil</div>
-          <div class="profile-value">
-            <span class="status-badge">
-              <%= current_user.user_type.capitalize %>
-            </span>
+          <div class="viewer-card__description">
+            Painel de Trechos Longos com atualização em tempo real.
           </div>
         </div>
 
+        <div class="viewer-card__actions">
+          <%= link_to "Abrir Viewer",
+              "/viewer.html",
+              target: "_blank",
+              rel: "noopener",
+              class: "viewer-card__button" %>
+        </div>
       </div>
-    </div>
 
+    </div>
   </section>
 
 </div>
