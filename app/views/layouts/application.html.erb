@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Portal de Relatórios</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <%= csrf_meta_tags %>
@@ -14,103 +15,125 @@
   <body>
     <div class="portal-shell">
 
-      <header class="portal-topbar">
+      <% if user_signed_in? %>
+        <header class="portal-topbar">
 
-        <div class="portal-topbar__left">
+          <div class="portal-topbar__left">
 
-          <%= link_to "Dashboard",
-              root_path,
-              class: "topbar-link" %>
+            <%= link_to "Dashboard",
+                root_path,
+                class: "topbar-link" %>
 
-          <div class="topbar-dropdown">
-            <button type="button" class="topbar-link topbar-button">
-              Operações
-            </button>
-
-            <div class="topbar-dropdown-menu">
-              <%= link_to "Atendimento ao Cliente",
-                  "/relatorios/setor-operacoes/atendimento-ao-cliente",
-                  class: "topbar-dropdown-link" %>
-
-              <%= link_to "Comunicação",
-                  "/relatorios/setor-operacoes/comunicacao",
-                  class: "topbar-dropdown-link" %>
-
-              <%= link_to "Logística",
-                  "/relatorios/setor-operacoes/logistica",
-                  class: "topbar-dropdown-link" %>
-            </div>
-          </div>
-
-          <div class="topbar-dropdown">
-            <button type="button" class="topbar-link topbar-button">
-              Pedagógico
-            </button>
-
-            <div class="topbar-dropdown-menu">
-              <!-- coloque aqui as subseções pedagógicas -->
-            </div>
-          </div>
-
-          <div class="topbar-dropdown">
-            <button type="button" class="topbar-link topbar-button">
-              Calendários
-            </button>
-
-            <div class="topbar-dropdown-menu">
-              <!-- MG / RJ / BA etc -->
-            </div>
-          </div>
-
-          <% if current_user&.admin? %>
             <div class="topbar-dropdown">
               <button type="button" class="topbar-link topbar-button">
-                Administração
+                Operações
               </button>
 
               <div class="topbar-dropdown-menu">
-                <%= link_to "Usuários", "#", class: "topbar-dropdown-link" %>
-                <%= link_to "Seções", "#", class: "topbar-dropdown-link" %>
-                <%= link_to "Subseções", "#", class: "topbar-dropdown-link" %>
-                <%= link_to "Conteúdos", "#", class: "topbar-dropdown-link" %>
+                <%= link_to "Atendimento ao Cliente",
+                    "/relatorios/setor-operacoes/atendimento-ao-cliente",
+                    class: "topbar-dropdown-link" %>
+
+                <%= link_to "Comunicação",
+                    "/relatorios/setor-operacoes/comunicacao",
+                    class: "topbar-dropdown-link" %>
+
+                <%= link_to "Logística",
+                    "/relatorios/setor-operacoes/logistica",
+                    class: "topbar-dropdown-link" %>
               </div>
             </div>
-          <% end %>
 
-        </div>
+            <div class="topbar-dropdown">
+              <button type="button" class="topbar-link topbar-button">
+                Pedagógico
+              </button>
 
-        <div class="portal-topbar__right">
-          <div class="topbar-user">
-            <div class="topbar-user__avatar">
-              <%= current_user.email.first.upcase %>
+              <div class="topbar-dropdown-menu">
+                <!-- subseções pedagógicas serão adicionadas aqui -->
+              </div>
             </div>
 
-            <div class="topbar-user__info">
-              <strong>
-                <%= current_user.respond_to?(:name) && current_user.name.present? ? current_user.name : current_user.email %>
-              </strong>
+            <div class="topbar-dropdown">
+              <button type="button" class="topbar-link topbar-button">
+                Calendários
+              </button>
 
-              <span>
-                <%= current_user.admin? ? "Admin" : "Usuário" %>
-              </span>
+              <div class="topbar-dropdown-menu">
+                <!-- MG / RJ / BA serão adicionados aqui -->
+              </div>
             </div>
+
+            <% is_admin =
+                 current_user.respond_to?(:admin?) &&
+                 current_user.admin? %>
+
+            <% if is_admin %>
+              <div class="topbar-dropdown">
+                <button type="button" class="topbar-link topbar-button">
+                  Administração
+                </button>
+
+                <div class="topbar-dropdown-menu">
+                  <%= link_to "Usuários", "#", class: "topbar-dropdown-link" %>
+                  <%= link_to "Seções", "#", class: "topbar-dropdown-link" %>
+                  <%= link_to "Subseções", "#", class: "topbar-dropdown-link" %>
+                  <%= link_to "Conteúdos", "#", class: "topbar-dropdown-link" %>
+                </div>
+              </div>
+            <% end %>
+
           </div>
 
-          <%= button_to "Sair",
-              destroy_user_session_path,
-              method: :delete,
-              class: "topbar-logout" %>
-        </div>
+          <div class="portal-topbar__right">
 
-      </header>
+            <div class="topbar-user">
+
+              <div class="topbar-user__avatar">
+                <%= current_user.email.to_s.first&.upcase || "U" %>
+              </div>
+
+              <div class="topbar-user__info">
+                <strong>
+                  <% if current_user.respond_to?(:name) && current_user.name.present? %>
+                    <%= current_user.name %>
+                  <% else %>
+                    <%= current_user.email %>
+                  <% end %>
+                </strong>
+
+                <span>
+                  <% if current_user.respond_to?(:admin?) && current_user.admin? %>
+                    Admin
+                  <% elsif current_user.respond_to?(:role) && current_user.role.present? %>
+                    <%= current_user.role.to_s.humanize %>
+                  <% else %>
+                    Usuário
+                  <% end %>
+                </span>
+              </div>
+
+            </div>
+
+            <%= button_to "Sair",
+                destroy_user_session_path,
+                method: :delete,
+                class: "topbar-logout" %>
+
+          </div>
+
+        </header>
+      <% end %>
 
       <main class="portal-main">
 
-        <div class="portal-background-logo">
-          <%= image_tag "Logo_EP_Fundo_Transparente.png",
-              alt: "",
-              class: "portal-background-logo__image" %>
-        </div>
+        <% if user_signed_in? %>
+          <div class="portal-background-logo">
+            <%= image_tag "Logo_EP_Fundo_Transparente.png",
+                alt: "",
+                class: "portal-background-logo__image" %>
+          </div>
+        <% end %>
 
         <div class="portal-content">
           <%= yield %>
