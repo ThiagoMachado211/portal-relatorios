@@ -31,9 +31,15 @@ class LongTripsController < ApplicationController
     @long_trip = LongTrip.find(params[:id])
 
     if @long_trip.update(long_trip_params)
-      redirect_to long_trips_path, notice: "Registro atualizado com sucesso."
+      broadcast_long_trips_update
+
+      redirect_to(
+        long_trips_path,
+        notice: "Registro atualizado com sucesso."
+      )
     else
-      render :edit, status: :unprocessable_entity
+      render :edit,
+            status: :unprocessable_entity
     end
   end
 
@@ -41,7 +47,12 @@ class LongTripsController < ApplicationController
     @long_trip = LongTrip.find(params[:id])
     @long_trip.destroy
 
-    redirect_to long_trips_path, notice: "Registro removido com sucesso."
+    broadcast_long_trips_update
+
+    redirect_to(
+      long_trips_path,
+      notice: "Registro removido com sucesso."
+    )
   end
 
   def dashboard
@@ -148,12 +159,72 @@ class LongTripsController < ApplicationController
   end
 
 
+  def analytics
+    @start_date = parsed_filter_date(params[:start_date])
+    @end_date   = parsed_filter_date(params[:end_date])
+
+    @dashboard_data =
+      LongTrips::DashboardData.new(
+        start_date: @start_date,
+        end_date: @end_date
+      ).call(
+        include_financial: can_access_financial_data?
+      )
+
+    @can_view_financial =
+      can_access_financial_data?
+  end
+
+  def presentation_v2
+    @presentation_mode =
+      params[:mode].presence || "non_financial"
+
+    unless %w[full non_financial].include?(@presentation_mode)
+      @presentation_mode = "non_financial"
+    end
+
+    if @presentation_mode == "full" &&
+      !can_access_financial_data?
+
+      redirect_to(
+        analytics_long_trips_path,
+        alert: "Você não possui permissão para acessar a apresentação completa."
+      )
+
+      return
+    end
+
+    @dashboard_data =
+      LongTrips::DashboardData.new(
+        start_date: params[:start_date],
+        end_date: params[:end_date]
+      ).call(
+        include_financial:
+          @presentation_mode == "full"
+      )
+  end
+
+
+
 
 
   private
 
 
 
+
+
+  def can_access_financial_data?
+    current_user.admin? || current_user.manager?
+  end
+
+  def parsed_filter_date(value)
+    return nil if value.blank?
+
+    Date.parse(value)
+  rescue ArgumentError
+    nil
+  end
 
 
   def build_monthly_object_data(trips, field)

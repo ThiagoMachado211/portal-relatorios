@@ -1,0 +1,385 @@
+<%
+  overview = @dashboard_data[:overview]
+  financial = @dashboard_data[:financial]
+  period = @dashboard_data[:period]
+%>
+
+<div class="travel-analytics-page">
+
+  <div class="travel-analytics-header">
+    <div>
+      <h1 class="travel-analytics-title">
+        Gestão de Viagens
+      </h1>
+
+      <p class="travel-analytics-subtitle">
+        Visão analítica dos trechos, viagens, conformidade e custos.
+      </p>
+    </div>
+
+    <div class="travel-analytics-header-actions">
+
+      <%= link_to "Apresentação sem financeiro",
+          presentation_v2_long_trips_path(mode: "non_financial"),
+          class: "btn-secondary",
+          target: "_blank",
+          rel: "noopener" %>
+
+      <% if @can_view_financial %>
+        <%= link_to "Apresentação completa",
+            presentation_v2_long_trips_path(mode: "full"),
+            class: "btn-primary",
+            target: "_blank",
+            rel: "noopener" %>
+      <% end %>
+
+    </div>
+  </div>
+
+
+  <!-- FILTROS -->
+  <section class="travel-filter-card">
+
+    <%= form_with url: analytics_long_trips_path,
+                  method: :get,
+                  local: true,
+                  class: "travel-filter-form" do |form| %>
+
+      <div class="travel-filter-group">
+        <%= form.label :start_date, "Data inicial" %>
+
+        <%= form.date_field :start_date,
+            value: @start_date,
+            class: "travel-filter-input" %>
+      </div>
+
+      <div class="travel-filter-group">
+        <%= form.label :end_date, "Data final" %>
+
+        <%= form.date_field :end_date,
+            value: @end_date,
+            class: "travel-filter-input" %>
+      </div>
+
+      <div class="travel-filter-actions">
+
+        <%= form.submit "Aplicar filtros",
+            class: "btn-primary" %>
+
+        <%= link_to "Limpar",
+            analytics_long_trips_path,
+            class: "btn-secondary" %>
+
+      </div>
+
+    <% end %>
+
+  </section>
+
+
+  <!-- PERÍODO -->
+  <div class="travel-period-info">
+
+    <% if period[:start_date].present? && period[:end_date].present? %>
+
+      Período analisado:
+
+      <strong>
+        <%= period[:start_date].strftime("%d/%m/%Y") %>
+      </strong>
+
+      até
+
+      <strong>
+        <%= period[:end_date].strftime("%d/%m/%Y") %>
+      </strong>
+
+    <% else %>
+
+      Nenhum período disponível.
+
+    <% end %>
+
+  </div>
+
+
+  <!-- KPIs OPERACIONAIS -->
+  <section class="travel-kpi-section">
+
+    <h2 class="travel-section-title">
+      Indicadores Operacionais
+    </h2>
+
+    <div class="travel-kpi-grid">
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Total de Viagens
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= number_with_delimiter(overview[:total_trips], delimiter: ".") %>
+        </strong>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Total de Trechos
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= number_with_delimiter(overview[:total_segments], delimiter: ".") %>
+        </strong>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Trechos Aéreos
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= number_with_delimiter(overview[:total_air_segments], delimiter: ".") %>
+        </strong>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Trechos Terrestres
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= number_with_delimiter(overview[:total_land_segments], delimiter: ".") %>
+        </strong>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Quilometragem Total
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= number_with_delimiter(
+                overview[:total_mileage],
+                delimiter: ".",
+                separator: ","
+              ) %>
+          km
+        </strong>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Antecedência Média
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= number_with_precision(
+                overview[:average_lead_time_days],
+                precision: 2,
+                separator: ","
+              ) %>
+          dias
+        </strong>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Cancelamentos
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= overview[:canceled_segments] %>
+        </strong>
+
+        <span class="travel-kpi-meta">
+          <%= number_with_precision(
+                overview[:cancellation_rate],
+                precision: 2,
+                separator: ","
+              ) %>%
+        </span>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Conformidade
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= number_with_precision(
+                overview[:compliance_rate],
+                precision: 2,
+                separator: ","
+              ) %>%
+        </strong>
+
+        <span class="travel-kpi-meta">
+          <%= overview[:compliant_segments] %>
+          conformes
+        </span>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Não conformes
+        </span>
+
+        <strong class="travel-kpi-value">
+          <%= overview[:non_compliant_segments] %>
+        </strong>
+      </div>
+
+      <div class="travel-kpi-card">
+        <span class="travel-kpi-label">
+          Destino mais frequente
+        </span>
+
+        <strong class="travel-kpi-value travel-kpi-value--text">
+          <%= overview[:most_frequent_destination].presence || "-" %>
+        </strong>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- KPIs FINANCEIROS -->
+  <% if @can_view_financial && financial.present? %>
+
+    <section class="travel-kpi-section">
+
+      <h2 class="travel-section-title">
+        Indicadores Financeiros
+      </h2>
+
+      <div class="travel-kpi-grid">
+
+        <div class="travel-kpi-card">
+          <span class="travel-kpi-label">
+            Valor das Compras
+          </span>
+
+          <strong class="travel-kpi-value">
+            <%= number_to_currency(
+                  financial[:purchase_value_brl],
+                  unit: "R$ ",
+                  separator: ",",
+                  delimiter: "."
+                ) %>
+          </strong>
+        </div>
+
+        <div class="travel-kpi-card">
+          <span class="travel-kpi-label">
+            Taxas Extras
+          </span>
+
+          <strong class="travel-kpi-value">
+            <%= number_to_currency(
+                  financial[:extra_fees_brl],
+                  unit: "R$ ",
+                  separator: ",",
+                  delimiter: "."
+                ) %>
+          </strong>
+        </div>
+
+        <div class="travel-kpi-card">
+          <span class="travel-kpi-label">
+            Reembolsos
+          </span>
+
+          <strong class="travel-kpi-value">
+            <%= number_to_currency(
+                  financial[:refund_value_brl],
+                  unit: "R$ ",
+                  separator: ",",
+                  delimiter: "."
+                ) %>
+          </strong>
+        </div>
+
+        <div class="travel-kpi-card">
+          <span class="travel-kpi-label">
+            Valor Final
+          </span>
+
+          <strong class="travel-kpi-value">
+            <%= number_to_currency(
+                  financial[:final_value_brl],
+                  unit: "R$ ",
+                  separator: ",",
+                  delimiter: "."
+                ) %>
+          </strong>
+        </div>
+
+        <div class="travel-kpi-card">
+          <span class="travel-kpi-label">
+            Custo Médio por Trecho
+          </span>
+
+          <strong class="travel-kpi-value">
+            <%= number_to_currency(
+                  financial[:average_final_value_brl_per_segment],
+                  unit: "R$ ",
+                  separator: ",",
+                  delimiter: "."
+                ) %>
+          </strong>
+        </div>
+
+        <div class="travel-kpi-card">
+          <span class="travel-kpi-label">
+            Custo Médio por Viagem
+          </span>
+
+          <strong class="travel-kpi-value">
+            <%= number_to_currency(
+                  financial[:average_final_value_brl_per_trip],
+                  unit: "R$ ",
+                  separator: ",",
+                  delimiter: "."
+                ) %>
+          </strong>
+        </div>
+
+        <div class="travel-kpi-card">
+          <span class="travel-kpi-label">
+            Saldo em Pontos
+          </span>
+
+          <strong class="travel-kpi-value">
+            <%= number_with_delimiter(
+                  financial[:final_value_points],
+                  delimiter: ".",
+                  separator: ","
+                ) %>
+          </strong>
+        </div>
+
+      </div>
+
+    </section>
+
+  <% end %>
+
+
+  <!-- ÁREA DOS GRÁFICOS - entra no próximo passo -->
+  <section class="travel-placeholder-section">
+
+    <div class="travel-placeholder-card">
+      <h2>
+        Evolução e Distribuições
+      </h2>
+
+      <p>
+        Os gráficos de evolução mensal, setores, destinos e quilometragem
+        serão adicionados no próximo passo.
+      </p>
+    </div>
+
+  </section>
+
+</div>

@@ -39,12 +39,19 @@ Rails.application.routes.draw do
 
   resources :long_trips do
     collection do
+      # Dashboard antigo — manter por enquanto
       get :dashboard
       get :presentation
+      get :dashboard_data
+
+      # Novo módulo
+      get :analytics
+      get :presentation_v2
+
+      # Importação
       get :import
       post :import_file
       post :import_csv
-      get :dashboard_data
     end
   end
 
