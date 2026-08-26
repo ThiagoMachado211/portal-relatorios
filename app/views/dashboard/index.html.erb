@@ -1,3 +1,10 @@
+<%
+  meses_abrev = [
+    "JAN", "FEV", "MAR", "ABR", "MAI", "JUN",
+    "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"
+  ]
+%>
+
 <div class="dashboard-page">
 
   <div class="dashboard-page__header">
@@ -42,10 +49,7 @@
                   </span>
 
                   <span class="dashboard-event-date__month">
-                    <%= I18n.l(
-                          item[:result_date],
-                          format: "%b"
-                        ).upcase %>
+                    <%= meses_abrev[item[:result_date].month - 1] %>
                   </span>
 
                 </div>
@@ -99,8 +103,9 @@
               <article class="dashboard-upcoming-event">
 
                 <div>
+
                   <span class="dashboard-upcoming-event__date">
-                    <%= l(item[:event_date], format: :short) %>
+                    <%= item[:event_date].strftime("%d/%m/%Y") %>
                   </span>
 
                   <h3>
@@ -110,6 +115,7 @@
                   <p>
                     <%= item[:event_label] %>
                   </p>
+
                 </div>
 
               </article>
