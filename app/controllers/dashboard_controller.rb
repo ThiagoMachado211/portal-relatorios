@@ -2,36 +2,73 @@ class DashboardController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @last_access_at =
-      if current_user.respond_to?(:last_access_at)
-        current_user.last_access_at
-      else
-        nil
-      end
+    return unless calendar_visible?
 
-    @access_count =
-      if current_user.respond_to?(:access_count)
-        current_user.access_count || 0
-      else
-        0
-      end
+    @calendar_items = CalendarData.mg_items
 
-    reports =
-      if ReportPage.respond_to?(:active)
-        ReportPage.active.to_a
-      else
-        ReportPage.all.to_a
-      end
+    @upcoming_events =
+      build_upcoming_events(@calendar_items)
+        .select { |item| item[:event_date] >= Date.current }
+        .sort_by { |item| item[:event_date] }
+        .first(8)
+  end
 
-    visible_reports = reports.select do |report|
-      begin
-        report.visible_to?(current_user)
-      rescue StandardError
-        false
-      end
+  private
+
+  def calendar_visible?
+    current_user.admin? || current_user.manager?
+  end
+
+  def build_upcoming_events(calendar_items)
+    calendar_items.flat_map do |item|
+      build_events_for(item)
     end
+  end
 
-    @available_content_count = visible_reports.count
-    @last_data_update = visible_reports.map(&:updated_at).compact.max
+  def build_events_for(item)
+    events = []
+
+    add_event(
+      events,
+      item,
+      :print_file_date,
+      "Arquivo para impressão"
+    )
+
+    add_event(
+      events,
+      item,
+      :upload_start_date,
+      "Início do upload"
+    )
+
+    add_event(
+      events,
+      item,
+      :upload_end_date,
+      "Fim do upload"
+    )
+
+    add_event(
+      events,
+      item,
+      :result_date,
+      "Divulgação do resultado"
+    )
+
+    events
+  end
+
+  def add_event(events, item, date_key, label)
+    date = item[date_key]
+
+    return if date.blank?
+
+    events << {
+      test_name: item[:test_name],
+      test_type: item[:test_type],
+      event_label: label,
+      event_date: date
+    }
   end
 end

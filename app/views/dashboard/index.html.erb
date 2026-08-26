@@ -1,37 +1,145 @@
-<div class="dashboard-home">
+<div class="dashboard-page">
 
-  <section class="dashboard-viewers-card">
-    <div class="dashboard-home-title">
-      Painéis Disponíveis
+  <div class="dashboard-page__header">
+    <div>
+      <h1 class="dashboard-page__title">
+        Dashboard
+      </h1>
+
+      <p class="dashboard-page__subtitle">
+        Calendário e próximos eventos.
+      </p>
     </div>
+  </div>
 
-    <div class="dashboard-home-subtitle">
-      Acesse os painéis disponíveis para exibição.
-    </div>
+  <% if current_user.admin? || current_user.manager? %>
 
-    <div class="viewer-grid">
+    <div class="dashboard-calendar-grid">
 
-      <div class="viewer-card">
-        <div class="viewer-card__content">
-          <div class="viewer-card__title">
-            Gestão de Viagens
-          </div>
+      <!-- CALENDÁRIO -->
+      <section class="dashboard-calendar-card">
 
-          <div class="viewer-card__description">
-            Painel de Trechos Longos com atualização em tempo real.
-          </div>
+        <div class="dashboard-card-header">
+          <h2>Calendário de Eventos</h2>
+
+          <p>
+            Acompanhe os eventos e principais datas.
+          </p>
         </div>
 
-        <div class="viewer-card__actions">
-          <%= link_to "Abrir Viewer",
-              "/viewer.html",
-              target: "_blank",
-              rel: "noopener",
-              class: "viewer-card__button" %>
+        <% if @calendar_items.present? %>
+
+          <div class="dashboard-event-list">
+
+            <% @calendar_items.each do |item| %>
+
+              <div class="dashboard-event-row">
+
+                <div class="dashboard-event-date">
+
+                  <span class="dashboard-event-date__day">
+                    <%= item[:result_date].day %>
+                  </span>
+
+                  <span class="dashboard-event-date__month">
+                    <%= I18n.l(
+                          item[:result_date],
+                          format: "%b"
+                        ).upcase %>
+                  </span>
+
+                </div>
+
+                <div class="dashboard-event-info">
+
+                  <strong>
+                    <%= item[:test_name] %>
+                  </strong>
+
+                  <span>
+                    <%= item[:test_type] %>
+                  </span>
+
+                </div>
+
+              </div>
+
+            <% end %>
+
+          </div>
+
+        <% else %>
+
+          <div class="dashboard-empty-state">
+            Nenhum evento disponível.
+          </div>
+
+        <% end %>
+
+      </section>
+
+
+      <!-- PRÓXIMOS EVENTOS -->
+      <section class="dashboard-calendar-card">
+
+        <div class="dashboard-card-header">
+          <h2>Próximos Eventos</h2>
+
+          <p>
+            Datas mais próximas a partir de hoje.
+          </p>
         </div>
+
+        <% if @upcoming_events.present? %>
+
+          <div class="dashboard-upcoming-events">
+
+            <% @upcoming_events.each do |item| %>
+
+              <article class="dashboard-upcoming-event">
+
+                <div>
+                  <span class="dashboard-upcoming-event__date">
+                    <%= l(item[:event_date], format: :short) %>
+                  </span>
+
+                  <h3>
+                    <%= item[:test_name] %>
+                  </h3>
+
+                  <p>
+                    <%= item[:event_label] %>
+                  </p>
+                </div>
+
+              </article>
+
+            <% end %>
+
+          </div>
+
+        <% else %>
+
+          <div class="dashboard-empty-state">
+            Nenhum evento próximo.
+          </div>
+
+        <% end %>
+
+      </section>
+
+    </div>
+
+  <% else %>
+
+    <section class="dashboard-calendar-card">
+
+      <div class="dashboard-empty-state">
+        Nenhuma informação disponível neste dashboard.
       </div>
 
-    </div>
-  </section>
+    </section>
+
+  <% end %>
 
 </div>
