@@ -1007,7 +1007,7 @@ a {
   justify-content: center;
 }
 
-.travel-kpi-card {
+.travel-dashboard-sidebar .travel-kpi-card {
   width: 150px;
   border-radius: 8px;
   overflow: hidden;
@@ -1306,9 +1306,6 @@ a {
 
 
 
-.dashboard-nav__button--danger {
-  background: #ef4444;
-}
 
 .dashboard-chart-panel--centered {
   margin-left: auto;
@@ -1338,14 +1335,6 @@ a {
   }
 }
 
-.dashboard-nav__button--success {
-  background: #22c55e;
-  color: #ffffff;
-}
-
-.dashboard-nav__button--success:hover {
-  opacity: 0.9;
-}
 
 
 .dashboard-nav__button--success {
@@ -1486,412 +1475,6 @@ body .travel-dashboard-page.tv-mode {
 
 
 
-.portal-shell {
-  min-height: 100vh;
-}
-
-.portal-topbar {
-  height: 76px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 0 24px;
-
-  background: #1026a6;
-  color: #ffffff;
-
-  position: relative;
-  z-index: 1000;
-}
-
-.portal-topbar__left,
-.portal-topbar__right {
-  display: flex;
-  align-items: center;
-}
-
-.portal-topbar__left {
-  gap: 6px;
-}
-
-.portal-topbar__right {
-  gap: 12px;
-}
-
-/* MENU PRINCIPAL */
-
-.topbar-link {
-  display: inline-flex;
-  align-items: center;
-
-  padding: 10px 14px;
-
-  border: none;
-  border-radius: 9px;
-
-  background: transparent;
-  color: #ffffff;
-
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 700;
-
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.topbar-link:hover {
-  background: rgba(255,255,255,.12);
-}
-
-.topbar-button {
-  font-family: inherit;
-}
-
-/* DROPDOWNS */
-
-.topbar-dropdown {
-  position: relative;
-}
-
-.topbar-dropdown-menu {
-  display: none;
-
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-
-  min-width: 220px;
-
-  background: #ffffff;
-
-  padding: 8px;
-
-  border-radius: 12px;
-
-  box-shadow:
-    0 18px 38px rgba(0,0,0,.22);
-
-  z-index: 2000;
-}
-
-.topbar-dropdown:hover .topbar-dropdown-menu {
-  display: block;
-}
-
-.topbar-dropdown-link {
-  display: block;
-
-  padding: 10px 12px;
-
-  color: #12245f;
-  text-decoration: none;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  border-radius: 8px;
-}
-
-.topbar-dropdown-link:hover {
-  background: #eef3ff;
-}
-
-/* USUÁRIO */
-
-.topbar-user {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-
-  background: #ffffff;
-  color: #111827;
-
-  padding: 7px 12px;
-
-  border-radius: 12px;
-}
-
-.topbar-user__avatar {
-  width: 34px;
-  height: 34px;
-
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #2563eb;
-  color: #ffffff;
-
-  font-weight: 900;
-}
-
-.topbar-user__info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.15;
-}
-
-.topbar-user__info strong {
-  font-size: 13px;
-}
-
-.topbar-user__info span {
-  font-size: 11px;
-  color: #475569;
-}
-
-.topbar-logout {
-  border: 0;
-
-  padding: 10px 14px;
-
-  border-radius: 9px;
-
-  background: #ef4444;
-  color: #ffffff;
-
-  font-weight: 800;
-
-  cursor: pointer;
-}
-
-/* CONTEÚDO */
-
-.portal-main {
-  position: relative;
-
-  min-height: calc(100vh - 76px);
-
-  padding: 28px;
-
-  overflow: hidden;
-
-  background:
-    linear-gradient(
-      135deg,
-      #112ca7 0%,
-      #286ccc 100%
-    );
-}
-
-.portal-content {
-  position: relative;
-  z-index: 2;
-}
-
-/* LOGO COMO PLANO DE FUNDO */
-
-.portal-background-logo {
-  position: fixed;
-
-  top: 76px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  pointer-events: none;
-
-  z-index: 0;
-}
-
-.portal-background-logo__image {
-  width: min(52vw, 700px);
-  max-height: 65vh;
-
-  object-fit: contain;
-
-  opacity: 0.045;
-
-  filter:
-    grayscale(100%)
-    brightness(2);
-
-  user-select: none;
-}
-
-
-
-.dashboard-home {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.dashboard-viewers-card {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 18px;
-  padding: 26px;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.15);
-}
-
-.dashboard-home-title {
-  font-size: 22px;
-  font-weight: 900;
-  color: #0f172a;
-}
-
-.dashboard-home-subtitle {
-  margin-top: 5px;
-  margin-bottom: 20px;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.viewer-grid {
-  display: grid;
-  gap: 14px;
-}
-
-.viewer-card {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 20px;
-
-  padding: 20px;
-
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-}
-
-.viewer-card__title {
-  font-size: 18px;
-  font-weight: 900;
-  color: #0f172a;
-}
-
-.viewer-card__description {
-  margin-top: 5px;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.viewer-card__button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 11px 20px;
-
-  border-radius: 10px;
-
-  background: #2563eb;
-  color: #ffffff;
-
-  text-decoration: none;
-  font-weight: 800;
-}
-
-.viewer-card__button:hover {
-  background: #1d4ed8;
-}
-
-
-
-.portal-topbar__left {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.topbar-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 42px;
-  padding: 0 15px;
-
-  border: 0;
-  border-radius: 9px;
-
-  background: transparent;
-  color: #ffffff;
-
-  text-decoration: none;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.topbar-link:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.topbar-button {
-  appearance: none;
-}
-
-.topbar-dropdown {
-  position: relative;
-
-  /*
-    Essa pequena área inferior evita que o dropdown
-    desapareça quando o mouse sai do botão.
-  */
-  padding-bottom: 6px;
-  margin-bottom: -6px;
-}
-
-.topbar-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-
-  display: none;
-
-  min-width: 230px;
-  padding: 8px;
-
-  background: #ffffff;
-
-  border-radius: 12px;
-
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.24);
-
-  z-index: 5000;
-}
-
-.topbar-dropdown:hover .topbar-dropdown-menu,
-.topbar-dropdown:focus-within .topbar-dropdown-menu {
-  display: block;
-}
-
-.topbar-dropdown-link {
-  display: block;
-
-  padding: 11px 13px;
-
-  border-radius: 8px;
-
-  color: #12245f;
-  background: transparent;
-
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 700;
-
-  white-space: nowrap;
-}
-
-.topbar-dropdown-link:hover {
-  background: #eef3ff;
-  color: #1234b5;
-}
 
 /* ========================================================= */
 /* PORTAL 2026 — AJUSTES VISUAIS E NAVEGAÇÃO                 */
@@ -2584,19 +2167,20 @@ body::before {
 
 .travel-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-
-  gap: 14px;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .travel-kpi-card {
-  min-height: 125px;
+  width: 100%;
+  min-width: 0;
+  min-height: 145px;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-  padding: 18px;
+  padding: 22px;
 
   background: rgba(255, 255, 255, 0.96);
 
@@ -2604,24 +2188,28 @@ body::before {
   border-radius: 15px;
 
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07);
+
+  overflow: hidden;
 }
 
 .travel-kpi-label {
-  color: #64748b;
+  color: #475569;
 
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
 }
 
 .travel-kpi-value {
-  margin-top: 12px;
+  margin-top: 16px;
 
   color: #041194;
 
-  font-size: 25px;
+  font-size: clamp(24px, 1.8vw, 30px);
   font-weight: 900;
+  line-height: 1.15;
 
-  line-height: 1.1;
+  overflow-wrap: anywhere;
 }
 
 .travel-kpi-value--text {
@@ -2667,9 +2255,9 @@ body::before {
 
 /* RESPONSIVO */
 
-@media (max-width: 1300px) {
+@media (max-width: 1200px) {
   .travel-kpi-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
   }
 }
 
@@ -2679,7 +2267,7 @@ body::before {
   }
 
   .travel-kpi-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(200px, 1fr));
   }
 }
 
