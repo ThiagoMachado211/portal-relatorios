@@ -366,7 +366,7 @@
   <% end %>
 
 
-  <!-- GRÁFICOS ANALÍTICOS -->
+  <!-- ÁREA DOS GRÁFICOS - entra no próximo passo -->
 
   <%
     monthly = @dashboard_data[:monthly]
@@ -698,15 +698,6 @@
 
   <%
     details = @dashboard_data[:details] || []
-
-    financial_records =
-      if @can_view_financial && details.any?
-        LongTrip
-          .where(id: details.map { |trip| trip[:id] })
-          .index_by(&:id)
-      else
-        {}
-      end
   %>
 
   <section class="travel-analysis-section">
@@ -928,7 +919,10 @@
                   <% if @can_view_financial %>
 
                     <%
-                      record = financial_records[trip[:id]]
+                      record =
+                        LongTrip.find_by(
+                          id: trip[:id]
+                        )
                     %>
 
                     <td>

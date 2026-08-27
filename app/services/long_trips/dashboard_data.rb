@@ -551,9 +551,11 @@ module LongTrips
 
           origin_city: trip.origin_city,
           origin_state: trip.origin_state,
+          origin_terminal: trip.origin_terminal,
 
           destination_city: trip.destination_city,
           destination_state: trip.destination_state,
+          destination_terminal: trip.destination_terminal,
 
           transport_company: trip.transport_company,
 
@@ -566,10 +568,32 @@ module LongTrips
             trip.non_compliance_reason,
 
           canceled:
-            trip.canceled
+            trip.canceled,
+
+          purchase_value_brl:
+            trip.purchase_value_brl,
+
+          purchase_value_points:
+            trip.purchase_value_points,
+
+          extra_fees_brl:
+            trip.extra_fees_brl,
+
+          refund_value_brl:
+            trip.refund_value_brl,
+
+          refund_value_points:
+            trip.refund_value_points,
+
+          final_value_brl:
+            trip.final_value_brl,
+
+          final_value_points:
+            trip.final_value_points
         }
       end
     end
+
 
     # =========================================================
     # UTILITÁRIOS
