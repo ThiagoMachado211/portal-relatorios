@@ -2764,3 +2764,38 @@ body::before {
     flex-direction: column;
   }
 }
+
+/* ========================================================= */
+/* GESTÃO DE VIAGENS — EXPORTAÇÃO                            */
+/* ========================================================= */
+
+.travel-table-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.travel-table-actions {
+  display: flex;
+  align-items: center;
+}
+
+.travel-table-actions .btn-secondary {
+  margin-right: 0;
+}
+
+@media (max-width: 800px) {
+  .travel-table-summary {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .travel-table-actions,
+  .travel-table-actions .btn-secondary {
+    width: 100%;
+  }
+}
+

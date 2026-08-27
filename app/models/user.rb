@@ -11,4 +11,16 @@ class User < ApplicationRecord
   }
 
   validates :name, presence: true
+
+
+  # Gestão de Viagens:
+  # manager e admin podem acessar dados financeiros;
+  # client acessa somente a visão operacional.
+  def can_view_travel_financial_data?
+    manager? || admin?
+  end
+
+  def can_view_full_travel_presentation?
+    can_view_travel_financial_data?
+  end
 end

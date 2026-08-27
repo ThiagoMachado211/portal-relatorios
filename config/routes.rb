@@ -37,10 +37,9 @@ Rails.application.routes.draw do
     end
   end
 
-  
   resources :long_trips do
     collection do
-      # Dashboard antigo — manter temporariamente
+      # Dashboard antigo — manter por enquanto
       get :dashboard
       get :presentation
       get :dashboard_data
@@ -48,10 +47,11 @@ Rails.application.routes.draw do
       # Novo módulo
       get :analytics
       get :presentation_v2
+
+      # Exportação do recorte atual
+      get :export_csv
     end
   end
-
-
 
   mount ActionCable.server => "/cable"
 end

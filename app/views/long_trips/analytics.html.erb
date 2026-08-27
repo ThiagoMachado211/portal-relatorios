@@ -19,6 +19,17 @@
 
     <div class="travel-analytics-header-actions">
 
+      <%= link_to "Baixar dados filtrados",
+          export_csv_long_trips_path(
+            start_date: @start_date,
+            end_date: @end_date,
+            sector: @sector,
+            transport_mode: @transport_mode,
+            policy_compliant: @policy_compliant,
+            canceled: @canceled
+          ),
+          class: "btn-secondary" %>
+
       <%= link_to "Apresentação sem financeiro",
           presentation_v2_long_trips_path(
              mode: "non_financial",
@@ -785,8 +796,21 @@
         </p>
       </div>
 
-      <div class="travel-table-count">
-        <strong>
+      <div class="travel-table-summary">
+      <div class="travel-table-actions">
+        <%= link_to "Baixar este recorte (CSV)",
+            export_csv_long_trips_path(
+              start_date: @start_date,
+              end_date: @end_date,
+              sector: @sector,
+              transport_mode: @transport_mode,
+              policy_compliant: @policy_compliant,
+              canceled: @canceled
+            ),
+            class: "btn-secondary" %>
+      </div>
+        <div class="travel-table-count">
+          <strong>
           <%= number_with_delimiter(
                 details.size,
                 delimiter: "."
@@ -795,7 +819,8 @@
 
         <span>
           registros
-        </span>
+          </span>
+        </div>
       </div>
     </div>
 

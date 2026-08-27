@@ -1,3 +1,5 @@
+require "csv"
+
 class LongTripsController < ApplicationController
   before_action :authenticate_user!
   skip_before_action :authenticate_user!, only: [:dashboard_data]
@@ -175,7 +177,131 @@ class LongTripsController < ApplicationController
       )
   end
 
+
+  def export_csv
+    can_view_financial = can_access_financial_data?
+
+    data =
+      LongTrips::DashboardData.new(
+        start_date: params[:start_date],
+        end_date: params[:end_date],
+        sector: params[:sector],
+        transport_mode: params[:transport_mode],
+        policy_compliant: params[:policy_compliant],
+        canceled: params[:canceled]
+      ).call(
+        include_financial: can_view_financial
+      )
+
+    details = data[:details] || []
+
+    csv =
+      CSV.generate(
+        col_sep: ";",
+        headers: true
+      ) do |csv_file|
+
+        headers = [
+          "ID Viagem",
+          "Viajante",
+          "Setor",
+          "Motivo",
+          "Data da compra",
+          "Data da viagem",
+          "Antecedência (dias)",
+          "Meio de transporte",
+          "Cidade origem",
+          "Estado origem",
+          "Terminal origem",
+          "Cidade destino",
+          "Estado destino",
+          "Terminal destino",
+          "Empresa de transporte",
+          "Quilometragem",
+          "Conforme?",
+          "Motivo não conformidade",
+          "Cancelada?"
+        ]
+
+        if can_view_financial
+          headers += [
+            "Compra (R$)",
+            "Compra (Pontos)",
+            "Taxas extras (R$)",
+            "Reembolso (R$)",
+            "Reembolso (Pontos)",
+            "Valor final (R$)",
+            "Valor final (Pontos)"
+          ]
+        end
+
+        csv_file << headers
+
+        details.each do |trip|
+          row = [
+            trip[:travel_request_id],
+            trip[:traveler_name],
+            trip[:traveler_sector],
+            trip[:travel_reason],
+            csv_date(trip[:purchase_date]),
+            csv_date(trip[:travel_date]),
+            csv_number(trip[:lead_time_days]),
+            trip[:transport_mode],
+            trip[:origin_city],
+            trip[:origin_state],
+            trip[:origin_terminal],
+            trip[:destination_city],
+            trip[:destination_state],
+            trip[:destination_terminal],
+            trip[:transport_company],
+            csv_number(trip[:mileage]),
+            csv_boolean(trip[:policy_compliant]),
+            trip[:non_compliance_reason],
+            csv_boolean(trip[:canceled])
+          ]
+
+          if can_view_financial
+            row += [
+              csv_number(trip[:purchase_value_brl]),
+              csv_number(trip[:purchase_value_points]),
+              csv_number(trip[:extra_fees_brl]),
+              csv_number(trip[:refund_value_brl]),
+              csv_number(trip[:refund_value_points]),
+              csv_number(trip[:final_value_brl]),
+              csv_number(trip[:final_value_points])
+            ]
+          end
+
+          csv_file << row
+        end
+      end
+
+    filename =
+      [
+        "gestao_viagens",
+        params[:start_date].presence,
+        params[:end_date].presence,
+        Time.zone.today.strftime("%Y%m%d")
+      ]
+        .compact
+        .join("_") + ".csv"
+
+    send_data(
+      "\uFEFF#{csv}",
+      filename: filename,
+      type: "text/csv; charset=utf-8",
+      disposition: "attachment"
+    )
+  end
+
   def presentation_v2
+
+    if params[:mode].to_s == "full" && !current_user&.can_view_full_travel_presentation?
+      redirect_to analytics_long_trips_path,
+                  alert: "Você não tem permissão para acessar dados financeiros."
+      return
+    end
+
     @presentation_mode =
       params[:mode].presence || "non_financial"
 
@@ -219,7 +345,7 @@ class LongTripsController < ApplicationController
 
 
   def can_access_financial_data?
-    current_user.admin? || current_user.manager?
+    current_user&.can_view_travel_financial_data? || false
   end
 
   def parsed_filter_date(value)
@@ -230,6 +356,30 @@ class LongTripsController < ApplicationController
     nil
   end
 
+
+
+  def csv_date(value)
+    value.present? ? value.strftime("%d/%m/%Y") : nil
+  end
+
+  def csv_boolean(value)
+    return nil if value.nil?
+
+    value ? "Sim" : "Não"
+  end
+
+  def csv_number(value)
+    return nil if value.nil?
+
+    if value.respond_to?(:to_d)
+      number = value.to_d
+      formatted = number.frac.zero? ? number.to_i.to_s : number.to_s("F")
+    else
+      formatted = value.to_s
+    end
+
+    formatted.tr(".", ",")
+  end
 
   def build_monthly_object_data(trips, field)
     quarter_months.map do |month|
