@@ -367,19 +367,336 @@
 
 
   <!-- ÁREA DOS GRÁFICOS - entra no próximo passo -->
-  <section class="travel-placeholder-section">
 
-    <div class="travel-placeholder-card">
-      <h2>
-        Evolução e Distribuições
-      </h2>
+  <%
+    monthly = @dashboard_data[:monthly]
+    distributions = @dashboard_data[:distributions]
 
-      <p>
-        Os gráficos de evolução mensal, setores, destinos e quilometragem
-        serão adicionados no próximo passo.
-      </p>
+    monthly_segments = monthly[:total_segments] || []
+    monthly_mileage  = monthly[:total_mileage] || []
+
+    sectors      = distributions[:sectors] || {}
+    destinations = distributions[:destinations] || {}
+
+    max_segments =
+      monthly_segments.map { |item| item[:value].to_f }.max.to_f
+
+    max_mileage =
+      monthly_mileage.map { |item| item[:value].to_f }.max.to_f
+
+    max_sector =
+      sectors.values.map(&:to_f).max.to_f
+
+    max_destination =
+      destinations.values.map(&:to_f).max.to_f
+  %>
+
+
+  <!-- ====================================================== -->
+  <!-- EVOLUÇÃO MENSAL                                       -->
+  <!-- ====================================================== -->
+
+  <section class="travel-analysis-section">
+
+    <h2 class="travel-section-title">
+      Evolução Mensal
+    </h2>
+
+    <div class="travel-chart-grid">
+
+      <!-- TRECHOS POR MÊS -->
+
+      <article class="travel-analysis-card">
+
+        <div class="travel-analysis-card__header">
+          <div>
+            <h3>Trechos por Mês</h3>
+            <p>Quantidade total de trechos realizados.</p>
+          </div>
+        </div>
+
+        <% if monthly_segments.any? %>
+
+          <div class="travel-column-chart">
+
+            <% monthly_segments.each do |item| %>
+
+              <%
+                value = item[:value].to_f
+
+                height =
+                  if max_segments.positive?
+                    (value / max_segments * 100)
+                  else
+                    0
+                  end
+              %>
+
+              <div class="travel-column-chart__item">
+
+                <div class="travel-column-chart__value">
+                  <%= number_with_delimiter(
+                        value.to_i,
+                        delimiter: "."
+                      ) %>
+                </div>
+
+                <div class="travel-column-chart__track">
+
+                  <div
+                    class="travel-column-chart__bar"
+                    style="height: <%= height.round(2) %>%;">
+                  </div>
+
+                </div>
+
+                <div class="travel-column-chart__label">
+                  <%= item[:label].to_s.sub(" 2026", "") %>
+                </div>
+
+              </div>
+
+            <% end %>
+
+          </div>
+
+        <% else %>
+
+          <div class="travel-analysis-empty">
+            Nenhum dado disponível.
+          </div>
+
+        <% end %>
+
+      </article>
+
+
+      <!-- QUILOMETRAGEM POR MÊS -->
+
+      <article class="travel-analysis-card">
+
+        <div class="travel-analysis-card__header">
+          <div>
+            <h3>Quilometragem por Mês</h3>
+            <p>Quilometragem total registrada mensalmente.</p>
+          </div>
+        </div>
+
+        <% if monthly_mileage.any? %>
+
+          <div class="travel-column-chart">
+
+            <% monthly_mileage.each do |item| %>
+
+              <%
+                value = item[:value].to_f
+
+                height =
+                  if max_mileage.positive?
+                    (value / max_mileage * 100)
+                  else
+                    0
+                  end
+              %>
+
+              <div class="travel-column-chart__item">
+
+                <div class="travel-column-chart__value">
+                  <%= number_with_delimiter(
+                        value.round,
+                        delimiter: "."
+                      ) %>
+                </div>
+
+                <div class="travel-column-chart__track">
+
+                  <div
+                    class="travel-column-chart__bar"
+                    style="height: <%= height.round(2) %>%;">
+                  </div>
+
+                </div>
+
+                <div class="travel-column-chart__label">
+                  <%= item[:label].to_s.sub(" 2026", "") %>
+                </div>
+
+              </div>
+
+            <% end %>
+
+          </div>
+
+        <% else %>
+
+          <div class="travel-analysis-empty">
+            Nenhum dado disponível.
+          </div>
+
+        <% end %>
+
+      </article>
+
     </div>
 
   </section>
+
+
+  <!-- ====================================================== -->
+  <!-- DISTRIBUIÇÕES                                         -->
+  <!-- ====================================================== -->
+
+  <section class="travel-analysis-section">
+
+    <h2 class="travel-section-title">
+      Distribuições
+    </h2>
+
+    <div class="travel-chart-grid">
+
+      <!-- SETORES -->
+
+      <article class="travel-analysis-card">
+
+        <div class="travel-analysis-card__header">
+          <div>
+            <h3>Trechos por Setor</h3>
+            <p>Distribuição dos registros por setor do viajante.</p>
+          </div>
+        </div>
+
+        <% if sectors.any? %>
+
+          <div class="travel-horizontal-chart">
+
+            <% sectors.each do |sector, value| %>
+
+              <%
+                percentage =
+                  if max_sector.positive?
+                    value.to_f / max_sector * 100
+                  else
+                    0
+                  end
+              %>
+
+              <div class="travel-horizontal-chart__item">
+
+                <div class="travel-horizontal-chart__top">
+                  <span class="travel-horizontal-chart__label">
+                    <%= sector %>
+                  </span>
+
+                  <strong class="travel-horizontal-chart__value">
+                    <%= number_with_delimiter(
+                          value,
+                          delimiter: "."
+                        ) %>
+                  </strong>
+                </div>
+
+                <div class="travel-horizontal-chart__track">
+
+                  <div
+                    class="travel-horizontal-chart__bar"
+                    style="width: <%= percentage.round(2) %>%;">
+                  </div>
+
+                </div>
+
+              </div>
+
+            <% end %>
+
+          </div>
+
+        <% else %>
+
+          <div class="travel-analysis-empty">
+            Nenhum dado disponível.
+          </div>
+
+        <% end %>
+
+      </article>
+
+
+      <!-- DESTINOS -->
+
+      <article class="travel-analysis-card">
+
+        <div class="travel-analysis-card__header">
+          <div>
+            <h3>Principais Destinos</h3>
+            <p>
+              Cidades de destino mais frequentes, desconsiderando João Pessoa.
+            </p>
+          </div>
+        </div>
+
+        <% if destinations.any? %>
+
+          <div class="travel-horizontal-chart">
+
+            <% destinations.first(10).each do |city, value| %>
+
+              <%
+                percentage =
+                  if max_destination.positive?
+                    value.to_f / max_destination * 100
+                  else
+                    0
+                  end
+              %>
+
+              <div class="travel-horizontal-chart__item">
+
+                <div class="travel-horizontal-chart__top">
+
+                  <span class="travel-horizontal-chart__label">
+                    <%= city %>
+                  </span>
+
+                  <strong class="travel-horizontal-chart__value">
+                    <%= number_with_delimiter(
+                          value,
+                          delimiter: "."
+                        ) %>
+                  </strong>
+
+                </div>
+
+                <div class="travel-horizontal-chart__track">
+
+                  <div
+                    class="travel-horizontal-chart__bar"
+                    style="width: <%= percentage.round(2) %>%;">
+                  </div>
+
+                </div>
+
+              </div>
+
+            <% end %>
+
+          </div>
+
+        <% else %>
+
+          <div class="travel-analysis-empty">
+            Nenhum dado disponível.
+          </div>
+
+        <% end %>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+
+
 
 </div>

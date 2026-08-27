@@ -1,52 +1,17 @@
 require "csv"
+require "bigdecimal"
 
 class LongTripsImporter
   attr_reader :imported_count,
-              :updated_count,
+              :deleted_count,
               :skipped_count,
               :errors
-
-  HEADER_MAP = {
-    "ID da viagem" => :travel_request_id,
-    "Nome do viajante" => :traveler_name,
-    "Setor do viajante" => :traveler_sector,
-    "Motivo da viagem" => :travel_reason,
-
-    "Data da compra" => :purchase_date,
-    "Data da viagem" => :travel_date,
-
-    "Meio de transporte" => :transport_mode,
-
-    "Cidade origem" => :origin_city,
-    "Estado origem" => :origin_state,
-    "Nome do aeroporto ou rodoviária" => :origin_terminal,
-
-    "Cidade destino" => :destination_city,
-    "Estado destino" => :destination_state,
-
-    "Nome da empresa de transporte" => :transport_company,
-
-    "Quilometragem" => :mileage,
-
-    "Cumpriu política?" => :policy_compliant,
-    "Motivo do não-cumprimento" => :non_compliance_reason,
-
-    "Passagem foi cancelada?" => :canceled,
-
-    "Valor da compra (R$)" => :purchase_value_brl,
-    "Valor da compra (Pontos)" => :purchase_value_points,
-
-    "Taxas extras (R$)" => :extra_fees_brl,
-
-    "Valor Reembolso (R$)" => :refund_value_brl,
-    "Valor Reembolso (Pontos)" => :refund_value_points
-  }.freeze
 
   def initialize(file_path)
     @file_path = file_path
 
     @imported_count = 0
-    @updated_count = 0
+    @deleted_count = 0
     @skipped_count = 0
     @errors = []
   end
@@ -56,31 +21,44 @@ class LongTripsImporter
 
     return self if errors.any?
 
-    ActiveRecord::Base.transaction do
-      rows.each_with_index do |row, index|
-        import_row(row, index + 2)
-      end
-    end
+    attributes_list = prepare_records(rows)
+
+    return self if errors.any?
+    return self if attributes_list.empty?
+
+    validate_records(attributes_list)
+
+    return self if errors.any?
+
+    replace_database(attributes_list)
 
     self
   rescue StandardError => e
     errors << "Erro geral na importação: #{e.message}"
-
     self
   end
 
   private
 
   # =========================================================
-  # LEITURA
+  # LEITURA DO CSV
   # =========================================================
 
   def read_rows
-    CSV.read(
-      @file_path,
+    raw_content = File.binread(@file_path)
+
+    utf8_content =
+      raw_content
+        .force_encoding("UTF-8")
+        .sub(/\A\xEF\xBB\xBF/, "")
+        .gsub("\r\n", "\n")
+        .gsub("\r", "\n")
+
+    CSV.parse(
+      utf8_content,
       headers: true,
-      encoding: "bom|utf-8",
-      liberal_parsing: true
+      liberal_parsing: true,
+      row_sep: "\n"
     )
   rescue CSV::MalformedCSVError => e
     errors << "CSV inválido: #{e.message}"
@@ -91,180 +69,254 @@ class LongTripsImporter
   end
 
   # =========================================================
-  # IMPORTAÇÃO DE UMA LINHA
+  # PREPARAÇÃO
   # =========================================================
 
-  def import_row(row, line_number)
-    return skip_row if blank_row?(row)
+  def prepare_records(rows)
+    records = []
 
-    attributes = build_attributes(row)
+    rows.each_with_index do |row, index|
+      line_number = index + 2
 
-    unless valid_minimum_data?(attributes)
-      @skipped_count += 1
+      if blank_row?(row)
+        @skipped_count += 1
+        next
+      end
 
-      errors <<(
-        "Linha #{line_number}: ID da viagem ou data da viagem ausente."
-      )
+      attributes = build_attributes(row)
 
-      return
+      unless minimum_data_present?(attributes)
+        errors <<(
+          "Linha #{line_number}: ID da viagem, nome do viajante, " \
+          "data da viagem ou meio de transporte ausente."
+        )
+
+        next
+      end
+
+      records << {
+        line_number: line_number,
+        attributes: attributes
+      }
     end
 
-    trip = find_existing_trip(attributes)
+    records
+  end
 
-    if trip.present?
-      update_trip(trip, attributes, line_number)
-    else
-      create_trip(attributes, line_number)
+  # =========================================================
+  # VALIDAÇÃO ANTES DE APAGAR A BASE
+  # =========================================================
+
+  def validate_records(records)
+    records.each do |record_data|
+      trip = LongTrip.new(
+        record_data[:attributes]
+      )
+
+      next if trip.valid?
+
+      errors <<(
+        "Linha #{record_data[:line_number]}: " \
+        "#{trip.errors.full_messages.join(', ')}"
+      )
     end
   end
 
   # =========================================================
-  # IDENTIFICAÇÃO DO REGISTRO
+  # SUBSTITUIÇÃO TRANSACIONAL
   # =========================================================
 
-  def find_existing_trip(attributes)
-    LongTrip.find_by(
-      travel_request_id: attributes[:travel_request_id],
-      traveler_name: attributes[:traveler_name],
-      travel_date: attributes[:travel_date],
-      origin_city: attributes[:origin_city],
-      destination_city: attributes[:destination_city]
+  def replace_database(records)
+    ActiveRecord::Base.transaction do
+      @deleted_count = LongTrip.count
+
+      LongTrip.delete_all
+
+      records.each do |record_data|
+        LongTrip.create!(
+          record_data[:attributes]
+        )
+
+        @imported_count += 1
+      end
+    end
+  rescue StandardError => e
+    @imported_count = 0
+    @deleted_count = 0
+
+    errors <<(
+      "A sincronização foi cancelada e a base anterior foi preservada. " \
+      "Motivo: #{e.message}"
     )
   end
 
   # =========================================================
-  # CREATE / UPDATE
-  # =========================================================
-
-  def create_trip(attributes, line_number)
-    trip = LongTrip.new(attributes)
-
-    if trip.save
-      @imported_count += 1
-    else
-      errors <<(
-        "Linha #{line_number}: #{trip.errors.full_messages.join(', ')}"
-      )
-    end
-  end
-
-  def update_trip(trip, attributes, line_number)
-    if trip.update(attributes)
-      @updated_count += 1
-    else
-      errors <<(
-        "Linha #{line_number}: #{trip.errors.full_messages.join(', ')}"
-      )
-    end
-  end
-
-  # =========================================================
-  # CONVERSÃO DAS COLUNAS
+  # MAPEAMENTO
   # =========================================================
 
   def build_attributes(row)
     {
       travel_request_id:
-        integer_value(row["ID da viagem"]),
+        integer_value(
+          row["ID da viagem"]
+        ),
 
       traveler_name:
-        clean_text(row["Nome do viajante"]),
+        clean_text(
+          row["Nome do viajante"]
+        ),
 
       traveler_sector:
-        clean_text(row["Setor do viajante"]),
+        clean_text(
+          row["Setor do viajante"]
+        ),
 
       travel_reason:
-        clean_text(row["Motivo da viagem"]),
+        clean_text(
+          row["Motivo da viagem"]
+        ),
 
       purchase_date:
-        date_value(row["Data da compra"]),
+        date_value(
+          row["Data da compra"]
+        ),
 
       travel_date:
-        date_value(row["Data da viagem"]),
+        date_value(
+          row["Data da viagem"]
+        ),
 
       transport_mode:
-        clean_text(row["Meio de transporte"]),
+        clean_text(
+          row["Meio de transporte"]
+        ),
 
       origin_city:
-        clean_text(row["Cidade origem"]),
+        clean_text(
+          row["Cidade origem"]
+        ),
 
       origin_state:
-        clean_text(row["Estado origem"]),
+        clean_text(
+          row["Estado origem"]
+        ),
 
       origin_terminal:
-        clean_text(row["Nome do aeroporto ou rodoviária"]),
+        duplicated_header_value(
+          row,
+          "Nome do aeroporto ou rodoviária",
+          0
+        ),
 
       destination_city:
-        clean_text(row["Cidade destino"]),
+        clean_text(
+          row["Cidade destino"]
+        ),
 
       destination_state:
-        clean_text(row["Estado destino"]),
+        clean_text(
+          row["Estado destino"]
+        ),
 
       destination_terminal:
-        destination_terminal(row),
+        duplicated_header_value(
+          row,
+          "Nome do aeroporto ou rodoviária",
+          1
+        ),
 
       transport_company:
-        clean_text(row["Nome da empresa de transporte"]),
+        clean_text(
+          row["Nome da empresa de transporte"]
+        ),
 
       mileage:
-        numeric_value(row["Quilometragem"]),
+        numeric_value(
+          row["Quilometragem"]
+        ),
 
       policy_compliant:
-        boolean_value(row["Cumpriu política?"]),
+        boolean_value(
+          row["Cumpriu política?"]
+        ),
 
       non_compliance_reason:
-        clean_text(row["Motivo do não-cumprimento"]),
+        clean_text(
+          row["Motivo do não-cumprimento"]
+        ),
 
       canceled:
-        boolean_value(row["Passagem foi cancelada?"]),
+        boolean_value(
+          row["Passagem foi cancelada?"]
+        ),
 
       purchase_value_brl:
-        money_value(row["Valor da compra (R$)"]),
+        decimal_value(
+          row["Valor da compra (R$)"]
+        ),
 
       purchase_value_points:
-        numeric_value(row["Valor da compra (Pontos)"]),
+        numeric_value(
+          row["Valor da compra (Pontos)"]
+        ),
 
       extra_fees_brl:
-        money_value(row["Taxas extras (R$)"]),
+        decimal_value(
+          row["Taxas extras (R$)"]
+        ),
 
       refund_value_brl:
-        money_value(row["Valor Reembolso (R$)"]),
+        decimal_value(
+          row["Valor Reembolso (R$)"]
+        ),
 
       refund_value_points:
-        numeric_value(row["Valor Reembolso (Pontos)"])
+        numeric_value(
+          row["Valor Reembolso (Pontos)"]
+        )
     }
   end
 
   # =========================================================
-  # TERMINAIS
+  # CABEÇALHOS DUPLICADOS
   # =========================================================
 
-  def destination_terminal(row)
-    #
-    # O CSV possui duas colunas com o mesmo cabeçalho:
-    #
-    # Nome do aeroporto ou rodoviária
-    #
-    # A primeira é origem e a segunda é destino.
-    #
-    # CSV::Row permite acessar pelo índice.
-    #
+  def duplicated_header_value(row, header_name, occurrence)
+    indexes =
+      row.headers
+         .each_index
+         .select do |index|
+           normalize_header(
+             row.headers[index]
+           ) == normalize_header(header_name)
+         end
 
-    headers = row.headers
+    index = indexes[occurrence]
 
-    positions =
-      headers.each_index.select do |index|
-        headers[index] == "Nome do aeroporto ou rodoviária"
-      end
+    return nil if index.nil?
 
-    return nil if positions.size < 2
+    clean_text(
+      row.fields[index]
+    )
+  end
 
-    clean_text(row.fields[positions[1]])
+  def normalize_header(value)
+    value
+      .to_s
+      .sub(/\.\d+\z/, "")
+      .strip
   end
 
   # =========================================================
-  # VALIDAÇÃO
+  # VALIDAÇÃO MÍNIMA
   # =========================================================
+
+  def minimum_data_present?(attributes)
+    attributes[:travel_request_id].present? &&
+      attributes[:traveler_name].present? &&
+      attributes[:travel_date].present? &&
+      attributes[:transport_mode].present?
+  end
 
   def blank_row?(row)
     row.fields.all? do |value|
@@ -272,32 +324,44 @@ class LongTripsImporter
     end
   end
 
-  def valid_minimum_data?(attributes)
-    attributes[:travel_request_id].present? &&
-      attributes[:travel_date].present?
-  end
-
-  def skip_row
-    @skipped_count += 1
-  end
-
   # =========================================================
-  # CONVERSORES
+  # TEXTO
   # =========================================================
 
   def clean_text(value)
-    text = value.to_s.strip
+    text =
+      value
+        .to_s
+        .strip
 
     text.presence
   end
 
+  # =========================================================
+  # DATAS
+  # =========================================================
+
+  def date_value(value)
+    return nil if value.blank?
+
+    text = value.to_s.strip
+
+    Date.strptime(
+      text,
+      "%d/%m/%Y"
+    )
+  rescue ArgumentError
+    nil
+  end
+
+  # =========================================================
+  # NÚMEROS
+  # =========================================================
+
   def integer_value(value)
     return nil if value.blank?
 
-    value
-      .to_s
-      .strip
-      .sub(",", ".")
+    normalize_number(value)
       .to_f
       .to_i
   end
@@ -308,34 +372,43 @@ class LongTripsImporter
     normalize_number(value).to_f
   end
 
-  def money_value(value)
-    return 0 if value.blank?
+  def decimal_value(value)
+    return BigDecimal("0") if value.blank?
 
-    normalize_number(value).to_d
+    BigDecimal(
+      normalize_number(value)
+    )
+  rescue ArgumentError
+    BigDecimal("0")
   end
 
   def normalize_number(value)
-    value
-      .to_s
-      .strip
-      .gsub("R$", "")
-      .gsub(/\s+/, "")
-      .gsub(".", "")
-      .gsub(",", ".")
+    text =
+      value
+        .to_s
+        .strip
+        .gsub("R$", "")
+        .gsub(/\s+/, "")
+
+    # Exemplo brasileiro:
+    # 2.314,34 -> 2314.34
+
+    if text.include?(",")
+      text
+        .gsub(".", "")
+        .gsub(",", ".")
+    else
+      text
+    end
   end
 
-  def date_value(value)
-    return nil if value.blank?
-
-    Date.strptime(
-      value.to_s.strip,
-      "%d/%m/%Y"
-    )
-  rescue ArgumentError
-    nil
-  end
+  # =========================================================
+  # BOOLEANOS
+  # =========================================================
 
   def boolean_value(value)
+    return nil if value.blank?
+
     normalized =
       value
         .to_s

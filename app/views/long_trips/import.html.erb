@@ -1,30 +1,85 @@
 <div class="subsection-page">
   <div class="subsection-card">
+
     <div class="report-item-header">
       <div>
-        <div class="card-title">Importar Trechos Longos</div>
-        <div class="card-subtitle">Envie um arquivo CSV com os dados de viagens.</div>
+        <div class="card-title">
+          Importar Trechos Longos
+        </div>
+
+        <div class="card-subtitle">
+          Envie um arquivo CSV com os dados de viagens.
+        </div>
       </div>
 
-      <%= link_to "Voltar", long_trips_path, class: "btn-secondary" %>
+      <%= link_to "Voltar",
+          long_trips_path,
+          class: "btn-secondary" %>
     </div>
+
+
+    <!-- MENSAGENS DA IMPORTAÇÃO -->
+
+    <% if flash[:notice].present? %>
+      <div style="
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid #86efac;
+        border-radius: 10px;
+        background: #f0fdf4;
+        color: #166534;
+        font-weight: 600;
+      ">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+
+    <% if flash[:alert].present? %>
+      <div style="
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #991b1b;
+        font-weight: 600;
+        line-height: 1.5;
+      ">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+
+    <!-- FORMULÁRIO -->
 
     <%= form_with url: import_file_long_trips_path,
                   method: :post,
                   multipart: true,
                   local: true do |form| %>
 
-      <div class="profile-line">
-        <div class="profile-key">Arquivo CSV</div>
-        <div class="profile-value">
-          <%= form.file_field :file, accept: ".csv" %>
+      <div class="profile-line" style="margin-top: 20px;">
+
+        <div class="profile-key">
+          Arquivo CSV
         </div>
+
+        <div class="profile-value">
+          <%= form.file_field :file,
+              accept: ".csv,text/csv",
+              required: true %>
+        </div>
+
       </div>
 
       <div style="margin-top: 20px;">
-        <%= form.submit "Importar Dados", class: "btn-primary" %>
+        <%= form.submit "Importar Dados",
+            class: "btn-primary",
+            data: {
+              disable_with: "Importando..."
+            } %>
       </div>
 
     <% end %>
+
   </div>
 </div>

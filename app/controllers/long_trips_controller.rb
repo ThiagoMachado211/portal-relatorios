@@ -91,55 +91,6 @@ class LongTripsController < ApplicationController
     @pages = presentation_pages
   end
 
-  def import
-  end
-
-
-  def import_file
-    if params[:file].blank?
-      redirect_to(
-        import_long_trips_path,
-        alert: "Selecione um arquivo."
-      )
-
-      return
-    end
-
-    file = params[:file]
-
-    importer =
-      LongTripsImporter
-        .new(file.path)
-        .call
-
-    if importer.errors.any?
-      flash[:alert] =
-        [
-          "Importação concluída com ocorrências.",
-          "#{importer.imported_count} novos.",
-          "#{importer.updated_count} atualizados.",
-          "#{importer.skipped_count} ignorados.",
-          "#{importer.errors.size} erros."
-        ].join(" ")
-    else
-      flash[:notice] =
-        [
-          "Importação concluída com sucesso.",
-          "#{importer.imported_count} novos.",
-          "#{importer.updated_count} atualizados.",
-          "#{importer.skipped_count} linhas vazias ignoradas."
-        ].join(" ")
-    end
-
-    if importer.imported_count.positive? ||
-      importer.updated_count.positive?
-
-      broadcast_long_trips_update
-    end
-
-    redirect_to long_trips_path
-  end
-
 
 
   def dashboard_data
