@@ -295,29 +295,46 @@ class LongTripsController < ApplicationController
   end
 
   def presentation_v2
+    return unless prepare_presentation_v2
 
-    if params[:mode].to_s == "full" && !current_user&.can_view_full_travel_presentation?
-      redirect_to analytics_long_trips_path,
-                  alert: "Você não tem permissão para acessar dados financeiros."
-      return
-    end
+    render :presentation_v2, layout: false
+  end
 
-    @presentation_mode =
-      params[:mode].presence || "non_financial"
+  def download_presentation_v2
+    return unless prepare_presentation_v2
 
-    unless %w[full non_financial].include?(@presentation_mode)
-      @presentation_mode = "non_financial"
-    end
+    html = render_to_string(
+      template: "long_trips/presentation_v2",
+      layout: false,
+      formats: [:html]
+    )
 
-    if @presentation_mode == "full" &&
-      !can_access_financial_data?
+    mode_label = @presentation_mode == "full" ? "completa" : "sem_financeiro"
+    filename = "gestao_viagens_apresentacao_#{mode_label}_#{Time.zone.today.strftime('%Y%m%d')}.html"
 
+    send_data(
+      html,
+      filename: filename,
+      type: "text/html; charset=utf-8",
+      disposition: "attachment"
+    )
+  end
+
+
+
+
+
+  private
+
+  def prepare_presentation_v2
+    @presentation_mode = params[:mode].presence_in(%w[full non_financial]) || "non_financial"
+
+    if @presentation_mode == "full" && !can_access_financial_data?
       redirect_to(
         analytics_long_trips_path,
         alert: "Você não possui permissão para acessar a apresentação completa."
       )
-
-      return
+      return false
     end
 
     @dashboard_data =
@@ -329,16 +346,19 @@ class LongTripsController < ApplicationController
         policy_compliant: params[:policy_compliant],
         canceled: params[:canceled]
       ).call(
-        include_financial:
-          @presentation_mode == "full"
+        include_financial: @presentation_mode == "full"
       )
+
+    @presentation_filters = {
+      start_date: params[:start_date],
+      end_date: params[:end_date],
+      sector: params[:sector],
+      transport_mode: params[:transport_mode],
+      policy_compliant: params[:policy_compliant],
+      canceled: params[:canceled]
+    }
   end
 
-
-
-
-
-  private
 
 
 

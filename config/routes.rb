@@ -47,6 +47,7 @@ Rails.application.routes.draw do
       # Novo módulo
       get :analytics
       get :presentation_v2
+      get :download_presentation_v2
 
       # Exportação do recorte atual
       get :export_csv
