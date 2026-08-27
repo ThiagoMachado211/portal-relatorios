@@ -140,18 +140,39 @@ class LongTripsController < ApplicationController
 
   def analytics
     @start_date = parsed_filter_date(params[:start_date])
-    @end_date   = parsed_filter_date(params[:end_date])
+    @end_date = parsed_filter_date(params[:end_date])
+    @sector = params[:sector].presence
+    @transport_mode = params[:transport_mode].presence
+    @policy_compliant = params[:policy_compliant].presence
+    @canceled = params[:canceled].presence
+
+    @available_sectors =
+      LongTrip
+        .where.not(traveler_sector: [nil, ""])
+        .distinct
+        .order(:traveler_sector)
+        .pluck(:traveler_sector)
+
+    @available_transport_modes =
+      LongTrip
+        .where.not(transport_mode: [nil, ""])
+        .distinct
+        .order(:transport_mode)
+        .pluck(:transport_mode)
+
+    @can_view_financial = can_access_financial_data?
 
     @dashboard_data =
       LongTrips::DashboardData.new(
         start_date: @start_date,
-        end_date: @end_date
+        end_date: @end_date,
+        sector: @sector,
+        transport_mode: @transport_mode,
+        policy_compliant: @policy_compliant,
+        canceled: @canceled
       ).call(
-        include_financial: can_access_financial_data?
+        include_financial: @can_view_financial
       )
-
-    @can_view_financial =
-      can_access_financial_data?
   end
 
   def presentation_v2
@@ -176,7 +197,11 @@ class LongTripsController < ApplicationController
     @dashboard_data =
       LongTrips::DashboardData.new(
         start_date: params[:start_date],
-        end_date: params[:end_date]
+        end_date: params[:end_date],
+        sector: params[:sector],
+        transport_mode: params[:transport_mode],
+        policy_compliant: params[:policy_compliant],
+        canceled: params[:canceled]
       ).call(
         include_financial:
           @presentation_mode == "full"

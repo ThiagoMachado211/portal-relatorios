@@ -8,12 +8,30 @@ module LongTrips
       refund_value_points
     ].freeze
 
-    attr_reader :scope, :start_date, :end_date
+    attr_reader :scope,
+                :start_date,
+                :end_date,
+                :sector,
+                :transport_mode,
+                :policy_compliant,
+                :canceled
 
-    def initialize(scope: LongTrip.all, start_date: nil, end_date: nil)
+    def initialize(
+      scope: LongTrip.all,
+      start_date: nil,
+      end_date: nil,
+      sector: nil,
+      transport_mode: nil,
+      policy_compliant: nil,
+      canceled: nil
+    )
       @scope = scope
       @start_date = normalize_date(start_date)
       @end_date = normalize_date(end_date)
+      @sector = sector.presence
+      @transport_mode = transport_mode.presence
+      @policy_compliant = normalize_boolean_filter(policy_compliant)
+      @canceled = normalize_boolean_filter(canceled)
     end
 
     def call(include_financial: true)
@@ -46,6 +64,22 @@ module LongTrips
 
         if end_date.present?
           result = result.where("travel_date <= ?", end_date)
+        end
+
+        if sector.present?
+          result = result.where(traveler_sector: sector)
+        end
+
+        if transport_mode.present?
+          result = result.where(transport_mode: transport_mode)
+        end
+
+        unless policy_compliant.nil?
+          result = result.where(policy_compliant: policy_compliant)
+        end
+
+        unless canceled.nil?
+          result = result.where(canceled: canceled)
         end
 
         result
@@ -626,6 +660,14 @@ module LongTrips
         denominator.to_f *
         100
       ).round(2)
+    end
+
+    def normalize_boolean_filter(value)
+      return nil if value.blank?
+      return true if value.to_s == "true"
+      return false if value.to_s == "false"
+
+      nil
     end
 
     def normalize_date(value)

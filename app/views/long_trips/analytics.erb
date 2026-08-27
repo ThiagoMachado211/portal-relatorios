@@ -20,14 +20,30 @@
     <div class="travel-analytics-header-actions">
 
       <%= link_to "Apresentação sem financeiro",
-          presentation_v2_long_trips_path(mode: "non_financial"),
+          presentation_v2_long_trips_path(
+             mode: "non_financial",
+             start_date: @start_date,
+             end_date: @end_date,
+             sector: @sector,
+             transport_mode: @transport_mode,
+             policy_compliant: @policy_compliant,
+             canceled: @canceled
+           ),
           class: "btn-secondary",
           target: "_blank",
           rel: "noopener" %>
 
       <% if @can_view_financial %>
         <%= link_to "Apresentação completa",
-            presentation_v2_long_trips_path(mode: "full"),
+            presentation_v2_long_trips_path(
+               mode: "full",
+               start_date: @start_date,
+               end_date: @end_date,
+               sector: @sector,
+               transport_mode: @transport_mode,
+               policy_compliant: @policy_compliant,
+               canceled: @canceled
+             ),
             class: "btn-primary",
             target: "_blank",
             rel: "noopener" %>
@@ -40,6 +56,26 @@
   <!-- FILTROS -->
   <section class="travel-filter-card">
 
+    <div class="travel-filter-card__header">
+      <div>
+        <h2>Filtros do dashboard</h2>
+        <p>Todos os indicadores, gráficos e registros abaixo respeitam estes filtros.</p>
+      </div>
+
+      <% active_filters = [
+           @start_date.present?,
+           @end_date.present?,
+           @sector.present?,
+           @transport_mode.present?,
+           @policy_compliant.present?,
+           @canceled.present?
+         ].count(true) %>
+
+      <% if active_filters.positive? %>
+        <span class="travel-filter-count"><%= active_filters %> ativos</span>
+      <% end %>
+    </div>
+
     <%= form_with url: analytics_long_trips_path,
                   method: :get,
                   local: true,
@@ -47,31 +83,69 @@
 
       <div class="travel-filter-group">
         <%= form.label :start_date, "Data inicial" %>
-
-        <%= form.date_field :start_date,
-            value: @start_date,
-            class: "travel-filter-input" %>
+        <%= form.date_field :start_date, value: @start_date, class: "travel-filter-input" %>
       </div>
 
       <div class="travel-filter-group">
         <%= form.label :end_date, "Data final" %>
+        <%= form.date_field :end_date, value: @end_date, class: "travel-filter-input" %>
+      </div>
 
-        <%= form.date_field :end_date,
-            value: @end_date,
-            class: "travel-filter-input" %>
+      <div class="travel-filter-group">
+        <%= form.label :sector, "Setor" %>
+        <%= form.select :sector,
+              options_for_select([["Todos", ""]] + @available_sectors.map { |item| [item, item] }, @sector),
+              {},
+              class: "travel-filter-input" %>
+      </div>
+
+      <div class="travel-filter-group">
+        <%= form.label :transport_mode, "Meio de transporte" %>
+        <%= form.select :transport_mode,
+              options_for_select([["Todos", ""]] + @available_transport_modes.map { |item| [item, item] }, @transport_mode),
+              {},
+              class: "travel-filter-input" %>
+      </div>
+
+      <div class="travel-filter-group">
+        <%= form.label :policy_compliant, "Conformidade" %>
+        <%= form.select :policy_compliant,
+              options_for_select(
+                [["Todos", ""], ["Conforme", "true"], ["Não conforme", "false"]],
+                @policy_compliant
+              ),
+              {},
+              class: "travel-filter-input" %>
+      </div>
+
+      <div class="travel-filter-group">
+        <%= form.label :canceled, "Cancelamento" %>
+        <%= form.select :canceled,
+              options_for_select(
+                [["Todos", ""], ["Cancelada", "true"], ["Não cancelada", "false"]],
+                @canceled
+              ),
+              {},
+              class: "travel-filter-input" %>
       </div>
 
       <div class="travel-filter-actions">
-
-        <%= form.submit "Aplicar filtros",
-            class: "btn-primary" %>
-
-        <%= link_to "Limpar",
-            analytics_long_trips_path,
-            class: "btn-secondary" %>
-
+        <%= form.submit "Aplicar filtros", class: "btn-primary" %>
+        <%= link_to "Limpar", analytics_long_trips_path, class: "btn-secondary" %>
       </div>
 
+    <% end %>
+
+    <% if active_filters.positive? %>
+      <div class="travel-active-filters">
+        <span>Filtros ativos:</span>
+        <% if @start_date.present? %><strong>Desde <%= @start_date.strftime("%d/%m/%Y") %></strong><% end %>
+        <% if @end_date.present? %><strong>Até <%= @end_date.strftime("%d/%m/%Y") %></strong><% end %>
+        <% if @sector.present? %><strong>Setor: <%= @sector %></strong><% end %>
+        <% if @transport_mode.present? %><strong>Transporte: <%= @transport_mode %></strong><% end %>
+        <% if @policy_compliant.present? %><strong>Conformidade: <%= @policy_compliant == "true" ? "Conforme" : "Não conforme" %></strong><% end %>
+        <% if @canceled.present? %><strong>Cancelamento: <%= @canceled == "true" ? "Cancelada" : "Não cancelada" %></strong><% end %>
+      </div>
     <% end %>
 
   </section>
@@ -696,18 +770,7 @@
   </section>
 
 
-  <%
-    details = @dashboard_data[:details] || []
-
-    financial_records =
-      if @can_view_financial && details.any?
-        LongTrip
-          .where(id: details.map { |trip| trip[:id] })
-          .index_by(&:id)
-      else
-        {}
-      end
-  %>
+  <% details = @dashboard_data[:details] || [] %>
 
   <section class="travel-analysis-section">
 
@@ -927,13 +990,9 @@
 
                   <% if @can_view_financial %>
 
-                    <%
-                      record = financial_records[trip[:id]]
-                    %>
-
                     <td>
                       <%= number_to_currency(
-                            record&.purchase_value_brl || 0,
+                            trip[:purchase_value_brl] || 0,
                             unit: "R$ ",
                             separator: ",",
                             delimiter: "."
@@ -943,7 +1002,7 @@
 
                     <td>
                       <%= number_with_delimiter(
-                            record&.purchase_value_points || 0,
+                            trip[:purchase_value_points] || 0,
                             delimiter: ".",
                             separator: ","
                           ) %>
@@ -952,7 +1011,7 @@
 
                     <td>
                       <%= number_to_currency(
-                            record&.extra_fees_brl || 0,
+                            trip[:extra_fees_brl] || 0,
                             unit: "R$ ",
                             separator: ",",
                             delimiter: "."
@@ -962,7 +1021,7 @@
 
                     <td>
                       <%= number_to_currency(
-                            record&.refund_value_brl || 0,
+                            trip[:refund_value_brl] || 0,
                             unit: "R$ ",
                             separator: ",",
                             delimiter: "."
@@ -972,7 +1031,7 @@
 
                     <td>
                       <%= number_with_delimiter(
-                            record&.refund_value_points || 0,
+                            trip[:refund_value_points] || 0,
                             delimiter: ".",
                             separator: ","
                           ) %>
@@ -981,7 +1040,7 @@
 
                     <td>
                       <%= number_to_currency(
-                            record&.final_value_brl || 0,
+                            trip[:final_value_brl] || 0,
                             unit: "R$ ",
                             separator: ",",
                             delimiter: "."
@@ -991,7 +1050,7 @@
 
                     <td>
                       <%= number_with_delimiter(
-                            record&.final_value_points || 0,
+                            trip[:final_value_points] || 0,
                             delimiter: ".",
                             separator: ","
                           ) %>
