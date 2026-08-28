@@ -2566,10 +2566,10 @@ body::before {
 }
 
 .travel-kpi-label {
-  color: #475569;
+  color: black;
 
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 600;
   line-height: 1.3;
 }
 
