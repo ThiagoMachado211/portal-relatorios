@@ -3262,3 +3262,61 @@ body::before {
     overflow-x: auto;
   }
 }
+
+
+
+/* ========================================================= */
+/* DASHBOARD — AJUSTE DE LEGIBILIDADE                        */
+/* ========================================================= */
+
+.executive-stat__label {
+  font-size: 14px;
+}
+
+.executive-stat small {
+  font-size: 12px;
+}
+
+.executive-calendar__weekday {
+  font-size: 11px;
+}
+
+.executive-calendar__day-number {
+  font-size: 12px;
+}
+
+.executive-calendar-event strong {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.executive-calendar-event span {
+  font-size: 9.5px;
+  line-height: 1.2;
+}
+
+.executive-calendar__more {
+  font-size: 9px;
+}
+
+.executive-calendar__legend {
+  font-size: 11px;
+}
+
+.executive-event-type,
+.executive-event-next {
+  font-size: 9px;
+}
+
+.executive-upcoming-event h3 {
+  font-size: 14px;
+}
+
+.executive-upcoming-event p {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.executive-upcoming-event small {
+  font-size: 10px;
+}
