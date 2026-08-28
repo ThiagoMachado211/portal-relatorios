@@ -2830,7 +2830,7 @@ body::before {
 .executive-panel__eyebrow {
   display: block;
   margin-bottom: 6px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 900;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -2894,7 +2894,7 @@ body::before {
   display: block;
   margin-bottom: 8px;
   color: #64748b;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 800;
 }
 
@@ -2954,6 +2954,7 @@ body::before {
 
 .executive-panel__eyebrow {
   color: #2563eb;
+  font-size: 14px;
 }
 
 .executive-panel__header h2 {

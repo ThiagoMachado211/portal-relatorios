@@ -12,9 +12,8 @@
 <div class="executive-dashboard">
   <header class="executive-dashboard__hero">
     <div>
-      <span class="executive-dashboard__eyebrow">Visão geral</span>
-      <h1>Dashboard</h1>
-      <p>Acompanhe os próximos eventos, entregas e datas importantes da operação.</p>
+      <h1>Visão Geral</h1>
+      <p>Próximos eventos, entregas e datas importantes.</p>
     </div>
     <div class="executive-dashboard__today">
       <span>Hoje</span>
@@ -31,6 +30,7 @@
         <span class="executive-stat__label">Próximo evento</span>
         <% if next_event %>
           <strong class="executive-stat__value executive-stat__value--date">
+            <%= "#{next_event[:event_date].day.to_s.rjust(2, '0')} #{month_short[next_event[:event_date].month - 1]}" %>
             <%= next_event[:event_date].strftime("%d %b").upcase %>
           </strong>
           <small><%= next_event[:test_name] %></small>
