@@ -31,7 +31,6 @@
         <% if next_event %>
           <strong class="executive-stat__value executive-stat__value--date">
             <%= "#{next_event[:event_date].day.to_s.rjust(2, '0')} #{month_short[next_event[:event_date].month - 1]}" %>
-            <%= next_event[:event_date].strftime("%d %b").upcase %>
           </strong>
           <small><%= next_event[:test_name] %></small>
         <% else %>
