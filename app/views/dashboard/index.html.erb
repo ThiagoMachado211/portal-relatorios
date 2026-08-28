@@ -1,151 +1,174 @@
 <%
-  meses_abrev = [
-    "JAN", "FEV", "MAR", "ABR", "MAI", "JUN",
-    "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"
-  ]
+  month_names = %w[JANEIRO FEVEREIRO MARÇO ABRIL MAIO JUNHO JULHO AGOSTO SETEMBRO OUTUBRO NOVEMBRO DEZ]
+  month_short = %w[JAN FEV MAR ABR MAI JUN JUL AGO SET OUT NOV DEZ]
+  week_days = %w[SEG TER QUA QUI SEX SÁB DOM]
+
+  event_tone = lambda do |item|
+    text = "#{item[:test_name]} #{item[:test_type]}".downcase
+    text.include?("redação") ? "redacao" : "enem"
+  end
 %>
 
-<div class="dashboard-page">
-
-  <div class="dashboard-page__header">
+<div class="executive-dashboard">
+  <header class="executive-dashboard__hero">
     <div>
-      <h1 class="dashboard-page__title">
-        Dashboard
-      </h1>
-
-      <p class="dashboard-page__subtitle">
-        Calendário e próximos eventos.
-      </p>
+      <span class="executive-dashboard__eyebrow">Visão geral</span>
+      <h1>Dashboard</h1>
+      <p>Acompanhe os próximos eventos, entregas e datas importantes da operação.</p>
     </div>
-  </div>
+    <div class="executive-dashboard__today">
+      <span>Hoje</span>
+      <strong><%= l(Date.current, format: "%d/%m/%Y") %></strong>
+    </div>
+  </header>
 
   <% if current_user.admin? || current_user.manager? %>
+    <% stats = @dashboard_stats || {} %>
+    <% next_event = stats[:next_event] %>
 
-    <div class="dashboard-calendar-grid">
+    <section class="executive-stats">
+      <article class="executive-stat">
+        <span class="executive-stat__label">Próximo evento</span>
+        <% if next_event %>
+          <strong class="executive-stat__value executive-stat__value--date">
+            <%= next_event[:event_date].strftime("%d %b").upcase %>
+          </strong>
+          <small><%= next_event[:test_name] %></small>
+        <% else %>
+          <strong class="executive-stat__value">—</strong>
+          <small>Nenhum evento futuro</small>
+        <% end %>
+      </article>
 
-      <!-- CALENDÁRIO -->
-      <section class="dashboard-calendar-card">
+      <article class="executive-stat">
+        <span class="executive-stat__label">Eventos futuros</span>
+        <strong class="executive-stat__value"><%= stats[:future_events_count].to_i %></strong>
+        <small>datas programadas</small>
+      </article>
 
-        <div class="dashboard-card-header">
-          <h2>Calendário de Eventos</h2>
+      <article class="executive-stat">
+        <span class="executive-stat__label">Próximos 30 dias</span>
+        <strong class="executive-stat__value"><%= stats[:next_30_days_count].to_i %></strong>
+        <small>eventos no período</small>
+      </article>
 
-          <p>
-            Acompanhe os eventos e principais datas.
-          </p>
+      <article class="executive-stat">
+        <span class="executive-stat__label">Tipos de avaliação</span>
+        <strong class="executive-stat__value"><%= stats[:test_types_count].to_i %></strong>
+        <small>categorias no calendário</small>
+      </article>
+    </section>
+
+    <section class="executive-dashboard__grid">
+      <article class="executive-panel executive-panel--calendar">
+        <div class="executive-panel__header">
+          <div>
+            <span class="executive-panel__eyebrow">Agenda mensal</span>
+            <h2>Calendário de Eventos</h2>
+          </div>
+
+          <div class="calendar-month-nav">
+            <%= link_to "‹",
+                dashboard_path(month: (@calendar_month << 1).strftime("%Y-%m")),
+                class: "calendar-month-nav__button",
+                aria: { label: "Mês anterior" } %>
+
+            <strong>
+              <%= month_names[@calendar_month.month - 1] %>
+              <%= @calendar_month.year %>
+            </strong>
+
+            <%= link_to "›",
+                dashboard_path(month: (@calendar_month >> 1).strftime("%Y-%m")),
+                class: "calendar-month-nav__button",
+                aria: { label: "Próximo mês" } %>
+          </div>
         </div>
 
-        <% if @calendar_items.present? %>
+        <div class="executive-calendar">
+          <% week_days.each do |day_name| %>
+            <div class="executive-calendar__weekday"><%= day_name %></div>
+          <% end %>
 
-          <div class="dashboard-event-list">
+          <% first_offset = @calendar_month.cwday - 1 %>
+          <% first_offset.times do %>
+            <div class="executive-calendar__day executive-calendar__day--empty"></div>
+          <% end %>
 
-            <% @calendar_items.each do |item| %>
+          <% (@calendar_month..@calendar_month.end_of_month).each do |date| %>
+            <% events = @calendar_events[date] || [] %>
+            <div class="executive-calendar__day <%= "executive-calendar__day--today" if date == Date.current %>">
+              <div class="executive-calendar__day-number"><%= date.day %></div>
 
-              <div class="dashboard-event-row">
+              <div class="executive-calendar__events">
+                <% events.first(3).each do |event| %>
+                  <div class="executive-calendar-event executive-calendar-event--<%= event_tone.call(event) %>"
+                       title="<%= "#{event[:test_name]} — #{event[:event_label]}" %>">
+                    <strong><%= event[:test_name] %></strong>
+                    <span><%= event[:event_label] %></span>
+                  </div>
+                <% end %>
 
-                <div class="dashboard-event-date">
-
-                  <span class="dashboard-event-date__day">
-                    <%= item[:result_date].day %>
-                  </span>
-
-                  <span class="dashboard-event-date__month">
-                    <%= meses_abrev[item[:result_date].month - 1] %>
-                  </span>
-
-                </div>
-
-                <div class="dashboard-event-info">
-
-                  <strong>
-                    <%= item[:test_name] %>
-                  </strong>
-
-                  <span>
-                    <%= item[:test_type] %>
-                  </span>
-
-                </div>
-
+                <% if events.size > 3 %>
+                  <span class="executive-calendar__more">+ <%= events.size - 3 %> evento(s)</span>
+                <% end %>
               </div>
+            </div>
+          <% end %>
+        </div>
 
-            <% end %>
+        <div class="executive-calendar__legend">
+          <span><i class="legend-dot legend-dot--enem"></i> ENEM / Simulados</span>
+          <span><i class="legend-dot legend-dot--redacao"></i> Redação</span>
+        </div>
+      </article>
 
+      <aside class="executive-panel executive-panel--upcoming">
+        <div class="executive-panel__header">
+          <div>
+            <span class="executive-panel__eyebrow">Agenda</span>
+            <h2>Próximos Eventos</h2>
           </div>
-
-        <% else %>
-
-          <div class="dashboard-empty-state">
-            Nenhum evento disponível.
-          </div>
-
-        <% end %>
-
-      </section>
-
-
-      <!-- PRÓXIMOS EVENTOS -->
-      <section class="dashboard-calendar-card">
-
-        <div class="dashboard-card-header">
-          <h2>Próximos Eventos</h2>
-
-          <p>
-            Datas mais próximas a partir de hoje.
-          </p>
         </div>
 
         <% if @upcoming_events.present? %>
-
-          <div class="dashboard-upcoming-events">
-
-            <% @upcoming_events.each do |item| %>
-
-              <article class="dashboard-upcoming-event">
-
-                <div>
-
-                  <span class="dashboard-upcoming-event__date">
-                    <%= item[:event_date].strftime("%d/%m/%Y") %>
-                  </span>
-
-                  <h3>
-                    <%= item[:test_name] %>
-                  </h3>
-
-                  <p>
-                    <%= item[:event_label] %>
-                  </p>
-
+          <div class="executive-upcoming-list">
+            <% @upcoming_events.each_with_index do |item, index| %>
+              <article class="executive-upcoming-event">
+                <div class="executive-upcoming-event__date">
+                  <strong><%= item[:event_date].day %></strong>
+                  <span><%= month_short[item[:event_date].month - 1] %></span>
                 </div>
 
+                <div class="executive-upcoming-event__body">
+                  <div class="executive-upcoming-event__top">
+                    <span class="executive-event-type executive-event-type--<%= event_tone.call(item) %>">
+                      <%= item[:test_type].presence || "Evento" %>
+                    </span>
+                    <% if index.zero? %>
+                      <span class="executive-event-next">PRÓXIMO</span>
+                    <% end %>
+                  </div>
+
+                  <h3><%= item[:test_name] %></h3>
+                  <p><%= item[:event_label] %></p>
+                  <small><%= item[:event_date].strftime("%d/%m/%Y") %></small>
+                </div>
               </article>
-
             <% end %>
-
           </div>
-
         <% else %>
-
           <div class="dashboard-empty-state">
             Nenhum evento próximo.
           </div>
-
         <% end %>
-
-      </section>
-
-    </div>
-
+      </aside>
+    </section>
   <% else %>
-
-    <section class="dashboard-calendar-card">
-
+    <section class="executive-panel">
       <div class="dashboard-empty-state">
         Nenhuma informação disponível neste dashboard.
       </div>
-
     </section>
-
   <% end %>
-
 </div>
