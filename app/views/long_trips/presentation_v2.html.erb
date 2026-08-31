@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gestão de Viagens — Apresentação</title>
+  <style>
+    :root { --blue:#041194; --blue2:#2563eb; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f8fafc; --good:#15803d; --bad:#b91c1c; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:100%; height:100%; font-family:Arial,Helvetica,sans-serif; background:#020617; color:var(--ink); overflow:hidden; }
+    button { font:inherit; }
+    .deck { position:fixed; inset:0; background:#fff; }
+    .slide { position:absolute; inset:0; display:none; padding:76px 56px 54px; background:linear-gradient(180deg,#fff 0%,#f8fafc 100%); overflow:auto; }
+    .slide.active { display:block; }
+    .slide::after { content:""; position:fixed; right:-70px; bottom:-70px; width:330px; height:330px; border-radius:50%; background:rgba(4,17,148,.035); pointer-events:none; }
+    .eyebrow { color:var(--blue2); font-size:13px; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { margin:8px 0 6px; font-size:42px; line-height:1.05; color:var(--blue); }
+    h2 { margin:8px 0 20px; font-size:32px; color:var(--blue); }
+    .subtitle { color:var(--muted); font-size:16px; margin-bottom:24px; }
+    .kpis { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; }
+    .kpi { background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 8px 22px rgba(15,23,42,.06); }
+    .kpi span { display:block; color:var(--muted); font-size:12px; font-weight:800; margin-bottom:8px; }
+    .kpi strong { display:block; font-size:28px; color:var(--ink); }
+    .kpi small { display:block; margin-top:6px; color:var(--muted); }
+    .chart { display:flex; flex-direction:column; gap:12px; max-width:1180px; }
+    .bar-row { display:grid; grid-template-columns:170px 1fr 90px; align-items:center; gap:12px; }
+    .bar-label { text-align:right; font-size:13px; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .bar-track { height:28px; background:#e2e8f0; border-radius:8px; overflow:hidden; }
+    .bar-fill { height:100%; min-width:2px; background:linear-gradient(90deg,var(--blue),var(--blue2)); border-radius:8px; }
+    .bar-value { font-weight:900; font-size:14px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .panel { background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 8px 22px rgba(15,23,42,.06); }
+    .panel h3 { margin:0 0 14px; color:var(--blue); }
+    .controls { position:fixed; z-index:100; left:18px; right:18px; top:14px; display:flex; align-items:center; gap:8px; padding:8px 10px; background:rgba(2,6,23,.92); border-radius:14px; color:#fff; box-shadow:0 8px 25px rgba(0,0,0,.25); }
+    .controls button { border:0; border-radius:9px; padding:8px 11px; background:#1e293b; color:#fff; cursor:pointer; font-weight:800; }
+    .controls button:hover { background:#334155; }
+    .controls .primary { background:#2563eb; }
+    .controls .danger { background:#b91c1c; }
+    .controls .spacer { flex:1; }
+    .counter { font-size:12px; color:#cbd5e1; min-width:75px; text-align:center; }
+    .progress { position:fixed; z-index:101; left:0; bottom:0; height:5px; background:#2563eb; transition:width .25s ease; }
+    .mode-badge { position:fixed; right:28px; bottom:20px; z-index:90; padding:7px 10px; border-radius:999px; background:#e0e7ff; color:#3730a3; font-size:11px; font-weight:900; }
+    .filter-line { display:flex; flex-wrap:wrap; gap:7px; margin:12px 0 22px; }
+    .filter-line span { background:#eff6ff; color:#1e40af; border-radius:999px; padding:6px 9px; font-size:11px; font-weight:800; }
+    .empty { color:var(--muted); padding:30px; text-align:center; }
+    .help { position:fixed; left:26px; bottom:18px; z-index:90; font-size:10px; color:#64748b; }
+    @media (max-width:1000px) { .slide{padding:72px 24px 48px}.kpis{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.bar-row{grid-template-columns:120px 1fr 70px}h1{font-size:34px} }
+    @media print { .controls,.progress,.mode-badge,.help{display:none!important}.slide{position:relative;display:block!important;page-break-after:always;height:100vh}.deck{position:relative}html,body{overflow:visible;background:#fff} }
+  </style>
+</head>
+<body>
+<%
+  data = @dashboard_data || {}
+  overview = data[:overview] || {}
+  monthly = data[:monthly] || {}
+  distributions = data[:distributions] || {}
+  financial = data[:financial]
+  period = data[:period] || {}
+
+  br_date = ->(d) { d.present? ? d.strftime("%d/%m/%Y") : "—" }
+  number = ->(v, digits = 0) { number_with_delimiter(v.to_f.round(digits), delimiter: ".", separator: ",") }
+  money = ->(v) { number_to_currency(v.to_f, unit: "R$ ", separator: ",", delimiter: ".") }
+
+  chart_rows = lambda do |items, limit = nil|
+    rows = Array(items)
+    rows = rows.first(limit) if limit
+    max = rows.map { |item| item.is_a?(Hash) ? item[:value].to_f : item[1].to_f }.max.to_f
+    max = 1 if max <= 0
+    [rows, max]
+  end
+
+  sectors = (distributions[:sectors] || {}).to_a.first(12)
+  destinations = (distributions[:destinations] || {}).to_a.first(12)
+  modes = (distributions[:transport_modes] || {}).to_a
+  monthly_segments = monthly[:total_segments] || []
+  monthly_mileage = monthly[:total_mileage] || []
+  monthly_lead = monthly[:average_lead_time] || []
+
+  filters = []
+  filters << "Período: #{br_date.call(period[:start_date])} a #{br_date.call(period[:end_date])}"
+  filters << "Setor: #{@presentation_filters[:sector]}" if @presentation_filters&.dig(:sector).present?
+  filters << "Transporte: #{@presentation_filters[:transport_mode]}" if @presentation_filters&.dig(:transport_mode).present?
+  filters << "Conformidade: #{@presentation_filters[:policy_compliant] == "true" ? "Conforme" : "Não conforme"}" if @presentation_filters&.dig(:policy_compliant).present?
+  filters << "Cancelamento: #{@presentation_filters[:canceled] == "true" ? "Cancelada" : "Não cancelada"}" if @presentation_filters&.dig(:canceled).present?
+%>
+
+<div class="controls">
+  <button id="prevBtn" title="Anterior (←)">←</button>
+  <button id="nextBtn" title="Próximo (→)">→</button>
+  <button id="autoBtn" class="primary">Pausar automático</button>
+  <button id="fullscreenBtn">Tela cheia</button>
+  <button id="downloadBtn">Baixar HTML</button>
+  <div class="spacer"></div>
+  <span id="counter" class="counter"></span>
+  <button id="closeBtn" class="danger" title="Fechar">Fechar</button>
+</div>
+
+<div class="deck" id="deck">
+  <section class="slide active">
+    <div class="eyebrow">Gestão de Viagens</div>
+    <h1>Visão executiva</h1>
+    <div class="subtitle">Indicadores consolidados do recorte selecionado.</div>
+    <div class="filter-line"><% filters.each do |f| %><span><%= f %></span><% end %></div>
+    <div class="kpis">
+      <div class="kpi"><span>Viagens</span><strong><%= overview[:total_trips].to_i %></strong></div>
+      <div class="kpi"><span>Trechos</span><strong><%= overview[:total_segments].to_i %></strong></div>
+      <div class="kpi"><span>Trechos aéreos</span><strong><%= overview[:total_air_segments].to_i %></strong></div>
+      <div class="kpi"><span>Trechos terrestres</span><strong><%= overview[:total_land_segments].to_i %></strong></div>
+      <div class="kpi"><span>Quilometragem</span><strong><%= number.call(overview[:total_mileage], 1) %></strong><small>km</small></div>
+      <div class="kpi"><span>Antecedência média</span><strong><%= number.call(overview[:average_lead_time_days], 1) %></strong><small>dias</small></div>
+      <div class="kpi"><span>Conformidade</span><strong><%= number.call(overview[:compliance_rate], 1) %>%</strong></div>
+      <div class="kpi"><span>Cancelamentos</span><strong><%= number.call(overview[:cancellation_rate], 1) %>%</strong></div>
+      <div class="kpi"><span>Não conformes</span><strong><%= overview[:non_compliant_segments].to_i %></strong></div>
+      <div class="kpi"><span>Destino mais frequente</span><strong style="font-size:20px"><%= overview[:most_frequent_destination].presence || "—" %></strong></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Evolução mensal</div><h2>Quantidade de trechos</h2>
+    <% rows, max = chart_rows.call(monthly_segments) %>
+    <div class="chart">
+      <% rows.each do |item| %><div class="bar-row"><div class="bar-label"><%= item[:label] %></div><div class="bar-track"><div class="bar-fill" style="width:<%= (item[:value].to_f / max * 100).round(1) %>%"></div></div><div class="bar-value"><%= item[:value].to_i %></div></div><% end %>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Evolução mensal</div><h2>Quilometragem</h2>
+    <% rows, max = chart_rows.call(monthly_mileage) %>
+    <div class="chart">
+      <% rows.each do |item| %><div class="bar-row"><div class="bar-label"><%= item[:label] %></div><div class="bar-track"><div class="bar-fill" style="width:<%= (item[:value].to_f / max * 100).round(1) %>%"></div></div><div class="bar-value"><%= number.call(item[:value], 1) %> km</div></div><% end %>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Perfil</div><h2>Viagens por setor</h2>
+    <% rows, max = chart_rows.call(sectors) %>
+    <div class="chart">
+      <% rows.each do |label,value| %><div class="bar-row"><div class="bar-label"><%= label %></div><div class="bar-track"><div class="bar-fill" style="width:<%= (value.to_f / max * 100).round(1) %>%"></div></div><div class="bar-value"><%= value %></div></div><% end %>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Destinos</div><h2>Cidades mais frequentes</h2>
+    <% rows, max = chart_rows.call(destinations) %>
+    <div class="chart">
+      <% rows.each do |label,value| %><div class="bar-row"><div class="bar-label"><%= label %></div><div class="bar-track"><div class="bar-fill" style="width:<%= (value.to_f / max * 100).round(1) %>%"></div></div><div class="bar-value"><%= value %></div></div><% end %>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Política de viagens</div><h2>Conformidade e cancelamentos</h2>
+    <div class="two-col">
+      <div class="panel"><h3>Conformidade</h3><div class="kpis" style="grid-template-columns:repeat(2,1fr)"><div class="kpi"><span>Conformes</span><strong><%= overview[:compliant_segments].to_i %></strong></div><div class="kpi"><span>Não conformes</span><strong><%= overview[:non_compliant_segments].to_i %></strong></div></div></div>
+      <div class="panel"><h3>Cancelamentos</h3><div class="kpis" style="grid-template-columns:repeat(2,1fr)"><div class="kpi"><span>Cancelados</span><strong><%= overview[:canceled_segments].to_i %></strong></div><div class="kpi"><span>Taxa</span><strong><%= number.call(overview[:cancellation_rate],1) %>%</strong></div></div></div>
+    </div>
+    <h2 style="margin-top:28px;font-size:24px">Meios de transporte</h2>
+    <% rows, max = chart_rows.call(modes) %>
+    <div class="chart"><% rows.each do |label,value| %><div class="bar-row"><div class="bar-label"><%= label %></div><div class="bar-track"><div class="bar-fill" style="width:<%= (value.to_f/max*100).round(1) %>%"></div></div><div class="bar-value"><%= value %></div></div><% end %></div>
+  </section>
+
+  <% if @presentation_mode == "full" && financial.present? %>
+    <section class="slide">
+      <div class="eyebrow">Financeiro</div><h2>Visão financeira consolidada</h2>
+      <div class="kpis">
+        <div class="kpi"><span>Compras</span><strong style="font-size:22px"><%= money.call(financial[:purchase_value_brl]) %></strong></div>
+        <div class="kpi"><span>Taxas extras</span><strong style="font-size:22px"><%= money.call(financial[:extra_fees_brl]) %></strong></div>
+        <div class="kpi"><span>Reembolsos</span><strong style="font-size:22px"><%= money.call(financial[:refund_value_brl]) %></strong></div>
+        <div class="kpi"><span>Valor final</span><strong style="font-size:22px"><%= money.call(financial[:final_value_brl]) %></strong></div>
+        <div class="kpi"><span>Média por viagem</span><strong style="font-size:22px"><%= money.call(financial[:average_final_value_brl_per_trip]) %></strong></div>
+        <div class="kpi"><span>Pontos comprados</span><strong><%= number.call(financial[:purchase_value_points]) %></strong></div>
+        <div class="kpi"><span>Pontos reembolsados</span><strong><%= number.call(financial[:refund_value_points]) %></strong></div>
+        <div class="kpi"><span>Pontos finais</span><strong><%= number.call(financial[:final_value_points]) %></strong></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow">Financeiro</div><h2>Valor final por mês</h2>
+      <% rows, max = chart_rows.call(financial[:monthly_final_value_brl] || []) %>
+      <div class="chart">
+        <% rows.each do |item| %><div class="bar-row"><div class="bar-label"><%= item[:label] %></div><div class="bar-track"><div class="bar-fill" style="width:<%= (item[:value].to_f/max*100).round(1) %>%"></div></div><div class="bar-value"><%= money.call(item[:value]) %></div></div><% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
+
+<div id="progress" class="progress"></div>
+<div class="mode-badge"><%= @presentation_mode == "full" ? "APRESENTAÇÃO COMPLETA" : "SEM DADOS FINANCEIROS" %></div>
+<div class="help">← → navegar · Espaço pausar/retomar · F tela cheia</div>
+
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const autoBtn = document.getElementById("autoBtn");
+  let index = 0, timer = null, auto = true;
+  const interval = 12000;
+
+  function show(i) {
+    index = (i + slides.length) % slides.length;
+    slides.forEach((s,n) => s.classList.toggle("active", n === index));
+    counter.textContent = `${index + 1} / ${slides.length}`;
+    progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+  }
+  function next(manual=false){ if(manual) pause(); show(index+1); }
+  function prev(){ pause(); show(index-1); }
+  function start(){
+    clearInterval(timer); auto = true;
+    autoBtn.textContent = "Pausar automático";
+    timer = setInterval(() => show(index+1), interval);
+  }
+  function pause(){
+    clearInterval(timer); timer = null; auto = false;
+    autoBtn.textContent = "Retomar automático";
+  }
+  function toggleAuto(){ auto ? pause() : start(); }
+  function fullscreen(){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+  function downloadStandalone(){
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll(".slide").forEach((s,n)=>s.classList.toggle("active", n===0));
+    const html = "<!DOCTYPE html>\n" + clone.outerHTML;
+    const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "gestao_viagens_apresentacao.html";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+
+  document.getElementById("nextBtn").onclick = () => next(true);
+  document.getElementById("prevBtn").onclick = prev;
+  autoBtn.onclick = toggleAuto;
+  document.getElementById("fullscreenBtn").onclick = fullscreen;
+  document.getElementById("downloadBtn").onclick = downloadStandalone;
+  document.getElementById("closeBtn").onclick = () => { if(history.length > 1) history.back(); else window.close(); };
+
+  document.addEventListener("keydown", e => {
+    if(e.key === "ArrowRight") next(true);
+    if(e.key === "ArrowLeft") prev();
+    if(e.key === " "){ e.preventDefault(); toggleAuto(); }
+    if(e.key.toLowerCase() === "f") fullscreen();
+  });
+
+  show(0); start();
+})();
+</script>
+</body>
+</html>

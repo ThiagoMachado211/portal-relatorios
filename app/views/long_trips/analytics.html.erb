@@ -19,6 +19,12 @@
 
     <div class="travel-analytics-header-actions">
 
+      <% if @can_manage_long_trips %>
+        <%= link_to "Novo registro",
+            new_long_trip_path,
+            class: "btn-primary" %>
+      <% end %>
+
       <%= link_to "Baixar dados filtrados",
           export_csv_long_trips_path(
             start_date: @start_date,
@@ -519,20 +525,18 @@
 
               <div class="travel-column-chart__item">
 
-                <div class="travel-column-chart__value">
-                  <%= number_with_delimiter(
+                <div class="travel-column-chart__track">
+                  <div
+                    class="travel-column-chart__bar-wrap"
+                    style="height: <%= height.round(2) %>%;">
+                    <div class="travel-column-chart__value">
+                      <%= number_with_delimiter(
                         value.to_i,
                         delimiter: "."
                       ) %>
-                </div>
-
-                <div class="travel-column-chart__track">
-
-                  <div
-                    class="travel-column-chart__bar"
-                    style="height: <%= height.round(2) %>%;">
+                    </div>
+                    <div class="travel-column-chart__bar"></div>
                   </div>
-
                 </div>
 
                 <div class="travel-column-chart__label">
@@ -586,20 +590,18 @@
 
               <div class="travel-column-chart__item">
 
-                <div class="travel-column-chart__value">
-                  <%= number_with_delimiter(
+                <div class="travel-column-chart__track">
+                  <div
+                    class="travel-column-chart__bar-wrap"
+                    style="height: <%= height.round(2) %>%;">
+                    <div class="travel-column-chart__value">
+                      <%= number_with_delimiter(
                         value.round,
                         delimiter: "."
                       ) %>
-                </div>
-
-                <div class="travel-column-chart__track">
-
-                  <div
-                    class="travel-column-chart__bar"
-                    style="height: <%= height.round(2) %>%;">
+                    </div>
+                    <div class="travel-column-chart__bar"></div>
                   </div>
-
                 </div>
 
                 <div class="travel-column-chart__label">
@@ -857,6 +859,10 @@
 
                 <th>Cancelada?</th>
 
+                <% if @can_manage_long_trips %>
+                  <th>Ações</th>
+                <% end %>
+
                 <% if @can_view_financial %>
                   <th>Compra (R$)</th>
                   <th>Compra (Pontos)</th>
@@ -1012,6 +1018,26 @@
                     <% end %>
                   </td>
 
+
+
+                  <% if @can_manage_long_trips %>
+                    <td class="travel-record-actions">
+                      <%= link_to "Editar",
+                          edit_long_trip_path(trip[:id]),
+                          class: "travel-action-button travel-action-button--edit" %>
+
+                      <%= button_to "Excluir",
+                          long_trip_path(trip[:id]),
+                          method: :delete,
+                          form: {
+                            class: "travel-delete-form",
+                            data: {
+                              turbo_confirm: "Excluir este registro de viagem? Esta operação não poderá ser desfeita."
+                            }
+                          },
+                          class: "travel-action-button travel-action-button--delete" %>
+                    </td>
+                  <% end %>
 
                   <% if @can_view_financial %>
 

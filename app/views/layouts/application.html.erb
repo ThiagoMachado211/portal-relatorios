@@ -9,6 +9,14 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <% if controller_name == "long_trips" && action_name == "analytics" %>
+      <%= stylesheet_link_tag "long_trips_analytics", "data-turbo-track": "reload" %>
+    <% end %>
+
+    <% if controller_name == "long_trips" && %w[new edit].include?(action_name) %>
+      <%= stylesheet_link_tag "long_trips_form", "data-turbo-track": "reload" %>
+    <% end %>
     <%= javascript_importmap_tags %>
   </head>
 

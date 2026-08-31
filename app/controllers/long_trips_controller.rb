@@ -3,6 +3,8 @@ require "csv"
 class LongTripsController < ApplicationController
   before_action :authenticate_user!
   skip_before_action :authenticate_user!, only: [:dashboard_data]
+  before_action :ensure_long_trip_management_access!, only: %i[new create edit update destroy]
+  before_action :set_long_trip, only: %i[edit update destroy]
 
   def index
     @long_trips = LongTrip.order(created_at: :desc)
@@ -17,44 +19,31 @@ class LongTripsController < ApplicationController
 
     if @long_trip.save
       broadcast_long_trips_update
-
-      redirect_to long_trips_path, notice: "Trecho longo criado com sucesso."
+      redirect_to analytics_long_trips_path, notice: "Registro criado com sucesso."
     else
       render :new, status: :unprocessable_entity
     end
-
   end
 
   def edit
-    @long_trip = LongTrip.find(params[:id])
   end
 
   def update
-    @long_trip = LongTrip.find(params[:id])
-
     if @long_trip.update(long_trip_params)
       broadcast_long_trips_update
-
-      redirect_to(
-        long_trips_path,
-        notice: "Registro atualizado com sucesso."
-      )
+      redirect_to analytics_long_trips_path, notice: "Registro atualizado com sucesso."
     else
-      render :edit,
-            status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    @long_trip = LongTrip.find(params[:id])
-    @long_trip.destroy
-
-    broadcast_long_trips_update
-
-    redirect_to(
-      long_trips_path,
-      notice: "Registro removido com sucesso."
-    )
+    if @long_trip.destroy
+      broadcast_long_trips_update
+      redirect_to analytics_long_trips_path, notice: "Registro excluído com sucesso."
+    else
+      redirect_to analytics_long_trips_path, alert: "Não foi possível excluir o registro."
+    end
   end
 
   def dashboard
@@ -163,6 +152,7 @@ class LongTripsController < ApplicationController
         .pluck(:transport_mode)
 
     @can_view_financial = can_access_financial_data?
+    @can_manage_long_trips = can_manage_long_trips?
 
     @dashboard_data =
       LongTrips::DashboardData.new(
@@ -363,6 +353,21 @@ class LongTripsController < ApplicationController
 
 
 
+
+  def set_long_trip
+    @long_trip = LongTrip.find(params[:id])
+  end
+
+  def can_manage_long_trips?
+    current_user&.admin? || current_user&.manager?
+  end
+
+  def ensure_long_trip_management_access!
+    return if can_manage_long_trips?
+
+    redirect_to analytics_long_trips_path,
+                alert: "Você não possui permissão para alterar registros de viagens."
+  end
 
   def can_access_financial_data?
     current_user&.can_view_travel_financial_data? || false

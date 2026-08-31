@@ -1,0 +1,148 @@
+<% submit_label = local_assigns.fetch(:submit_label, @long_trip.persisted? ? "Salvar alterações" : "Salvar registro") %>
+
+<% if @long_trip.errors.any? %>
+  <div class="trip-form-errors">
+    <div class="trip-form-errors__title">Não foi possível salvar o registro.</div>
+    <ul>
+      <% @long_trip.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @long_trip, local: true, class: "trip-form-card" do |f| %>
+  <div class="trip-form-grid">
+    <div class="trip-field">
+      <%= f.label :travel_request_id, "ID da solicitação" %>
+      <%= f.number_field :travel_request_id, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :traveler_name, "Nome do viajante" %>
+      <%= f.text_field :traveler_name, class: "trip-input", required: true %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :traveler_sector, "Setor do viajante" %>
+      <%= f.text_field :traveler_sector, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :travel_reason, "Motivo da viagem" %>
+      <%= f.text_field :travel_reason, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :purchase_date, "Data da compra" %>
+      <%= f.date_field :purchase_date, class: "trip-input", min: "2000-01-01" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :travel_date, "Data da viagem" %>
+      <%= f.date_field :travel_date, class: "trip-input", min: "2000-01-01", required: true %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :transport_mode, "Modal de transporte" %>
+      <%= f.select :transport_mode,
+          [["Aéreo", "Aéreo"], ["Terrestre", "Terrestre"]],
+          { include_blank: "Selecione" },
+          class: "trip-input",
+          required: true %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :transport_company, "Empresa de transporte" %>
+      <%= f.text_field :transport_company, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :origin_city, "Cidade de origem" %>
+      <%= f.text_field :origin_city, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :origin_state, "Estado de origem" %>
+      <%= f.text_field :origin_state, class: "trip-input", maxlength: 2 %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :origin_terminal, "Terminal de origem" %>
+      <%= f.text_field :origin_terminal, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :destination_city, "Cidade de destino" %>
+      <%= f.text_field :destination_city, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :destination_state, "Estado de destino" %>
+      <%= f.text_field :destination_state, class: "trip-input", maxlength: 2 %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :destination_terminal, "Terminal de destino" %>
+      <%= f.text_field :destination_terminal, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :mileage, "Quilometragem" %>
+      <%= f.number_field :mileage, step: :any, min: 0, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :purchase_value_brl, "Valor da compra (R$)" %>
+      <%= f.number_field :purchase_value_brl, step: :any, min: 0, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :purchase_value_points, "Valor da compra (pontos)" %>
+      <%= f.number_field :purchase_value_points, step: :any, min: 0, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :extra_fees_brl, "Taxas extras (R$)" %>
+      <%= f.number_field :extra_fees_brl, step: :any, min: 0, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :refund_value_brl, "Valor reembolsado (R$)" %>
+      <%= f.number_field :refund_value_brl, step: :any, min: 0, class: "trip-input" %>
+    </div>
+
+    <div class="trip-field">
+      <%= f.label :refund_value_points, "Valor reembolsado (pontos)" %>
+      <%= f.number_field :refund_value_points, step: :any, min: 0, class: "trip-input" %>
+    </div>
+  </div>
+
+  <div class="trip-form-section-title">Conformidade e status</div>
+
+  <div class="trip-form-grid trip-form-grid--compact">
+    <div class="trip-field trip-field--checkbox">
+      <label class="trip-check">
+        <%= f.check_box :policy_compliant %>
+        <span>Está em conformidade com a política</span>
+      </label>
+    </div>
+
+    <div class="trip-field trip-field--checkbox">
+      <label class="trip-check">
+        <%= f.check_box :canceled %>
+        <span>Viagem cancelada</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="trip-field">
+    <%= f.label :non_compliance_reason, "Motivo de não conformidade" %>
+    <%= f.text_area :non_compliance_reason, rows: 4, class: "trip-input trip-textarea" %>
+  </div>
+
+  <div class="trip-form-actions">
+    <%= link_to "Cancelar", analytics_long_trips_path, class: "trip-btn trip-btn--secondary" %>
+    <%= f.submit submit_label, class: "trip-btn trip-btn--primary" %>
+  </div>
+<% end %>
