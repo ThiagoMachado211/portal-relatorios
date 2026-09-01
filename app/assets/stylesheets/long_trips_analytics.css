@@ -893,3 +893,34 @@
     width: calc(100% + 40px);
   }
 }
+
+
+/* ========================================================= */
+/* ANALYTICS — PADRONIZAÇÃO DOS BOTÕES SUPERIORES            */
+/* ========================================================= */
+
+.travel-analytics-header-actions .btn-primary,
+.travel-analytics-header-actions .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  margin: 0;
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+  background: #2563eb !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.travel-analytics-header-actions .btn-primary:hover,
+.travel-analytics-header-actions .btn-secondary:hover {
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}

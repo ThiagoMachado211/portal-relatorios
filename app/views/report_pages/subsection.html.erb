@@ -1,3 +1,15 @@
+<%
+  visible_report_pages =
+    if current_user.admin?
+      ReportPage.where(
+        sidebar_section_id: @section.id,
+        sidebar_subsection_id: @subsection.id
+      ).order(:position, :title)
+    else
+      @report_pages
+    end
+%>
+
 <div class="subsection-page">
   <% if @section.slug == "calendarios" && @subsection.slug == "mg" && @calendar_items.present? %>
     <%= render "calendar_mg" %>
@@ -11,6 +23,21 @@
         Conteúdos disponíveis nesta subseção
       </div>
 
+      <% if current_user.admin? %>
+        <div class="subsection-admin-toolbar">
+          <div class="subsection-admin-toolbar__text">
+            Como administrador, você pode cadastrar links do Power BI e gerenciar os relatórios desta subseção.
+          </div>
+
+          <%= link_to "Adicionar relatório Power BI",
+              new_admin_report_page_path(
+                sidebar_section_id: @section.id,
+                sidebar_subsection_id: @subsection.id
+              ),
+              class: "btn-primary" %>
+        </div>
+      <% end %>
+
       <% if @section.slug == "setor-operacoes" && @subsection.slug == "logistica" %>
         <div class="report-item-card" style="margin-bottom: 18px;">
           <div class="report-item-header">
@@ -19,8 +46,8 @@
             </div>
 
             <div>
-              <%= link_to "Ver Relatório",
-                  analytics_long_trips_path,
+              <%= link_to "Abrir Dashboard",
+                  long_trips_path,
                   class: "btn-primary" %>
             </div>
           </div>
@@ -31,9 +58,9 @@
         </div>
       <% end %>
 
-      <% if @report_pages.present? && @report_pages.any? %>
+      <% if visible_report_pages.present? && visible_report_pages.any? %>
         <div class="profile-card">
-          <% @report_pages.each do |page| %>
+          <% visible_report_pages.each do |page| %>
             <div class="report-item-card">
               <div class="report-item-header">
                 <div class="report-item-title">
@@ -56,7 +83,7 @@
                         class: "btn-primary" %>
 
                   <% elsif page.external_link? && page.embed_url.present? %>
-                    <%= link_to "Abrir Link",
+                    <%= link_to "Abrir Power BI",
                         page.embed_url,
                         target: "_blank",
                         rel: "noopener",
@@ -79,6 +106,18 @@
                   <% else %>
                     <span class="btn-secondary" style="opacity:0.7; cursor:default;">
                       Indisponível
+                    </span>
+                  <% end %>
+
+                  <% if current_user.admin? %>
+                    <span class="report-item-admin-actions">
+                      <% unless page.active? %>
+                        <span class="report-item-admin-badge">INATIVO</span>
+                      <% end %>
+
+                      <%= link_to "Editar",
+                          edit_admin_report_page_path(page),
+                          class: "btn-secondary" %>
                     </span>
                   <% end %>
                 </div>
