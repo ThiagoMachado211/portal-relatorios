@@ -10,6 +10,23 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
+    <% if devise_controller? %>
+      <%= stylesheet_link_tag "auth", "data-turbo-track": "reload" %>
+    <% end %>
+
+    <% if controller_name == "dashboard" %>
+      <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <% end %>
+
+    <% if controller_name == "report_pages" %>
+      <%= stylesheet_link_tag "report_pages", "data-turbo-track": "reload" %>
+      <%= stylesheet_link_tag "calendar", "data-turbo-track": "reload" %>
+    <% end %>
+
+    <% if controller_path.start_with?("admin/") %>
+      <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
+    <% end %>
+
     <% if controller_name == "long_trips" && action_name == "analytics" %>
       <%= stylesheet_link_tag "long_trips_analytics", "data-turbo-track": "reload" %>
     <% end %>
@@ -17,7 +34,11 @@
     <% if controller_name == "long_trips" && %w[new edit].include?(action_name) %>
       <%= stylesheet_link_tag "long_trips_form", "data-turbo-track": "reload" %>
     <% end %>
-    <%= javascript_importmap_tags %>
+
+    <% if controller_name == "long_trips" && %w[dashboard presentation].include?(action_name) %>
+      <%= stylesheet_link_tag "travel_dashboard", "data-turbo-track": "reload" %>
+    <% end %>
+<%= javascript_importmap_tags %>
   </head>
 
   <body>

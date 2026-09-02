@@ -1,0 +1,504 @@
+.travel-dashboard-page {
+  min-height: 100vh;
+  background: #63b8ea;
+  padding: 12px 18px 18px;
+  box-sizing: border-box;
+}
+
+.travel-dashboard-header {
+  text-align: center;
+  color: #061b9a;
+  margin-bottom: 18px;
+}
+
+.travel-dashboard-header h1 {
+  margin: 0;
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.travel-dashboard-header h2 {
+  margin: 6px 0 0;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.travel-dashboard-body {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.travel-dashboard-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.travel-dashboard-sidebar .travel-kpi-card {
+  width: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1626ad;
+  color: #d8ff28;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.travel-kpi-card__title {
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.travel-kpi-card__value {
+  padding: 18px 10px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.travel-dashboard-main {
+  display: flex;
+}
+
+.travel-chart-card {
+  width: 100%;
+  min-height: 520px;
+  background: #367fcc;
+  border: 1px solid rgba(17, 24, 39, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.travel-chart-card__header {
+  background: #1626ad;
+  color: #d8ff28;
+  text-align: center;
+  padding: 10px 12px 8px;
+}
+
+.travel-chart-card__title {
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.travel-chart-card__subtitle {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.travel-bar-chart {
+  padding: 34px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.travel-bar-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.travel-bar-row__label {
+  color: #d8ff28;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: right;
+}
+
+.travel-bar-row__track {
+  position: relative;
+  width: 100%;
+  height: 44px;
+}
+
+.travel-bar-row__bar {
+  position: relative;
+  height: 44px;
+  background: #1c28ab;
+  min-width: 18px;
+}
+
+.travel-bar-row__value {
+  position: absolute;
+  right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d8ff28;
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.travel-empty-state {
+  color: #ffffff;
+  font-size: 20px;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+@media (max-width: 900px) {
+  .travel-dashboard-header h1 {
+    font-size: 34px;
+  }
+
+  .travel-dashboard-header h2 {
+    font-size: 20px;
+  }
+
+  .travel-dashboard-body {
+    grid-template-columns: 1fr;
+  }
+
+  .travel-dashboard-sidebar {
+    justify-content: flex-start;
+  }
+
+  .travel-bar-row {
+    grid-template-columns: 1fr;
+  }
+
+  .travel-bar-row__label {
+    text-align: left;
+  }
+}
+
+
+.presentation-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #000;
+}
+
+.presentation-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+}
+
+.presentation-frame.is-active {
+  display: block;
+}
+
+
+.dashboard-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dashboard-kpi-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.dashboard-kpi-card__label {
+  display: block;
+  color: #475569;
+  font-size: 13px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.dashboard-kpi-card__value {
+  color: #0f172a;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.dashboard-kpi-card__value--text {
+  font-size: 22px;
+}
+
+.dashboard-chart-grid {
+  display: grid;
+  flex: center;
+  gap: 20px;
+}
+
+.dashboard-chart-panel {
+  background: #367fcc;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.dashboard-chart-panel__header {
+  margin-bottom: 18px;
+}
+
+.dashboard-chart-panel__title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.dashboard-chart-panel__description {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.pie-chart-wrapper {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+@media (max-width: 1000px) {
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.presentation-body {
+  margin: 0;
+  background: #63b8ea;
+}
+
+
+.dashboard-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  flex-wrap: wrap;
+}
+
+.dashboard-nav__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #1626ad;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
+}
+
+.dashboard-nav__button:hover {
+  opacity: 0.92;
+}
+
+.dashboard-nav__button--disabled {
+  background: #94a3b8;
+  cursor: default;
+}
+
+.travel-dashboard-main--full {
+  display: block;
+}
+
+.travel-bar-row__bar--zero {
+  min-width: 2px;
+  background: rgba(28, 40, 171, 0.35);
+}
+
+.travel-bar-row__value {
+  min-width: 48px;
+  text-align: right;
+}
+
+
+
+
+.dashboard-chart-panel--centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboard-chart-panel--wide {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.pie-chart-wrapper--xl {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.monthly-city-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1200px) {
+  .monthly-city-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+.dashboard-nav__button--success {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.dashboard-nav__button--success:hover {
+  opacity: 0.92;
+}
+
+.dashboard-nav__button--danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.dashboard-nav__button--danger:hover {
+  opacity: 0.92;
+}
+
+.dashboard-nav__button--dark {
+  background: #000000;
+  color: #ffffff;
+}
+
+.dashboard-nav__button--dark:hover {
+  opacity: 0.92;
+}
+
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.data-table tr:hover td {
+  background: #f8fafc;
+}
+
+
+.presentation-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #63b8ea;
+  overflow: hidden;
+}
+
+.presentation-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.travel-dashboard-page:has(.dashboard-nav) {
+  box-sizing: border-box;
+}
+
+body:has(.travel-dashboard-page) {
+  margin: 0;
+}
+
+.travel-dashboard-page {
+  min-height: 100vh;
+}
+
+.travel-dashboard-page .travel-dashboard-header {
+  margin-bottom: 12px;
+}
+
+body .travel-dashboard-page.tv-mode {
+  padding: 0;
+}
+
+
+.travel-dashboard-page.tv-mode .travel-dashboard-header {
+  display: none;
+}
+
+.travel-dashboard-page.tv-mode {
+  padding: 0;
+}
+
+.travel-dashboard-page.tv-mode .travel-chart-card,
+.travel-dashboard-page.tv-mode .dashboard-chart-panel {
+  min-height: 100vh;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.travel-dashboard-page.tv-mode .dashboard-kpi-grid {
+  padding: 24px;
+}
+
+
+.presentation-tv-controls {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  z-index: 9999;
+}
+
+.presentation-tv-button {
+  background: #000000;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}

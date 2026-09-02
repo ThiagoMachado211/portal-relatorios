@@ -1,0 +1,56 @@
+/* ============================= */
+/* ADMIN */
+/* ============================= */
+
+.admin-table,
+.admin-table th,
+.admin-table td,
+.admin-table a,
+.admin-list,
+.admin-list * {
+  color: #0f172a !important;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 10px;
+  font-weight: 700;
+}
+
+.admin-table td {
+  padding: 10px;
+  font-weight: 500;
+}
+
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}

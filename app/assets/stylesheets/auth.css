@@ -1,0 +1,151 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: linear-gradient(135deg, #041194 0%, #2f7fd1 100%);
+}
+
+.auth-card {
+  width: min(440px, 100%);
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  color: #0f172a;
+}
+
+.auth-card__header {
+  margin-bottom: 26px;
+  text-align: center;
+}
+
+.auth-card__header h1 {
+  margin: 0 0 8px;
+  color: #041194;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.auth-card__header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.auth-field label {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  outline: none;
+}
+
+.auth-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.auth-password-wrap {
+  position: relative;
+}
+
+.auth-password-wrap .auth-input {
+  padding-right: 52px;
+}
+
+.auth-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+}
+
+.auth-password-toggle:hover,
+.auth-password-toggle:focus-visible {
+  background: #eff6ff;
+  color: #1d4ed8;
+  outline: none;
+}
+
+.auth-password-toggle svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.auth-remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.auth-submit {
+  min-height: 48px;
+  border: 0;
+  border-radius: 11px;
+  background: #2563eb;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.auth-submit:hover {
+  background: #1d4ed8;
+}
+
+.auth-links {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.auth-links a {
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+}
