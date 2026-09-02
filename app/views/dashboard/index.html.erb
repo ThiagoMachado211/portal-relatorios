@@ -42,7 +42,7 @@
       <article class="executive-stat">
         <span class="executive-stat__label">Eventos futuros</span>
         <strong class="executive-stat__value"><%= stats[:future_events_count].to_i %></strong>
-        <small>datas programadas</small>
+        datas programadas
       </article>
 
       <article class="executive-stat">
@@ -62,8 +62,8 @@
       <article class="executive-panel executive-panel--calendar">
         <div class="executive-panel__header">
           <div>
-            <span class="executive-panel__eyebrow">Agenda mensal</span>
-            <h2>Calendário de Eventos</h2>
+            #<span class="executive-panel__eyebrow">Agenda mensal</span>
+            <h1>Calendário de Eventos</h1>
           </div>
 
           <div class="calendar-month-nav">
@@ -151,7 +151,7 @@
 
                   <h3><%= item[:test_name] %></h3>
                   <p><%= item[:event_label] %></p>
-                  <small><%= item[:event_date].strftime("%d/%m/%Y") %></small>
+                  #<small><%= item[:event_date].strftime("%d/%m/%Y") %></small>
                 </div>
               </article>
             <% end %>
