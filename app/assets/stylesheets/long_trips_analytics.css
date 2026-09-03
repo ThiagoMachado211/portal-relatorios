@@ -924,3 +924,125 @@
   color: #ffffff !important;
   transform: translateY(-1px);
 }
+
+
+/* ========================================================= */
+/* ANALYTICS — SELETOR DE INDICADORES / TABELA INTERATIVA    */
+/* ========================================================= */
+
+.travel-filter-form {
+  grid-template-columns: repeat(7, minmax(135px, 1fr));
+}
+
+.travel-filter-group--indicator {
+  min-width: 190px;
+}
+
+[data-indicator-group][hidden],
+[data-indicator-section][hidden] {
+  display: none !important;
+}
+
+.travel-chart-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.travel-table-page-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.travel-table-select {
+  min-height: 36px;
+  padding: 6px 30px 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  font-weight: 700;
+}
+
+.travel-sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.travel-sortable:hover,
+.travel-sortable:focus-visible {
+  background: #1726b8;
+  outline: none;
+}
+
+.travel-sort-icon {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 11px;
+  opacity: .75;
+}
+
+.travel-table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.travel-pagination-button {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1e40af;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.travel-pagination-button:hover:not(:disabled) {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.travel-pagination-button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+@media (max-width: 1450px) {
+  .travel-filter-form {
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .travel-filter-form {
+    grid-template-columns: repeat(2, minmax(150px, 1fr));
+  }
+
+  .travel-table-summary {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .travel-filter-form {
+    grid-template-columns: 1fr;
+  }
+
+  .travel-table-pagination {
+    justify-content: space-between;
+  }
+}

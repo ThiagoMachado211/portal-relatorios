@@ -124,6 +124,27 @@
               class: "travel-filter-input" %>
       </div>
 
+
+      <div class="travel-filter-group travel-filter-group--indicator">
+        <%= form.label :indicator_view, "Indicadores / gráficos" %>
+        <%= select_tag :indicator_view,
+              options_for_select(
+                [
+                  ["Todos", "all"],
+                  ["Indicadores operacionais", "operational"],
+                  ["Indicadores financeiros", "financial"],
+                  ["Trechos por mês", "monthly_segments"],
+                  ["Quilometragem por mês", "monthly_mileage"],
+                  ["Trechos por setor", "sectors"],
+                  ["Principais destinos", "destinations"],
+                  ["Gastos mensais", "monthly_costs"]
+                ],
+                params[:indicator_view].presence || "all"
+              ),
+              class: "travel-filter-input",
+              id: "travel-indicator-selector" %>
+      </div>
+
       <div class="travel-filter-group">
         <%= form.label :policy_compliant, "Conformidade" %>
         <%= form.select :policy_compliant,
@@ -195,7 +216,7 @@
 
 
   <!-- KPIs OPERACIONAIS -->
-  <section class="travel-kpi-section">
+  <section class="travel-kpi-section" data-indicator-group="operational">
 
     <h2 class="travel-section-title">
       Indicadores Operacionais
@@ -338,7 +359,7 @@
   <!-- KPIs FINANCEIROS -->
   <% if @can_view_financial && financial.present? %>
 
-    <section class="travel-kpi-section">
+    <section class="travel-kpi-section" data-indicator-group="financial">
 
       <h2 class="travel-section-title">
         Indicadores Financeiros
@@ -487,7 +508,7 @@
   <!-- EVOLUÇÃO MENSAL                                       -->
   <!-- ====================================================== -->
 
-  <section class="travel-analysis-section">
+  <section class="travel-analysis-section" data-indicator-section="monthly">
 
     <h2 class="travel-section-title">
       Evolução Mensal
@@ -497,7 +518,7 @@
 
       <!-- TRECHOS POR MÊS -->
 
-      <article class="travel-analysis-card">
+      <article class="travel-analysis-card" data-indicator-group="monthly_segments">
 
         <div class="travel-analysis-card__header">
           <div>
@@ -562,7 +583,7 @@
 
       <!-- QUILOMETRAGEM POR MÊS -->
 
-      <article class="travel-analysis-card">
+      <article class="travel-analysis-card" data-indicator-group="monthly_mileage">
 
         <div class="travel-analysis-card__header">
           <div>
@@ -633,7 +654,7 @@
   <!-- DISTRIBUIÇÕES                                         -->
   <!-- ====================================================== -->
 
-  <section class="travel-analysis-section">
+  <section class="travel-analysis-section" data-indicator-section="distributions">
 
     <h2 class="travel-section-title">
       Distribuições
@@ -643,7 +664,7 @@
 
       <!-- SETORES -->
 
-      <article class="travel-analysis-card">
+      <article class="travel-analysis-card" data-indicator-group="sectors">
 
         <div class="travel-analysis-card__header">
           <div>
@@ -710,7 +731,7 @@
 
       <!-- DESTINOS -->
 
-      <article class="travel-analysis-card">
+      <article class="travel-analysis-card" data-indicator-group="destinations">
 
         <div class="travel-analysis-card__header">
           <div>
@@ -783,6 +804,63 @@
   </section>
 
 
+
+  <% if @can_view_financial && financial.present? %>
+    <%
+      monthly_costs = financial[:monthly_final_value_brl] || []
+      max_monthly_cost = monthly_costs.map { |item| item[:value].to_f }.max.to_f
+    %>
+
+    <section class="travel-analysis-section" data-indicator-section="monthly_costs">
+      <h2 class="travel-section-title">Gastos Mensais</h2>
+
+      <div class="travel-chart-grid travel-chart-grid--single">
+        <article class="travel-analysis-card" data-indicator-group="monthly_costs">
+          <div class="travel-analysis-card__header">
+            <div>
+              <h3>Valor Final por Mês</h3>
+              <p>Evolução mensal do valor final dos trechos no recorte selecionado.</p>
+            </div>
+          </div>
+
+          <% if monthly_costs.any? %>
+            <div class="travel-column-chart">
+              <% monthly_costs.each do |item| %>
+                <%
+                  value = item[:value].to_f
+                  height = max_monthly_cost.positive? ? (value / max_monthly_cost * 100) : 0
+                %>
+
+                <div class="travel-column-chart__item">
+                  <div class="travel-column-chart__track">
+                    <div class="travel-column-chart__bar-wrap"
+                         style="height: <%= height.round(2) %>%;">
+                      <div class="travel-column-chart__value">
+                        <%= number_to_currency(
+                              value,
+                              unit: "R$ ",
+                              separator: ",",
+                              delimiter: "."
+                            ) %>
+                      </div>
+                      <div class="travel-column-chart__bar"></div>
+                    </div>
+                  </div>
+
+                  <div class="travel-column-chart__label">
+                    <%= item[:label].to_s.sub(" 2026", "") %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="travel-analysis-empty">Nenhum dado financeiro disponível.</div>
+          <% end %>
+        </article>
+      </div>
+    </section>
+  <% end %>
+
   <% details = @dashboard_data[:details] || [] %>
 
   <section class="travel-analysis-section">
@@ -799,18 +877,29 @@
       </div>
 
       <div class="travel-table-summary">
-      <div class="travel-table-actions">
-        <%= link_to "Baixar este recorte (CSV)",
-            export_csv_long_trips_path(
-              start_date: @start_date,
-              end_date: @end_date,
-              sector: @sector,
-              transport_mode: @transport_mode,
-              policy_compliant: @policy_compliant,
-              canceled: @canceled
-            ),
-            class: "btn-secondary" %>
-      </div>
+        <div class="travel-table-page-size">
+          <label for="travel-table-page-size">Linhas</label>
+          <select id="travel-table-page-size" class="travel-table-select">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+
+        <div class="travel-table-actions">
+          <%= link_to "Baixar este recorte (CSV)",
+              export_csv_long_trips_path(
+                start_date: @start_date,
+                end_date: @end_date,
+                sector: @sector,
+                transport_mode: @transport_mode,
+                policy_compliant: @policy_compliant,
+                canceled: @canceled
+              ),
+              class: "btn-secondary" %>
+        </div>
+
         <div class="travel-table-count">
           <strong>
           <%= number_with_delimiter(
@@ -837,40 +926,40 @@
 
             <thead>
               <tr>
-                <th>ID Viagem</th>
-                <th>Viajante</th>
-                <th>Setor</th>
-                <th>Motivo</th>
+                <th class="travel-sortable" tabindex="0" role="button">ID Viagem <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Viajante <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Setor <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Motivo <span class="travel-sort-icon">↕</span></th>
 
-                <th>Compra</th>
-                <th>Viagem</th>
-                <th>Antecedência</th>
+                <th class="travel-sortable" tabindex="0" role="button">Compra <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Viagem <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Antecedência <span class="travel-sort-icon">↕</span></th>
 
-                <th>Transporte</th>
+                <th class="travel-sortable" tabindex="0" role="button">Transporte <span class="travel-sort-icon">↕</span></th>
 
-                <th>Origem</th>
-                <th>Destino</th>
+                <th class="travel-sortable" tabindex="0" role="button">Origem <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Destino <span class="travel-sort-icon">↕</span></th>
 
-                <th>Empresa</th>
-                <th>Km</th>
+                <th class="travel-sortable" tabindex="0" role="button">Empresa <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Km <span class="travel-sort-icon">↕</span></th>
 
-                <th>Conformidade</th>
-                <th>Motivo não conformidade</th>
+                <th class="travel-sortable" tabindex="0" role="button">Conformidade <span class="travel-sort-icon">↕</span></th>
+                <th class="travel-sortable" tabindex="0" role="button">Motivo não conformidade <span class="travel-sort-icon">↕</span></th>
 
-                <th>Cancelada?</th>
+                <th class="travel-sortable" tabindex="0" role="button">Cancelada? <span class="travel-sort-icon">↕</span></th>
 
                 <% if @can_manage_long_trips %>
                   <th>Ações</th>
                 <% end %>
 
                 <% if @can_view_financial %>
-                  <th>Compra (R$)</th>
-                  <th>Compra (Pontos)</th>
-                  <th>Taxas Extras</th>
-                  <th>Reembolso (R$)</th>
-                  <th>Reembolso (Pontos)</th>
-                  <th>Valor Final (R$)</th>
-                  <th>Valor Final (Pontos)</th>
+                  <th class="travel-sortable" tabindex="0" role="button">Compra (R$) <span class="travel-sort-icon">↕</span></th>
+                  <th class="travel-sortable" tabindex="0" role="button">Compra (Pontos) <span class="travel-sort-icon">↕</span></th>
+                  <th class="travel-sortable" tabindex="0" role="button">Taxas Extras <span class="travel-sort-icon">↕</span></th>
+                  <th class="travel-sortable" tabindex="0" role="button">Reembolso (R$) <span class="travel-sort-icon">↕</span></th>
+                  <th class="travel-sortable" tabindex="0" role="button">Reembolso (Pontos) <span class="travel-sort-icon">↕</span></th>
+                  <th class="travel-sortable" tabindex="0" role="button">Valor Final (R$) <span class="travel-sort-icon">↕</span></th>
+                  <th class="travel-sortable" tabindex="0" role="button">Valor Final (Pontos) <span class="travel-sort-icon">↕</span></th>
                 <% end %>
               </tr>
             </thead>
@@ -1117,7 +1206,15 @@
 
           </table>
 
-        </div>
+        
+          
+</div>
+
+        <div class="travel-table-pagination" id="travel-table-pagination">
+            <button type="button" class="travel-pagination-button" id="travel-page-prev">← Anterior</button>
+            <span id="travel-page-info">Página 1 de 1</span>
+            <button type="button" class="travel-pagination-button" id="travel-page-next">Próxima →</button>
+          </div>
 
       <% else %>
 
@@ -1135,3 +1232,168 @@
 
 
 </div>
+
+
+<script>
+  document.addEventListener("turbo:load", () => {
+    // -------------------------------------------------------
+    // Seletor de indicadores / gráficos
+    // -------------------------------------------------------
+    const indicatorSelector = document.getElementById("travel-indicator-selector");
+    const indicatorGroups = Array.from(document.querySelectorAll("[data-indicator-group]"));
+    const indicatorSections = Array.from(document.querySelectorAll("[data-indicator-section]"));
+
+    const applyIndicatorFilter = () => {
+      if (!indicatorSelector) return;
+
+      const selected = indicatorSelector.value || "all";
+
+      indicatorGroups.forEach((element) => {
+        element.hidden = selected !== "all" && element.dataset.indicatorGroup !== selected;
+      });
+
+      indicatorSections.forEach((section) => {
+        const visibleChildren = Array.from(section.querySelectorAll("[data-indicator-group]"))
+          .some((child) => !child.hidden);
+
+        section.hidden = selected !== "all" && !visibleChildren;
+      });
+    };
+
+    if (indicatorSelector && indicatorSelector.dataset.bound !== "true") {
+      indicatorSelector.dataset.bound = "true";
+      indicatorSelector.addEventListener("change", applyIndicatorFilter);
+      applyIndicatorFilter();
+    }
+
+    // -------------------------------------------------------
+    // Tabela: limite por página + ordenação
+    // -------------------------------------------------------
+    const table = document.querySelector(".travel-detail-table");
+    const pageSizeSelect = document.getElementById("travel-table-page-size");
+    const prevButton = document.getElementById("travel-page-prev");
+    const nextButton = document.getElementById("travel-page-next");
+    const pageInfo = document.getElementById("travel-page-info");
+
+    if (!table || !pageSizeSelect || table.dataset.enhanced === "true") return;
+
+    table.dataset.enhanced = "true";
+
+    const tbody = table.querySelector("tbody");
+    const headers = Array.from(table.querySelectorAll("thead th"));
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+    let currentPage = 1;
+    let sortColumn = -1;
+    let sortDirection = 1;
+
+    const parseValue = (raw) => {
+      const text = (raw || "").trim();
+      if (!text || text === "-") return "";
+
+      const dateMatch = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (dateMatch) {
+        return Number(`${dateMatch[3]}${dateMatch[2]}${dateMatch[1]}`);
+      }
+
+      const daysMatch = text.match(/^(-?\d+(?:[.,]\d+)?)\s*dias?$/i);
+      if (daysMatch) return Number(daysMatch[1].replace(",", "."));
+
+      const cleaned = text
+        .replace(/^R\$\s*/i, "")
+        .replace(/\s*km$/i, "")
+        .replace(/\s*%$/i, "")
+        .replace(/\./g, "")
+        .replace(",", ".");
+
+      if (/^-?\d+(?:\.\d+)?$/.test(cleaned)) return Number(cleaned);
+
+      return text.toLocaleLowerCase("pt-BR");
+    };
+
+    const renderPage = () => {
+      const pageSize = Number(pageSizeSelect.value);
+      const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+
+      rows.forEach((row, index) => {
+        row.hidden = index < start || index >= end;
+      });
+
+      if (pageInfo) pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+      if (prevButton) prevButton.disabled = currentPage <= 1;
+      if (nextButton) nextButton.disabled = currentPage >= totalPages;
+    };
+
+    const sortRows = (columnIndex) => {
+      const sameColumn = sortColumn === columnIndex;
+      sortDirection = sameColumn ? sortDirection * -1 : 1;
+      sortColumn = columnIndex;
+
+      rows.sort((a, b) => {
+        const av = parseValue(a.cells[columnIndex]?.innerText);
+        const bv = parseValue(b.cells[columnIndex]?.innerText);
+
+        if (typeof av === "number" && typeof bv === "number") {
+          return (av - bv) * sortDirection;
+        }
+
+        return String(av).localeCompare(String(bv), "pt-BR", {
+          numeric: true,
+          sensitivity: "base"
+        }) * sortDirection;
+      });
+
+      rows.forEach((row) => tbody.appendChild(row));
+
+      headers.forEach((header, index) => {
+        const icon = header.querySelector(".travel-sort-icon");
+        if (!icon) return;
+        icon.textContent = index === sortColumn
+          ? (sortDirection === 1 ? "↑" : "↓")
+          : "↕";
+      });
+
+      currentPage = 1;
+      renderPage();
+    };
+
+    headers.forEach((header, index) => {
+      if (!header.classList.contains("travel-sortable")) return;
+
+      header.addEventListener("click", () => sortRows(index));
+      header.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          sortRows(index);
+        }
+      });
+    });
+
+    pageSizeSelect.addEventListener("change", () => {
+      currentPage = 1;
+      renderPage();
+    });
+
+    prevButton?.addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage -= 1;
+        renderPage();
+      }
+    });
+
+    nextButton?.addEventListener("click", () => {
+      const totalPages = Math.max(1, Math.ceil(rows.length / Number(pageSizeSelect.value)));
+      if (currentPage < totalPages) {
+        currentPage += 1;
+        renderPage();
+      }
+    });
+
+    renderPage();
+  });
+</script>
+
