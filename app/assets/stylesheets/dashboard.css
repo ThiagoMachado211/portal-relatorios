@@ -280,8 +280,9 @@
 
 .executive-dashboard {
   height: 100%;
-  max-width: 1540px;
-  margin: 0 auto;
+  width: calc(100% + 16px);
+  max-width: none;
+  margin: 0 -8px;
   color: #0f172a;
 }
 
@@ -743,15 +744,15 @@
 /* ========================================================= */
 
 .executive-stat__label {
-  font-size: 14px;
+  font-size: 18.2px;
 }
 
 .executive-stat small {
-  font-size: 12px;
+  font-size: 15.6px;
 }
 
 .executive-calendar__weekday {
-  font-size: 11px;
+  font-size: 14.3px;
 }
 
 .executive-calendar__day-number {
@@ -759,12 +760,12 @@
 }
 
 .executive-calendar-event strong {
-  font-size: 11px;
+  font-size: 13.2px;
   line-height: 1.2;
 }
 
 .executive-calendar-event span {
-  font-size: 9.5px;
+  font-size: 11.4px;
   line-height: 1.2;
 }
 
@@ -792,4 +793,12 @@
 
 .executive-upcoming-event small {
   font-size: 10px;
+}
+
+
+@media (max-width: 760px) {
+  .executive-dashboard {
+    width: 100%;
+    margin: 0;
+  }
 }
