@@ -30,9 +30,7 @@
             start_date: @start_date,
             end_date: @end_date,
             sector: @sector,
-            transport_mode: @transport_mode,
-            policy_compliant: @policy_compliant,
-            canceled: @canceled
+            transport_mode: @transport_mode
           ),
           class: "btn-secondary" %>
 
@@ -42,9 +40,7 @@
              start_date: @start_date,
              end_date: @end_date,
              sector: @sector,
-             transport_mode: @transport_mode,
-             policy_compliant: @policy_compliant,
-             canceled: @canceled
+             transport_mode: @transport_mode
            ),
           class: "btn-secondary",
           target: "_blank",
@@ -57,9 +53,7 @@
                start_date: @start_date,
                end_date: @end_date,
                sector: @sector,
-               transport_mode: @transport_mode,
-               policy_compliant: @policy_compliant,
-               canceled: @canceled
+               transport_mode: @transport_mode
              ),
             class: "btn-primary",
             target: "_blank",
@@ -83,9 +77,7 @@
            @start_date.present?,
            @end_date.present?,
            @sector.present?,
-           @transport_mode.present?,
-           @policy_compliant.present?,
-           @canceled.present?
+           @transport_mode.present?
          ].count(true) %>
 
       <% if active_filters.positive? %>
@@ -125,46 +117,36 @@
       </div>
 
 
+      <%
+        indicator_options = [
+          ["Indicadores operacionais", "operational"],
+          ["Trechos por mês", "monthly_segments"],
+          ["Quilometragem por mês", "monthly_mileage"],
+          ["Evolução mensal de conformidade", "monthly_compliance"],
+          ["Evolução mensal de cancelamentos", "monthly_cancellation"],
+          ["Trechos por setor", "sectors"],
+          ["Principais destinos", "destinations"],
+          ["Detalhamento dos trechos", "details"]
+        ]
+
+        if @can_view_financial
+          indicator_options.insert(1, ["Indicadores financeiros", "financial"])
+          indicator_options += [
+            ["Gastos mensais com passagens", "monthly_passages_cost"],
+            ["Gastos mensais com hospedagens", "monthly_accommodation_cost"],
+            ["Gastos mensais totais", "monthly_total_cost"]
+          ]
+        end
+
+        selected_indicator = params[:indicator_view].presence || "operational"
+      %>
+
       <div class="travel-filter-group travel-filter-group--indicator">
         <%= form.label :indicator_view, "Indicadores / gráficos" %>
         <%= select_tag :indicator_view,
-              options_for_select(
-                [
-                  ["Todos", "all"],
-                  ["Indicadores operacionais", "operational"],
-                  ["Indicadores financeiros", "financial"],
-                  ["Trechos por mês", "monthly_segments"],
-                  ["Quilometragem por mês", "monthly_mileage"],
-                  ["Trechos por setor", "sectors"],
-                  ["Principais destinos", "destinations"],
-                  ["Gastos mensais", "monthly_costs"]
-                ],
-                params[:indicator_view].presence || "all"
-              ),
+              options_for_select(indicator_options, selected_indicator),
               class: "travel-filter-input",
               id: "travel-indicator-selector" %>
-      </div>
-
-      <div class="travel-filter-group">
-        <%= form.label :policy_compliant, "Conformidade" %>
-        <%= form.select :policy_compliant,
-              options_for_select(
-                [["Todos", ""], ["Conforme", "true"], ["Não conforme", "false"]],
-                @policy_compliant
-              ),
-              {},
-              class: "travel-filter-input" %>
-      </div>
-
-      <div class="travel-filter-group">
-        <%= form.label :canceled, "Cancelamento" %>
-        <%= form.select :canceled,
-              options_for_select(
-                [["Todos", ""], ["Cancelada", "true"], ["Não cancelada", "false"]],
-                @canceled
-              ),
-              {},
-              class: "travel-filter-input" %>
       </div>
 
       <div class="travel-filter-actions">
@@ -181,8 +163,6 @@
         <% if @end_date.present? %><strong>Até <%= @end_date.strftime("%d/%m/%Y") %></strong><% end %>
         <% if @sector.present? %><strong>Setor: <%= @sector %></strong><% end %>
         <% if @transport_mode.present? %><strong>Transporte: <%= @transport_mode %></strong><% end %>
-        <% if @policy_compliant.present? %><strong>Conformidade: <%= @policy_compliant == "true" ? "Conforme" : "Não conforme" %></strong><% end %>
-        <% if @canceled.present? %><strong>Cancelamento: <%= @canceled == "true" ? "Cancelada" : "Não cancelada" %></strong><% end %>
       </div>
     <% end %>
 
@@ -486,6 +466,8 @@
 
     monthly_segments = monthly[:total_segments] || []
     monthly_mileage  = monthly[:total_mileage] || []
+    monthly_compliance = (@dashboard_data.dig(:compliance, :monthly_rate) || [])
+    monthly_cancellation = (@dashboard_data.dig(:cancellations, :monthly_rate) || [])
 
     sectors      = distributions[:sectors] || {}
     destinations = distributions[:destinations] || {}
@@ -495,6 +477,12 @@
 
     max_mileage =
       monthly_mileage.map { |item| item[:value].to_f }.max.to_f
+
+    max_compliance =
+      [monthly_compliance.map { |item| item[:value].to_f }.max.to_f, 100.0].max
+
+    max_cancellation =
+      [monthly_cancellation.map { |item| item[:value].to_f }.max.to_f, 100.0].max
 
     max_sector =
       sectors.values.map(&:to_f).max.to_f
@@ -645,6 +633,75 @@
 
       </article>
 
+
+
+      <!-- CONFORMIDADE POR MÊS -->
+      <article class="travel-analysis-card" data-indicator-group="monthly_compliance">
+        <div class="travel-analysis-card__header">
+          <div>
+            <h3>Conformidade por Mês</h3>
+            <p>Percentual mensal de trechos avaliados como conformes.</p>
+          </div>
+        </div>
+
+        <% if monthly_compliance.any? %>
+          <div class="travel-column-chart">
+            <% monthly_compliance.each do |item| %>
+              <% value = item[:value].to_f %>
+              <div class="travel-column-chart__item">
+                <div class="travel-column-chart__track">
+                  <div class="travel-column-chart__bar-wrap"
+                       style="height: <%= value.clamp(0, 100).round(2) %>%;">
+                    <div class="travel-column-chart__value">
+                      <%= number_with_precision(value, precision: 1, separator: ",") %>%
+                    </div>
+                    <div class="travel-column-chart__bar"></div>
+                  </div>
+                </div>
+                <div class="travel-column-chart__label">
+                  <%= item[:label].to_s.sub(" 2026", "") %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="travel-analysis-empty">Nenhum dado disponível.</div>
+        <% end %>
+      </article>
+
+      <!-- CANCELAMENTOS POR MÊS -->
+      <article class="travel-analysis-card" data-indicator-group="monthly_cancellation">
+        <div class="travel-analysis-card__header">
+          <div>
+            <h3>Cancelamentos por Mês</h3>
+            <p>Percentual mensal de trechos cancelados.</p>
+          </div>
+        </div>
+
+        <% if monthly_cancellation.any? %>
+          <div class="travel-column-chart">
+            <% monthly_cancellation.each do |item| %>
+              <% value = item[:value].to_f %>
+              <div class="travel-column-chart__item">
+                <div class="travel-column-chart__track">
+                  <div class="travel-column-chart__bar-wrap"
+                       style="height: <%= value.clamp(0, 100).round(2) %>%;">
+                    <div class="travel-column-chart__value">
+                      <%= number_with_precision(value, precision: 1, separator: ",") %>%
+                    </div>
+                    <div class="travel-column-chart__bar"></div>
+                  </div>
+                </div>
+                <div class="travel-column-chart__label">
+                  <%= item[:label].to_s.sub(" 2026", "") %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="travel-analysis-empty">Nenhum dado disponível.</div>
+        <% end %>
+      </article>
     </div>
 
   </section>
@@ -807,46 +864,47 @@
 
   <% if @can_view_financial && financial.present? %>
     <%
-      monthly_costs = financial[:monthly_final_value_brl] || []
-      max_monthly_cost = monthly_costs.map { |item| item[:value].to_f }.max.to_f
+      monthly_passages_cost =
+        financial[:monthly_long_segments_brl].presence ||
+        financial[:monthly_final_value_brl] || []
+
+      monthly_accommodation_cost =
+        financial[:monthly_accommodation_brl] || []
+
+      monthly_total_cost =
+        financial[:monthly_journey_total_brl].presence ||
+        financial[:monthly_final_value_brl] || []
     %>
 
-    <section class="travel-analysis-section" data-indicator-section="monthly_costs">
-      <h2 class="travel-section-title">Gastos Mensais</h2>
+    <section class="travel-analysis-section" data-indicator-section="monthly_financial">
+      <h2 class="travel-section-title">Evolução Mensal de Gastos</h2>
 
       <div class="travel-chart-grid travel-chart-grid--single">
-        <article class="travel-analysis-card" data-indicator-group="monthly_costs">
+
+        <article class="travel-analysis-card" data-indicator-group="monthly_passages_cost">
           <div class="travel-analysis-card__header">
             <div>
-              <h3>Valor Final por Mês</h3>
-              <p>Evolução mensal do valor final dos trechos no recorte selecionado.</p>
+              <h3>Gastos Mensais com Passagens</h3>
+              <p>Valor mensal dos trechos longos/passagens no recorte selecionado.</p>
             </div>
           </div>
 
-          <% if monthly_costs.any? %>
+          <% if monthly_passages_cost.any? %>
+            <% max_value = monthly_passages_cost.map { |item| item[:value].to_f }.max.to_f %>
             <div class="travel-column-chart">
-              <% monthly_costs.each do |item| %>
-                <%
-                  value = item[:value].to_f
-                  height = max_monthly_cost.positive? ? (value / max_monthly_cost * 100) : 0
-                %>
-
+              <% monthly_passages_cost.each do |item| %>
+                <% value = item[:value].to_f %>
+                <% height = max_value.positive? ? (value / max_value * 100) : 0 %>
                 <div class="travel-column-chart__item">
                   <div class="travel-column-chart__track">
                     <div class="travel-column-chart__bar-wrap"
                          style="height: <%= height.round(2) %>%;">
                       <div class="travel-column-chart__value">
-                        <%= number_to_currency(
-                              value,
-                              unit: "R$ ",
-                              separator: ",",
-                              delimiter: "."
-                            ) %>
+                        <%= number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") %>
                       </div>
                       <div class="travel-column-chart__bar"></div>
                     </div>
                   </div>
-
                   <div class="travel-column-chart__label">
                     <%= item[:label].to_s.sub(" 2026", "") %>
                   </div>
@@ -857,13 +915,84 @@
             <div class="travel-analysis-empty">Nenhum dado financeiro disponível.</div>
           <% end %>
         </article>
+
+        <article class="travel-analysis-card" data-indicator-group="monthly_accommodation_cost">
+          <div class="travel-analysis-card__header">
+            <div>
+              <h3>Gastos Mensais com Hospedagens</h3>
+              <p>Valor mensal de hospedagens associado às viagens selecionadas.</p>
+            </div>
+          </div>
+
+          <% if monthly_accommodation_cost.any? %>
+            <% max_value = monthly_accommodation_cost.map { |item| item[:value].to_f }.max.to_f %>
+            <div class="travel-column-chart">
+              <% monthly_accommodation_cost.each do |item| %>
+                <% value = item[:value].to_f %>
+                <% height = max_value.positive? ? (value / max_value * 100) : 0 %>
+                <div class="travel-column-chart__item">
+                  <div class="travel-column-chart__track">
+                    <div class="travel-column-chart__bar-wrap"
+                         style="height: <%= height.round(2) %>%;">
+                      <div class="travel-column-chart__value">
+                        <%= number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") %>
+                      </div>
+                      <div class="travel-column-chart__bar"></div>
+                    </div>
+                  </div>
+                  <div class="travel-column-chart__label">
+                    <%= item[:label].to_s.sub(" 2026", "") %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="travel-analysis-empty">Nenhum dado de hospedagem disponível.</div>
+          <% end %>
+        </article>
+
+        <article class="travel-analysis-card" data-indicator-group="monthly_total_cost">
+          <div class="travel-analysis-card__header">
+            <div>
+              <h3>Gastos Mensais Totais</h3>
+              <p>Valor consolidado mensal das viagens, incluindo os componentes disponíveis.</p>
+            </div>
+          </div>
+
+          <% if monthly_total_cost.any? %>
+            <% max_value = monthly_total_cost.map { |item| item[:value].to_f }.max.to_f %>
+            <div class="travel-column-chart">
+              <% monthly_total_cost.each do |item| %>
+                <% value = item[:value].to_f %>
+                <% height = max_value.positive? ? (value / max_value * 100) : 0 %>
+                <div class="travel-column-chart__item">
+                  <div class="travel-column-chart__track">
+                    <div class="travel-column-chart__bar-wrap"
+                         style="height: <%= height.round(2) %>%;">
+                      <div class="travel-column-chart__value">
+                        <%= number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") %>
+                      </div>
+                      <div class="travel-column-chart__bar"></div>
+                    </div>
+                  </div>
+                  <div class="travel-column-chart__label">
+                    <%= item[:label].to_s.sub(" 2026", "") %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="travel-analysis-empty">Nenhum dado financeiro consolidado disponível.</div>
+          <% end %>
+        </article>
+
       </div>
     </section>
   <% end %>
 
   <% details = @dashboard_data[:details] || [] %>
 
-  <section class="travel-analysis-section">
+  <section class="travel-analysis-section" data-indicator-group="details">
 
     <div class="travel-table-header">
       <div>
@@ -893,9 +1022,7 @@
                 start_date: @start_date,
                 end_date: @end_date,
                 sector: @sector,
-                transport_mode: @transport_mode,
-                policy_compliant: @policy_compliant,
-                canceled: @canceled
+                transport_mode: @transport_mode
               ),
               class: "btn-secondary" %>
         </div>
@@ -1246,17 +1373,17 @@
     const applyIndicatorFilter = () => {
       if (!indicatorSelector) return;
 
-      const selected = indicatorSelector.value || "all";
+      const selected = indicatorSelector.value || "operational";
 
       indicatorGroups.forEach((element) => {
-        element.hidden = selected !== "all" && element.dataset.indicatorGroup !== selected;
+        element.hidden = element.dataset.indicatorGroup !== selected;
       });
 
       indicatorSections.forEach((section) => {
         const visibleChildren = Array.from(section.querySelectorAll("[data-indicator-group]"))
           .some((child) => !child.hidden);
 
-        section.hidden = selected !== "all" && !visibleChildren;
+        section.hidden = !visibleChildren;
       });
     };
 

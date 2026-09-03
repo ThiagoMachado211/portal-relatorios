@@ -1046,3 +1046,53 @@
     justify-content: space-between;
   }
 }
+
+
+/* ========================================================= */
+/* ANALYTICS — SELETOR ÚNICO E GRÁFICOS CENTRALIZADOS        */
+/* ========================================================= */
+
+.travel-filter-form {
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
+}
+
+.travel-analysis-section[data-indicator-section] > .travel-section-title {
+  text-align: center;
+}
+
+.travel-analysis-section[data-indicator-section] .travel-chart-grid {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.travel-analysis-section[data-indicator-section] .travel-analysis-card[data-indicator-group] {
+  flex: 0 1 1200px;
+  width: min(1200px, 100%);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.travel-analysis-section[data-indicator-section] .travel-analysis-card__header {
+  text-align: center;
+}
+
+.travel-analysis-section[data-indicator-section] .travel-horizontal-chart,
+.travel-analysis-section[data-indicator-section] .travel-column-chart {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 1100px) {
+  .travel-filter-form {
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .travel-filter-form {
+    grid-template-columns: 1fr;
+  }
+}

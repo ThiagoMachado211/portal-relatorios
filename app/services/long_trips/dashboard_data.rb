@@ -20,6 +20,7 @@ module LongTrips
         monthly: monthly_data,
         distributions: distribution_data,
         lead_time: lead_time_data,
+        compliance: compliance_data,
         cancellations: cancellation_data,
         accommodations: accommodation_data,
         transfers: transfer_data,
@@ -240,6 +241,37 @@ module LongTrips
         "31 dias ou mais" => values.count { |v| v >= 31 }
       }
       { average_days: average_lead_time_days, distribution: buckets, monthly_average: monthly_average_lead_time }
+    end
+
+
+    # ---------- conformidade ----------
+    def compliance_data
+      monthly = month_range.map do |date|
+        month_items = trips.select do |t|
+          t.travel_date.present? &&
+            t.travel_date.year == date.year &&
+            t.travel_date.month == date.month
+        end
+
+        evaluated = month_items.count { |t| !t.policy_compliant.nil? }
+        compliant_count = month_items.count { |t| t.policy_compliant == true }
+
+        {
+          year: date.year,
+          month: date.month,
+          label: month_label(date),
+          total: month_items.count,
+          evaluated: evaluated,
+          compliant: compliant_count,
+          value: percentage(compliant_count, evaluated)
+        }
+      end
+
+      {
+        total: compliant_segments,
+        rate: compliance_rate,
+        monthly_rate: monthly
+      }
     end
 
     # ---------- cancelamentos ----------
