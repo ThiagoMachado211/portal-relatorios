@@ -16,6 +16,10 @@ Rails.application.routes.draw do
       to: "report_pages#subsection",
       as: :report_subsection
 
+  get "relatorios/pedagogico/enem/estados",
+      to: "enem_states#show",
+      as: :enem_states
+
   namespace :admin do
     resources :users
 
