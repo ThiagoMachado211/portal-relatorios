@@ -38,6 +38,28 @@
         </div>
       <% end %>
 
+      <% if @section.slug == "pedagogico" && @subsection.slug == "enem" %>
+        <div class="report-item-card" style="margin-bottom: 18px;">
+          <div class="report-item-header">
+            <div>
+              <div class="report-item-title">
+                ENEM — Estados
+              </div>
+
+              <div class="report-item-description">
+                Participação, desempenho, redação, evolução histórica e ranking dos estados.
+              </div>
+            </div>
+
+            <div>
+              <%= link_to "Abrir Relatório",
+                  enem_states_path,
+                  class: "btn-primary" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
       <% if @section.slug == "setor-operacoes" && @subsection.slug == "logistica" %>
         <div class="report-item-card" style="margin-bottom: 18px;">
           <div class="report-item-header">

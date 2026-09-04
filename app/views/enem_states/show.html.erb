@@ -1,0 +1,448 @@
+<% content_for :title, "ENEM — Estados" %>
+<%= stylesheet_link_tag "enem_states", "data-turbo-track": "reload" %>
+<%= javascript_include_tag "enem_states_dashboard", defer: true, "data-turbo-track": "reload" %>
+
+<%
+  filters = @dashboard[:filters]
+  common_params = {
+    year: filters[:year],
+    state_code: filters[:state_code],
+    dependency: filters[:dependency],
+    evolution_metric: @dashboard[:evolution_metric],
+    ranking_metric: @dashboard[:ranking_metric]
+  }
+
+  format_score = ->(value, precision = 1) do
+    value.nil? ? "—" : number_with_precision(value, precision: precision, separator: ",", delimiter: ".")
+  end
+
+  format_pct = ->(value, precision = 1) do
+    value.nil? ? "—" : number_to_percentage(value, precision: precision, separator: ",", delimiter: ".")
+  end
+
+  format_count = ->(value) do
+    value.nil? ? "—" : number_with_delimiter(value, delimiter: ".")
+  end
+%>
+
+<div class="enem-dashboard">
+  <header class="enem-dashboard__header">
+    <div>
+      <p class="enem-dashboard__eyebrow">Relatórios · Pedagógico · ENEM</p>
+      <h1>ENEM — Estados</h1>
+      <p class="enem-dashboard__subtitle">
+        Participação, desempenho, Redação, evolução histórica e ranking das unidades da federação.
+      </p>
+    </div>
+  </header>
+
+  <%= form_with url: enem_states_path, method: :get, local: true, class: "enem-filters" do %>
+    <%= hidden_field_tag :view, @dashboard[:current_view] %>
+    <%= hidden_field_tag :evolution_metric, @dashboard[:evolution_metric] %>
+    <%= hidden_field_tag :ranking_metric, @dashboard[:ranking_metric] %>
+
+    <div class="enem-filter">
+      <%= label_tag :year, "Ano" %>
+      <%= select_tag :year,
+            options_for_select(@dashboard[:filter_options][:years], filters[:year]),
+            onchange: "this.form.submit()" %>
+    </div>
+
+    <div class="enem-filter">
+      <%= label_tag :state_code, "UF" %>
+      <%= select_tag :state_code,
+            options_for_select(@dashboard[:filter_options][:states], filters[:state_code]),
+            onchange: "this.form.submit()" %>
+    </div>
+
+    <div class="enem-filter">
+      <%= label_tag :dependency, "Dependência administrativa" %>
+      <%= select_tag :dependency,
+            options_for_select(@dashboard[:filter_options][:dependencies], filters[:dependency]),
+            onchange: "this.form.submit()" %>
+    </div>
+  <% end %>
+
+  <nav class="enem-tabs" aria-label="Visualizações do relatório">
+    <% @dashboard[:navigation].each do |key, label| %>
+      <%= link_to label,
+            enem_states_path(**common_params, view: key),
+            class: ["enem-tab", ("is-active" if @dashboard[:current_view] == key)].compact.join(" ") %>
+    <% end %>
+  </nav>
+
+  <% if @dashboard[:record].nil? %>
+    <div class="enem-empty-state">
+      <strong>Não há dados para esta combinação de filtros.</strong>
+      <p>Selecione outro ano, UF ou dependência administrativa.</p>
+    </div>
+  <% else %>
+
+    <% if @dashboard[:current_view] == "overview" %>
+      <section class="enem-section">
+        <div class="enem-section__heading">
+          <div>
+            <span class="enem-section__label">Visão Geral</span>
+            <h2><%= filters[:state_code] %> · <%= filters[:dependency] %> · <%= filters[:year] %></h2>
+          </div>
+        </div>
+
+        <div class="enem-kpi-grid">
+          <article class="enem-kpi-card">
+            <span>Inscritos</span>
+            <strong><%= format_count.call(@dashboard[:kpis][:registered_count]) %></strong>
+          </article>
+
+          <article class="enem-kpi-card">
+            <span>Participantes — Dia 1</span>
+            <strong><%= format_count.call(@dashboard[:kpis][:participants_day1_count]) %></strong>
+            <small><%= format_pct.call(@dashboard[:kpis][:participation_day1_pct]) %></small>
+          </article>
+
+          <article class="enem-kpi-card">
+            <span>Participantes — Dia 2</span>
+            <strong><%= format_count.call(@dashboard[:kpis][:participants_day2_count]) %></strong>
+            <small><%= format_pct.call(@dashboard[:kpis][:participation_day2_pct]) %></small>
+          </article>
+
+          <article class="enem-kpi-card">
+            <span>Participantes — D1 + D2</span>
+            <strong><%= format_count.call(@dashboard[:kpis][:participants_both_days_count]) %></strong>
+            <small><%= format_pct.call(@dashboard[:kpis][:participation_both_days_pct]) %></small>
+          </article>
+
+          <article class="enem-kpi-card enem-kpi-card--accent">
+            <span>Média Geral</span>
+            <strong><%= format_score.call(@dashboard[:kpis][:general_average]) %></strong>
+          </article>
+
+          <article class="enem-kpi-card enem-kpi-card--accent">
+            <span>Redação</span>
+            <strong><%= format_score.call(@dashboard[:kpis][:essay_average]) %></strong>
+            <small><%= format_count.call(@dashboard[:kpis][:essays_count]) %> redações</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="enem-section">
+        <div class="enem-section__heading">
+          <div>
+            <span class="enem-section__label">Desempenho</span>
+            <h2>Médias por área</h2>
+          </div>
+        </div>
+
+        <div class="enem-metric-grid">
+          <% @dashboard[:performance].each do |item| %>
+            <article class="enem-metric-card">
+              <span><%= item[:short_label] %></span>
+              <strong><%= format_score.call(item[:value]) %></strong>
+              <small><%= item[:label] %></small>
+            </article>
+          <% end %>
+        </div>
+      </section>
+
+    <% elsif @dashboard[:current_view] == "participation" %>
+      <section class="enem-section">
+        <div class="enem-section__heading">
+          <div>
+            <span class="enem-section__label">Participação</span>
+            <h2>Presença no exame</h2>
+          </div>
+        </div>
+
+        <div class="enem-kpi-grid enem-kpi-grid--three">
+          <% @dashboard[:participation].each do |item| %>
+            <article class="enem-kpi-card">
+              <span><%= item[:label] %></span>
+              <strong><%= format_count.call(item[:count]) %></strong>
+              <small><%= format_pct.call(item[:percentage]) %></small>
+            </article>
+          <% end %>
+        </div>
+
+        <div class="enem-chart-card">
+          <h3>Percentual de participação</h3>
+          <div class="enem-chart"
+               data-enem-chart-type="bar"
+               data-enem-chart='<%= raw(json_escape({
+                 labels: @dashboard[:participation].map { |item| item[:label] },
+                 values: @dashboard[:participation].map { |item| item[:percentage] },
+                 suffix: "%",
+                 maximum: 100
+               }.to_json)) %>'></div>
+        </div>
+      </section>
+
+    <% elsif @dashboard[:current_view] == "performance" %>
+      <section class="enem-section">
+        <div class="enem-section__heading">
+          <div>
+            <span class="enem-section__label">Desempenho</span>
+            <h2>Médias das áreas e Média Geral</h2>
+          </div>
+        </div>
+
+        <div class="enem-metric-grid">
+          <% @dashboard[:performance].each do |item| %>
+            <article class="enem-metric-card">
+              <span><%= item[:short_label] %></span>
+              <strong><%= format_score.call(item[:value]) %></strong>
+              <small><%= item[:label] %></small>
+            </article>
+          <% end %>
+        </div>
+
+        <div class="enem-chart-card">
+          <h3>Comparativo das médias</h3>
+          <div class="enem-chart"
+               data-enem-chart-type="bar"
+               data-enem-chart='<%= raw(json_escape({
+                 labels: @dashboard[:performance].map { |item| item[:short_label] },
+                 values: @dashboard[:performance].map { |item| item[:value] },
+                 suffix: ""
+               }.to_json)) %>'></div>
+        </div>
+      </section>
+
+    <% elsif @dashboard[:current_view] == "essay" %>
+      <section class="enem-section">
+        <div class="enem-section__heading">
+          <div>
+            <span class="enem-section__label">Redação</span>
+            <h2>Resultado geral da Redação</h2>
+          </div>
+        </div>
+
+        <div class="enem-kpi-grid enem-kpi-grid--three">
+          <article class="enem-kpi-card enem-kpi-card--accent">
+            <span>Média de Redação</span>
+            <strong><%= format_score.call(@dashboard[:kpis][:essay_average]) %></strong>
+          </article>
+          <article class="enem-kpi-card">
+            <span>Redações consideradas</span>
+            <strong><%= format_count.call(@dashboard[:kpis][:essays_count]) %></strong>
+          </article>
+          <% sem_problemas = @dashboard[:essay_statuses].first %>
+          <article class="enem-kpi-card">
+            <span>Sem problemas</span>
+            <strong><%= format_pct.call(sem_problemas[:percentage]) %></strong>
+            <small><%= format_count.call(sem_problemas[:count]) %> redações</small>
+          </article>
+        </div>
+
+        <div class="enem-chart-card">
+          <h3>Médias das competências</h3>
+          <div class="enem-chart"
+               data-enem-chart-type="bar"
+               data-enem-chart='<%= raw(json_escape({
+                 labels: @dashboard[:competencies].map { |item| item[:short_label] },
+                 values: @dashboard[:competencies].map { |item| item[:value] },
+                 suffix: "",
+                 maximum: 200
+               }.to_json)) %>'></div>
+        </div>
+      </section>
+
+    <% elsif @dashboard[:current_view] == "competencies" %>
+      <section class="enem-section">
+        <div class="enem-section__heading">
+          <div>
+            <span class="enem-section__label">Redação</span>
+            <h2>Competências C1–C5</h2>
+          </div>
+        </div>
+
+        <div class="enem-metric-grid enem-metric-grid--five">
+          <% @dashboard[:competencies].each do |item| %>
+            <article class="enem-metric-card">
+              <span><%= item[:short_label] %></span>
+              <strong><%= format_score.call(item[:value]) %></strong>
+              <small><%= item[:label] %></small>
+            </article>
+          <% end %>
+        </div>
+
+        <div class="enem-chart-card">
+          <h3>Comparativo entre competências</h3>
+          <div class="enem-chart"
+               data-enem-chart-type="bar"
+               data-enem-chart='<%= raw(json_escape({
+                 labels: @dashboard[:competencies].map { |item| item[:short_label] },
+                 values: @dashboard[:competencies].map { |item| item[:value] },
+                 suffix: "",
+                 maximum: 200
+               }.to_json)) %>'></div>
+        </div>
+      </section>
+
+    <% elsif @dashboard[:current_view] == "status" %>
+      <section class="enem-section">
+        <div class="enem-section__heading">
+          <div>
+            <span class="enem-section__label">Redação</span>
+            <h2>Status das redações</h2>
+          </div>
+        </div>
+
+        <div class="enem-chart-card">
+          <h3>Distribuição percentual</h3>
+          <div class="enem-chart enem-chart--tall"
+               data-enem-chart-type="bar"
+               data-enem-chart='<%= raw(json_escape({
+                 labels: @dashboard[:essay_statuses].map { |item| item[:label] },
+                 values: @dashboard[:essay_statuses].map { |item| item[:percentage] },
+                 suffix: "%",
+                 maximum: 100
+               }.to_json)) %>'></div>
+        </div>
+
+        <div class="enem-table-wrap">
+          <table class="enem-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th class="is-number">Quantidade</th>
+                <th class="is-number">Percentual</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @dashboard[:essay_statuses].each do |item| %>
+                <tr>
+                  <td><%= item[:label] %></td>
+                  <td class="is-number"><%= format_count.call(item[:count]) %></td>
+                  <td class="is-number"><%= format_pct.call(item[:percentage], 2) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    <% elsif @dashboard[:current_view] == "evolution" %>
+      <section class="enem-section">
+        <div class="enem-section__heading enem-section__heading--with-control">
+          <div>
+            <span class="enem-section__label">2016–2025</span>
+            <h2>Evolução Histórica</h2>
+          </div>
+
+          <%= form_with url: enem_states_path, method: :get, local: true, class: "enem-inline-filter" do %>
+            <%= hidden_field_tag :year, filters[:year] %>
+            <%= hidden_field_tag :state_code, filters[:state_code] %>
+            <%= hidden_field_tag :dependency, filters[:dependency] %>
+            <%= hidden_field_tag :view, "evolution" %>
+            <%= hidden_field_tag :ranking_metric, @dashboard[:ranking_metric] %>
+            <%= label_tag :evolution_metric, "Indicador" %>
+            <%= select_tag :evolution_metric,
+                  options_for_select(@dashboard[:metric_options].map { |key, label| [label, key] }, @dashboard[:evolution_metric]),
+                  onchange: "this.form.submit()" %>
+          <% end %>
+        </div>
+
+        <div class="enem-chart-card">
+          <h3><%= @dashboard[:evolution][:label] %></h3>
+          <div class="enem-chart enem-chart--line"
+               data-enem-chart-type="line"
+               data-enem-chart='<%= raw(json_escape({
+                 labels: @dashboard[:evolution][:labels],
+                 values: @dashboard[:evolution][:values],
+                 suffix: (@dashboard[:evolution][:format] == :percentage ? "%" : "")
+               }.to_json)) %>'></div>
+        </div>
+
+        <div class="enem-table-wrap">
+          <table class="enem-table">
+            <thead>
+              <tr><th>Ano</th><th class="is-number"><%= @dashboard[:evolution][:label] %></th></tr>
+            </thead>
+            <tbody>
+              <% @dashboard[:evolution][:labels].zip(@dashboard[:evolution][:values]).each do |year, value| %>
+                <tr>
+                  <td><%= year %></td>
+                  <td class="is-number">
+                    <% if @dashboard[:evolution][:format] == :percentage %>
+                      <%= format_pct.call(value) %>
+                    <% else %>
+                      <%= format_score.call(value) %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    <% elsif @dashboard[:current_view] == "ranking" %>
+      <section class="enem-section">
+        <div class="enem-section__heading enem-section__heading--with-control">
+          <div>
+            <span class="enem-section__label"><%= filters[:year] %></span>
+            <h2>Ranking dos Estados</h2>
+          </div>
+
+          <%= form_with url: enem_states_path, method: :get, local: true, class: "enem-inline-filter" do %>
+            <%= hidden_field_tag :year, filters[:year] %>
+            <%= hidden_field_tag :state_code, filters[:state_code] %>
+            <%= hidden_field_tag :dependency, filters[:dependency] %>
+            <%= hidden_field_tag :view, "ranking" %>
+            <%= hidden_field_tag :evolution_metric, @dashboard[:evolution_metric] %>
+            <%= label_tag :ranking_metric, "Indicador" %>
+            <%= select_tag :ranking_metric,
+                  options_for_select(@dashboard[:metric_options].map { |key, label| [label, key] }, @dashboard[:ranking_metric]),
+                  onchange: "this.form.submit()" %>
+          <% end %>
+        </div>
+
+        <% if filters[:state_code] != "Brasil" && @dashboard[:ranking][:selected_position].present? %>
+          <div class="enem-ranking-highlight">
+            <strong><%= filters[:state_code] %></strong>
+            está em <strong><%= @dashboard[:ranking][:selected_position] %>º lugar</strong>
+            em <%= @dashboard[:ranking][:label] %>.
+          </div>
+        <% end %>
+
+        <div class="enem-chart-card">
+          <h3>Top 10 — <%= @dashboard[:ranking][:label] %></h3>
+          <% top10 = @dashboard[:ranking][:items].first(10) %>
+          <div class="enem-chart enem-chart--tall"
+               data-enem-chart-type="bar"
+               data-enem-chart='<%= raw(json_escape({
+                 labels: top10.map { |item| item[:state_code] },
+                 values: top10.map { |item| item[:value] },
+                 suffix: (@dashboard[:ranking][:format] == :percentage ? "%" : "")
+               }.to_json)) %>'></div>
+        </div>
+
+        <div class="enem-table-wrap">
+          <table class="enem-table">
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>UF</th>
+                <th class="is-number"><%= @dashboard[:ranking][:label] %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @dashboard[:ranking][:items].each do |item| %>
+                <tr class="<%= 'is-selected' if item[:selected] %>">
+                  <td><%= item[:position] %>º</td>
+                  <td><%= item[:state_code] %></td>
+                  <td class="is-number">
+                    <% if @dashboard[:ranking][:format] == :percentage %>
+                      <%= format_pct.call(item[:value]) %>
+                    <% else %>
+                      <%= format_score.call(item[:value]) %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    <% end %>
+  <% end %>
+</div>
