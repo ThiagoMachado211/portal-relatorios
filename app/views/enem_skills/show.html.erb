@@ -1,0 +1,151 @@
+<% content_for :title, "ENEM — Habilidades" %>
+<%= stylesheet_link_tag "enem_skills", "data-turbo-track": "reload" %>
+<%= javascript_include_tag "enem_skills_dashboard", defer: true, "data-turbo-track": "reload" %>
+
+<%
+  filters = @dashboard[:filters]
+  format_pct = ->(value) { value.nil? ? "—" : number_to_percentage(value, precision: 1, separator: ",", delimiter: ".") }
+  format_count = ->(value) { value.nil? ? "—" : number_with_delimiter(value, delimiter: ".") }
+%>
+
+<div class="enem-skills-dashboard">
+  <header class="skills-header">
+    <div>
+      <p class="skills-eyebrow">Relatórios · Pedagógico · ENEM</p>
+      <h1>ENEM — Habilidades</h1>
+      <p class="skills-subtitle">Distribuição das habilidades nas provas e evolução histórica do desempenho entre 2016 e 2025.</p>
+    </div>
+    <%= link_to "ENEM — Estados", enem_states_path, class: "skills-secondary-link" %>
+  </header>
+
+  <nav class="skills-tabs" aria-label="Visualizações do relatório">
+    <% @dashboard[:navigation].each do |key, label| %>
+      <%= link_to label,
+          enem_skills_path(view: key, year: filters[:year], area: filters[:area], language: filters[:language], skill_code: filters[:skill_code], uf: filters[:uf], dependency: filters[:dependency]),
+          class: ["skills-tab", ("is-active" if @dashboard[:current_view] == key)].compact.join(" ") %>
+    <% end %>
+  </nav>
+
+  <% if @dashboard[:current_view] == "distribution" %>
+    <%= form_with url: enem_skills_path, method: :get, local: true, class: "skills-filters" do %>
+      <%= hidden_field_tag :view, "distribution" %>
+      <div class="skills-filter">
+        <%= label_tag :year, "Ano" %>
+        <%= select_tag :year, options_for_select(@dashboard[:filter_options][:years], filters[:year]), onchange: "this.form.submit()" %>
+      </div>
+      <div class="skills-filter skills-filter--wide">
+        <%= label_tag :area, "Área" %>
+        <%= select_tag :area, options_for_select(@dashboard[:filter_options][:areas], filters[:area]), onchange: "this.form.submit()" %>
+      </div>
+      <% if filters[:area] == "LC" %>
+        <div class="skills-filter">
+          <%= label_tag :language, "Língua estrangeira" %>
+          <%= select_tag :language, options_for_select(@dashboard[:filter_options][:languages], filters[:language]), onchange: "this.form.submit()" %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <section class="skills-panel">
+      <div class="skills-panel__heading">
+        <div>
+          <span class="skills-section-label">Composição da prova</span>
+          <h2><%= filters[:area] %> · <%= filters[:year] %><%= " · #{@dashboard[:filter_options][:languages].to_h.key(filters[:language])}" if filters[:area] == "LC" %></h2>
+          <p>Percentual de questões associado a cada habilidade da Matriz de Referência.</p>
+        </div>
+      </div>
+
+      <div class="skills-chart-card">
+        <div class="skills-chart skills-chart--distribution"
+             data-skills-chart-type="bar"
+             data-skills-chart='<%= raw(json_escape({
+               labels: @dashboard[:distribution].map { |r| r[:label] },
+               values: @dashboard[:distribution].map { |r| r[:percentage] },
+               meta: @dashboard[:distribution].map { |r| {
+                 questions: r[:question_count], competency: r[:competency_code],
+                 competency_description: r[:competency_description], description: r[:skill_description]
+               } },
+               suffix: "%"
+             }.to_json)) %>'></div>
+      </div>
+
+      <div class="skills-table-wrap">
+        <table class="skills-table">
+          <thead><tr><th>Habilidade</th><th>Questões</th><th>Percentual</th><th>Competência</th><th>Descrição</th></tr></thead>
+          <tbody>
+            <% @dashboard[:distribution].each do |row| %>
+              <tr class="<%= 'is-exception' if row[:skill_code] == 0 %>">
+                <td><strong><%= row[:label] %></strong></td>
+                <td><%= row[:question_count].nil? ? "—" : number_with_precision(row[:question_count], precision: 0) %></td>
+                <td><%= format_pct.call(row[:percentage]) %></td>
+                <td><%= row[:competency_code].to_i.zero? ? "—" : "C#{row[:competency_code]}" %></td>
+                <td><%= row[:skill_description] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  <% else %>
+    <%= form_with url: enem_skills_path, method: :get, local: true, class: "skills-filters skills-filters--history" do %>
+      <%= hidden_field_tag :view, "history" %>
+      <div class="skills-filter skills-filter--wide">
+        <%= label_tag :area, "Área" %>
+        <%= select_tag :area, options_for_select(@dashboard[:filter_options][:areas], filters[:area]), onchange: "this.form.submit()" %>
+      </div>
+      <div class="skills-filter skills-filter--skill">
+        <%= label_tag :skill_code, "Habilidade" %>
+        <%= select_tag :skill_code, options_for_select(@dashboard[:filter_options][:skills], filters[:skill_code]), onchange: "this.form.submit()" %>
+      </div>
+      <% if filters[:area] == "LC" %>
+        <div class="skills-filter">
+          <%= label_tag :language, "Língua estrangeira" %>
+          <%= select_tag :language, options_for_select(@dashboard[:filter_options][:languages], filters[:language]), onchange: "this.form.submit()" %>
+        </div>
+      <% end %>
+      <div class="skills-filter">
+        <%= label_tag :uf, "UF" %>
+        <%= select_tag :uf, options_for_select(@dashboard[:filter_options][:ufs], filters[:uf]), onchange: "this.form.submit()" %>
+      </div>
+      <div class="skills-filter">
+        <%= label_tag :dependency, "Dependência" %>
+        <%= select_tag :dependency, options_for_select(@dashboard[:filter_options][:dependencies], filters[:dependency]), onchange: "this.form.submit()" %>
+      </div>
+    <% end %>
+
+    <% skill = @dashboard[:selected_skill] %>
+    <% if skill %>
+      <section class="skills-skill-card">
+        <div class="skills-skill-card__code"><%= skill[:label] %></div>
+        <div>
+          <span>Competência <%= skill[:competency_code] %></span>
+          <h2><%= skill[:description] %></h2>
+          <p><%= skill[:competency_description] %></p>
+        </div>
+      </section>
+    <% end %>
+
+    <div class="skills-kpi-grid">
+      <article class="skills-kpi"><span>Taxa de acerto mais recente</span><strong><%= format_pct.call(@dashboard[:summary][:latest_correct_rate]) %></strong></article>
+      <article class="skills-kpi"><span>Média histórica de acerto</span><strong><%= format_pct.call(@dashboard[:summary][:average_correct_rate]) %></strong></article>
+      <article class="skills-kpi"><span>Edições com a habilidade</span><strong><%= @dashboard[:summary][:years_present] %></strong><small>de <%= @dashboard[:filter_options][:years].size %> edições</small></article>
+      <article class="skills-kpi"><span>Participação média na prova</span><strong><%= format_pct.call(@dashboard[:summary][:average_presence]) %></strong></article>
+    </div>
+
+    <section class="skills-panel">
+      <div class="skills-panel__heading"><div><span class="skills-section-label">Recorrência</span><h2>Presença da habilidade na prova</h2><p>Percentual de questões da área associado à habilidade selecionada.</p></div></div>
+      <div class="skills-chart-card">
+        <div class="skills-chart" data-skills-chart-type="line"
+             data-skills-chart='<%= raw(json_escape({ labels: @dashboard[:presence_history].map { |r| r[:year] }, values: @dashboard[:presence_history].map { |r| r[:percentage] }, meta: @dashboard[:presence_history].map { |r| { questions: r[:question_count] } }, suffix: "%", zero_floor: true }.to_json)) %>'></div>
+      </div>
+    </section>
+
+    <section class="skills-panel">
+      <div class="skills-panel__heading"><div><span class="skills-section-label">Desempenho</span><h2>Taxa de acerto · <%= filters[:uf] %> · <%= filters[:dependency] %></h2><p>Acertos divididos pelo total de respostas válidas para a habilidade.</p></div></div>
+      <div class="skills-chart-card">
+        <div class="skills-chart" data-skills-chart-type="line"
+             data-skills-chart='<%= raw(json_escape({ labels: @dashboard[:performance_history].map { |r| r[:year] }, values: @dashboard[:performance_history].map { |r| r[:correct_rate] }, meta: @dashboard[:performance_history].map { |r| { participants: r[:participants], responses: r[:responses], correct: r[:correct], items: r[:items] } }, suffix: "%", zero_floor: true }.to_json)) %>'></div>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -20,6 +20,10 @@ Rails.application.routes.draw do
       to: "enem_states#show",
       as: :enem_states
 
+  get "relatorios/pedagogico/enem/habilidades",
+      to: "enem_skills#show",
+      as: :enem_skills
+
   namespace :admin do
     resources :users
 

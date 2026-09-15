@@ -58,6 +58,26 @@
             </div>
           </div>
         </div>
+
+        <div class="report-item-card" style="margin-bottom: 18px;">
+          <div class="report-item-header">
+            <div>
+              <div class="report-item-title">
+                ENEM — Habilidades
+              </div>
+
+              <div class="report-item-description">
+                Distribuição das habilidades nas provas, recorrência histórica e taxa de acerto por UF e dependência.
+              </div>
+            </div>
+
+            <div>
+              <%= link_to "Abrir Relatório",
+                  enem_skills_path,
+                  class: "btn-primary" %>
+            </div>
+          </div>
+        </div>
       <% end %>
 
       <% if @section.slug == "setor-operacoes" && @subsection.slug == "logistica" %>
