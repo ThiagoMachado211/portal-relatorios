@@ -1,0 +1,53 @@
+ATENDIMENTO AO CLIENTE — DIA 01 (5/5 PASSOS)
+
+OBJETIVO
+Criar a camada de dados do novo relatório:
+CSV mensal do Zoho -> consolidação -> PostgreSQL -> auditoria.
+
+ARQUIVOS E CAMINHOS
+
+1) db/migrate/20260915223000_create_customer_service_monthly_results.rb
+2) app/models/customer_service_monthly_result.rb
+3) app/services/customer_service/monthly_results_importer.rb
+4) lib/tasks/customer_service_data.rake
+5) script/verificar_customer_service.rb
+6) ESPECIFICACAO_INDICADORES.md (documentação; não precisa ficar no Rails se não quiser)
+7) db/import_data/customer_service/Suporte_Mar26.csv
+8) db/import_data/customer_service/Suporte_Abr26.csv
+9) db/import_data/customer_service/Suporte_Mai26.csv
+10) db/import_data/customer_service/Suporte_Jun26.csv
+11) db/import_data/customer_service/Suporte_Jul26.csv
+12) db/import_data/customer_service/Suporte_Ago26.csv
+13) db/import_data/customer_service/Suporte_Set26.csv
+
+PASSO 1/5 — ESPECIFICAÇÃO
+Leia ESPECIFICACAO_INDICADORES.md. As regras já estão implementadas no importador.
+
+PASSO 2/5 — BANCO
+Copie migration + model e execute no Render:
+  ruby bin/rails db:migrate
+
+PASSO 3/5 — IMPORTADOR
+Copie o service, a rake task e os 7 CSVs nos caminhos indicados.
+
+PASSO 4/5 — IMPORTAÇÃO
+No Render Shell:
+  ruby bin/rails customer_service_data:import
+
+PASSO 5/5 — AUDITORIA
+No Render Shell:
+  ruby bin/rails runner script/verificar_customer_service.rb
+
+RESULTADO FINAL ESPERADO
+  OK — 7 meses conferidos e todos os valores coincidem com a auditoria.
+
+GIT — executar sempre da raiz do projeto
+  cd C:\rails_projects\portal-relatorios
+  git status
+  git add .
+  git status
+  git commit -m "Adiciona base de Atendimento ao Cliente"
+  git push
+
+OBSERVAÇÃO
+O Dia 01 não cria rota, controller, view, CSS ou gráfico. Isso pertence ao Dia 02.
