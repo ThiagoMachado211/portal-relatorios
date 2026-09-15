@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  year: 1
+  uf: MyString
+  dependency: MyString
+  area: MyString
+  competency_code: 1
+  skill_code: 1
+  skill_status: MyString
+  item_count: 1
+  participant_count: 1
+  response_count: 1
+  correct_count: 1
+  correct_rate: 9.99
+
+two:
+  year: 1
+  uf: MyString
+  dependency: MyString
+  area: MyString
+  competency_code: 1
+  skill_code: 1
+  skill_status: MyString
+  item_count: 1
+  participant_count: 1
+  response_count: 1
+  correct_count: 1
+  correct_rate: 9.99

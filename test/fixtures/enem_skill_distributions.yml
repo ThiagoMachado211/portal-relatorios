@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  year: 1
+  area: MyString
+  competency_code: 1
+  skill_code: 1
+  skill_status: MyString
+  question_count: 9.99
+  question_percentage: 9.99
+  english_question_count: 9.99
+  english_question_percentage: 9.99
+  spanish_question_count: 9.99
+  spanish_question_percentage: 9.99
+  total_area_questions: 1
+
+two:
+  year: 1
+  area: MyString
+  competency_code: 1
+  skill_code: 1
+  skill_status: MyString
+  question_count: 9.99
+  question_percentage: 9.99
+  english_question_count: 9.99
+  english_question_percentage: 9.99
+  spanish_question_count: 9.99
+  spanish_question_percentage: 9.99
+  total_area_questions: 1

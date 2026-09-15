@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  area: MyString
+  name: MyString
+  area_name: MyString
+  competency_code: 1
+  competency_description: MyText
+  skill_code: 1
+  skill_description: MyText
+
+two:
+  area: MyString
+  name: MyString
+  area_name: MyString
+  competency_code: 1
+  competency_description: MyText
+  skill_code: 1
+  skill_description: MyText
