@@ -10,6 +10,16 @@ class ReportPagesController < ApplicationController
       slug: params[:subsection_slug]
     )
 
+    # Atendimento ao Cliente possui um dashboard nativo próprio.
+    # Ao acessar a subseção pelo menu, encaminhamos diretamente
+    # para o relatório.
+    if @section.slug == "setor-operacoes" &&
+       @subsection.slug == "atendimento-ao-cliente"
+
+      redirect_to customer_service_report_path
+      return
+    end
+
     @report_pages = ReportPage.where(
       sidebar_section: @section,
       sidebar_subsection: @subsection,
