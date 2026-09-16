@@ -24,7 +24,7 @@ module Ai
         metric:
       )
         @year = year.to_i
-        @state_code = state_code.to_s.strip.upcase
+        @state_code = normalize_state_code(state_code)
         @administrative_dependency =
           administrative_dependency.to_s.strip
 
@@ -58,6 +58,16 @@ module Ai
       end
 
       private
+
+      def normalize_state_code(value)
+        normalized = value.to_s.strip
+
+        if normalized.casecmp("brasil").zero?
+            "Brasil"
+        else
+            normalized.upcase
+        end
+      end
 
       def validate_metric!
         return if EnemCatalog.valid?(@metric)
