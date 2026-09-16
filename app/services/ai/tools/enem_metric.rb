@@ -1,8 +1,6 @@
 module Ai
   module Tools
-    class EnemMetric
-      class Error < StandardError; end
-
+    class EnemMetric < EnemBase
       def self.call(
         year:,
         state_code:,
@@ -23,24 +21,41 @@ module Ai
         administrative_dependency:,
         metric:
       )
-        @year = year.to_i
-        @state_code = normalize_state_code(state_code)
-        @administrative_dependency =
-          administrative_dependency.to_s.strip
+        @year =
+          validate_year!(year)
 
-        @metric = metric.to_s
+        @state_code =
+          normalize_state_code(state_code)
+
+        @administrative_dependency =
+          normalize_dependency(
+            administrative_dependency
+          )
+
+        @metric =
+          metric.to_s
+
+        validate_metric!(@metric)
       end
 
       def call
-        validate_metric!
+        result =
+          EnemStateResult.find_by(
+            year: @year,
+            state_code: @state_code,
+            administrative_dependency:
+              @administrative_dependency
+          )
 
-        result = find_result!
+        unless result
+          raise Error,
+                "Não foram encontrados dados ENEM para " \
+                "#{@state_code}, #{@year}, " \
+                "#{@administrative_dependency}."
+        end
 
         metadata =
-          EnemCatalog.fetch(@metric)
-
-        raw_value =
-          result.public_send(@metric)
+          metric_metadata(@metric)
 
         {
           year: result.year,
@@ -51,61 +66,10 @@ module Ai
           label: metadata[:label],
           format: metadata[:format],
           value: serialize_value(
-            raw_value,
+            result.public_send(@metric),
             metadata[:format]
           )
         }
-      end
-
-      private
-
-      def normalize_state_code(value)
-        normalized = value.to_s.strip
-
-        if normalized.casecmp("brasil").zero?
-            "Brasil"
-        else
-            normalized.upcase
-        end
-      end
-
-      def validate_metric!
-        return if EnemCatalog.valid?(@metric)
-
-        raise Error,
-              "Indicador ENEM não permitido: #{@metric}"
-      end
-
-      def find_result!
-        result =
-          EnemStateResult.find_by(
-            year: @year,
-            state_code: @state_code,
-            administrative_dependency:
-              @administrative_dependency
-          )
-
-        return result if result
-
-        raise Error,
-              "Não foram encontrados dados ENEM para " \
-              "#{@state_code}, #{@year}, " \
-              "#{@administrative_dependency}."
-      end
-
-      def serialize_value(value, format)
-        return nil if value.nil?
-
-        case format
-        when :integer
-          value.to_i
-        when :decimal
-          value.to_f.round(2)
-        when :percentage
-          value.to_f.round(2)
-        else
-          value
-        end
       end
     end
   end
