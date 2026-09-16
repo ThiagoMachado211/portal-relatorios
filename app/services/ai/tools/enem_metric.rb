@@ -92,7 +92,7 @@ module Ai
         when :decimal
           value.to_f.round(2)
         when :percentage
-          (value.to_f * 100).round(2)
+          value.to_f.round(2)
         else
           value
         end
