@@ -21,67 +21,38 @@ module Ai
     end
 
     def ask(message)
-      response = request(
-        model: @model,
+      response = create_response(
         input: message
       )
 
       extract_text(response)
     end
 
-    private
+    def create_response(
+      input:,
+      instructions: nil,
+      tools: nil,
+      previous_response_id: nil,
+      tool_choice: nil
+    )
+      payload = {
+        model: @model,
+        input: input
+      }
 
-    def request(payload)
-      uri = URI(API_URL)
+      payload[:instructions] =
+        instructions if instructions.present?
 
-      http = Net::HTTP.new(
-        uri.host,
-        uri.port
-      )
+      payload[:tools] =
+        tools if tools.present?
 
-      http.use_ssl = true
+      payload[:previous_response_id] =
+        previous_response_id if previous_response_id.present?
 
-      request = Net::HTTP::Post.new(uri)
+      payload[:tool_choice] =
+        tool_choice if tool_choice.present?
 
-      request["Authorization"] =
-        "Bearer #{@api_key}"
-
-      request["Content-Type"] =
-        "application/json"
-
-      request.body =
-        JSON.generate(payload)
-
-      response =
-        http.request(request)
-
-      body =
-        parse_response(response.body)
-
-      unless response.is_a?(Net::HTTPSuccess)
-        message =
-          body.dig("error", "message") ||
-          "Erro desconhecido da OpenAI."
-
-        raise Error,
-              "OpenAI API retornou HTTP #{response.code}: #{message}"
-      end
-
-      body
-    rescue JSON::ParserError => e
-      raise Error,
-            "Resposta inválida da OpenAI: #{e.message}"
-    rescue SocketError,
-           Errno::ECONNREFUSED,
-           Net::OpenTimeout,
-           Net::ReadTimeout => e
-
-      raise Error,
-            "Falha de conexão com a OpenAI: #{e.message}"
-    end
-
-    def parse_response(body)
-      JSON.parse(body)
+      request(payload)
     end
 
     def extract_text(response)
@@ -109,6 +80,68 @@ module Ai
       end
 
       text
+    end
+
+    private
+
+    def request(payload)
+      uri =
+        URI(API_URL)
+
+      http =
+        Net::HTTP.new(
+          uri.host,
+          uri.port
+        )
+
+      http.use_ssl = true
+      http.open_timeout = 15
+      http.read_timeout = 90
+
+      request =
+        Net::HTTP::Post.new(uri)
+
+      request["Authorization"] =
+        "Bearer #{@api_key}"
+
+      request["Content-Type"] =
+        "application/json"
+
+      request.body =
+        JSON.generate(payload)
+
+      response =
+        http.request(request)
+
+      body =
+        parse_response(response.body)
+
+      unless response.is_a?(Net::HTTPSuccess)
+        message =
+          body.dig("error", "message") ||
+          "Erro desconhecido da OpenAI."
+
+        raise Error,
+              "OpenAI API retornou HTTP #{response.code}: #{message}"
+      end
+
+      body
+
+    rescue JSON::ParserError => e
+      raise Error,
+            "Resposta inválida da OpenAI: #{e.message}"
+
+    rescue SocketError,
+           Errno::ECONNREFUSED,
+           Net::OpenTimeout,
+           Net::ReadTimeout => e
+
+      raise Error,
+            "Falha de conexão com a OpenAI: #{e.message}"
+    end
+
+    def parse_response(body)
+      JSON.parse(body)
     end
   end
 end
