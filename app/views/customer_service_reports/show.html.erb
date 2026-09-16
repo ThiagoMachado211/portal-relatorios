@@ -1,0 +1,141 @@
+<% content_for :title, "Atendimento ao Cliente" %>
+<%= stylesheet_link_tag "customer_service_report", "data-turbo-track": "reload" %>
+<%= javascript_include_tag "customer_service_report", defer: true, "data-turbo-track": "reload" %>
+
+<%
+  format_count = ->(value) do
+    value.nil? ? "—" : number_with_delimiter(value, delimiter: ".")
+  end
+
+  format_duration = ->(seconds) do
+    if seconds.nil?
+      "—"
+    else
+      total = seconds.to_i
+      hours = total / 3600
+      minutes = (total % 3600) / 60
+      secs = total % 60
+      format("%02d:%02d:%02d", hours, minutes, secs)
+    end
+  end
+
+  format_metric = ->(value, type) do
+    type == :duration ? format_duration.call(value) : format_count.call(value)
+  end
+%>
+
+<div class="customer-service-dashboard">
+  <header class="customer-service-dashboard__header">
+    <div>
+      <p class="customer-service-dashboard__eyebrow">Relatórios · Operações · Atendimento ao Cliente</p>
+      <h1>Atendimento ao Cliente</h1>
+      <p class="customer-service-dashboard__subtitle">
+        Indicadores consolidados da equipe e evolução mensal do atendimento.
+      </p>
+    </div>
+  </header>
+
+  <nav class="customer-service-tabs" aria-label="Indicadores do Atendimento ao Cliente">
+    <% @dashboard[:navigation].each do |key, label| %>
+      <%= link_to label,
+            customer_service_report_path(view: key),
+            class: ["customer-service-tab", ("is-active" if @dashboard[:current_view] == key)].compact.join(" ") %>
+    <% end %>
+  </nav>
+
+  <% if @dashboard[:latest].nil? %>
+    <div class="customer-service-empty-state">
+      <strong>Não há dados de Atendimento ao Cliente disponíveis.</strong>
+      <p>Importe ao menos um arquivo mensal para visualizar o relatório.</p>
+    </div>
+
+  <% elsif @dashboard[:current_view] == "overview" %>
+    <section class="customer-service-section">
+      <div class="customer-service-section__heading">
+        <div>
+          <span class="customer-service-section__label">Visão Geral</span>
+          <h2><%= @dashboard[:latest].month_label %> · Total da equipe</h2>
+        </div>
+      </div>
+
+      <div class="customer-service-kpi-grid">
+        <% @dashboard[:overview].each do |item| %>
+          <article class="customer-service-kpi-card <%= "customer-service-kpi-card--accent" if item[:format] == :duration %>">
+            <span><%= item[:label] %></span>
+            <strong><%= format_metric.call(item[:value], item[:format]) %></strong>
+
+            <% if item[:format] == :duration %>
+              <small>Média ponderada</small>
+            <% else %>
+              <small>Total no mês</small>
+            <% end %>
+          </article>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="customer-service-section">
+      <div class="customer-service-section__heading">
+        <div>
+          <span class="customer-service-section__label">Série Histórica</span>
+          <h2><%= @dashboard[:period_label] %></h2>
+          <p class="customer-service-section__description">
+            Selecione um dos indicadores acima para visualizar sua evolução mensal.
+          </p>
+        </div>
+      </div>
+
+      <div class="customer-service-overview-links">
+        <% @dashboard[:navigation].except("overview").each do |key, label| %>
+          <%= link_to customer_service_report_path(view: key), class: "customer-service-overview-link" do %>
+            <span><%= label %></span>
+            <strong>Ver evolução →</strong>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+
+  <% else %>
+    <% evolution = @dashboard[:evolution] %>
+    <% metric = @dashboard[:selected_metric] %>
+
+    <section class="customer-service-section">
+      <div class="customer-service-section__heading">
+        <div>
+          <span class="customer-service-section__label"><%= @dashboard[:period_label] %></span>
+          <h2>Evolução Histórica</h2>
+        </div>
+      </div>
+
+      <div class="customer-service-chart-card">
+        <h3><%= evolution[:label] %></h3>
+
+        <div class="customer-service-chart"
+             data-customer-service-chart
+             data-format="<%= evolution[:format] %>"
+             data-labels='<%= raw(json_escape(evolution[:labels].to_json)) %>'
+             data-values='<%= raw(json_escape(evolution[:values].to_json)) %>'>
+        </div>
+      </div>
+
+      <div class="customer-service-table-wrap">
+        <table class="customer-service-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th><%= metric[:label] %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% evolution[:labels].zip(evolution[:values]).each do |month_label, value| %>
+              <tr>
+                <td><%= month_label %></td>
+                <td><%= format_metric.call(value, evolution[:format]) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</div>

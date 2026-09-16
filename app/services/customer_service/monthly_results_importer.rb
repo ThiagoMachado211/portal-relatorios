@@ -16,7 +16,10 @@ module CustomerService
       first_responses_count: "PRIMEIRAS RESPOSTAS",
       fcr_tickets_count: "TÍQUETES FCR",
       closed_tickets_count: "TÍQUETES FECHADOS",
-      reopened_tickets_count: "TÍQUETES REABERTOS"
+      reopened_tickets_count: "TÍQUETES REABERTOS",
+      ok_classifications_count: "CLASSIFICAÇÕES OK",
+      bad_classifications_count: "CLASSIFICAÇÕES RUINS",
+      good_classifications_count: "BOAS CLASSIFICAÇÕES"
     }.freeze
 
     TIME_METRICS = {
@@ -54,6 +57,7 @@ module CustomerService
       path = Pathname.new(path)
       year, month = period_from_filename(path.basename.to_s)
       rows = read_agent_rows(path)
+
       attributes = summarize(rows).merge(
         year: year,
         month: month,

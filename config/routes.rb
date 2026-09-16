@@ -24,6 +24,10 @@ Rails.application.routes.draw do
       to: "enem_skills#show",
       as: :enem_skills
 
+  get "relatorios/operacoes/atendimento-ao-cliente",
+      to: "customer_service_reports#show",
+      as: :customer_service_report
+
   namespace :admin do
     resources :users
 
