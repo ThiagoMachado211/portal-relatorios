@@ -11,7 +11,14 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#index"
 
-  get "/relatorios/:slug", to: "report_pages#show", as: :report_page
+  get "relatorios/operacoes/atendimento-ao-cliente",
+      to: "customer_service_reports#show",
+      as: :customer_service_report
+
+  get "/relatorios/:slug", 
+  to: "report_pages#show", 
+  as: :report_page
+  
   get "/relatorios/:section_slug/:subsection_slug",
       to: "report_pages#subsection",
       as: :report_subsection
@@ -24,9 +31,6 @@ Rails.application.routes.draw do
       to: "enem_skills#show",
       as: :enem_skills
 
-  get "relatorios/operacoes/atendimento-ao-cliente",
-      to: "customer_service_reports#show",
-      as: :customer_service_report
 
   namespace :admin do
     resources :users
