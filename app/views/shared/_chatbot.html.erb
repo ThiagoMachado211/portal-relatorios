@@ -1,0 +1,101 @@
+<div
+  class="chatbot"
+  data-controller="chatbot"
+  data-action="keydown@window->chatbot#closeOnEscape"
+>
+  <button
+    type="button"
+    class="chatbot-launcher"
+    data-action="chatbot#open"
+    aria-label="Abrir assistente"
+    title="Assistente"
+  >
+    <span class="chatbot-launcher__icon">✦</span>
+    <span class="chatbot-launcher__text">IA</span>
+  </button>
+
+  <div
+    class="chatbot-backdrop"
+    data-chatbot-target="backdrop"
+    data-action="click->chatbot#close"
+  ></div>
+
+  <aside
+    class="chatbot-panel"
+    data-chatbot-target="panel"
+    aria-hidden="true"
+    aria-label="Assistente do portal"
+  >
+    <header class="chatbot-header">
+      <div>
+        <span class="chatbot-header__eyebrow">
+          Assistente
+        </span>
+
+        <h2 class="chatbot-header__title">
+          Inteligência do Portal
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="chatbot-close"
+        data-action="chatbot#close"
+        aria-label="Fechar assistente"
+      >
+        ×
+      </button>
+    </header>
+
+    <div
+      class="chatbot-messages"
+      data-chatbot-target="messages"
+    >
+      <div class="chatbot-message chatbot-message--assistant">
+        <div class="chatbot-message__content">
+          Olá! Posso consultar e analisar os dados disponíveis no portal.
+          Você pode perguntar sobre ENEM ou Atendimento ao Cliente.
+        </div>
+      </div>
+    </div>
+
+    <div class="chatbot-composer">
+      <form
+        action="<%= chatbot_path %>"
+        method="post"
+        data-chatbot-target="form"
+        data-action="submit->chatbot#submit"
+      >
+        <label
+          for="chatbot-question"
+          class="chatbot-composer__label"
+        >
+          Faça uma pergunta
+        </label>
+
+        <textarea
+          id="chatbot-question"
+          name="question"
+          class="chatbot-composer__input"
+          data-chatbot-target="input"
+          placeholder="Ex.: Qual foi a média de Matemática de MG em 2025?"
+          rows="3"
+        ></textarea>
+
+        <div class="chatbot-composer__footer">
+          <span class="chatbot-composer__hint">
+            As respostas utilizam os dados disponíveis no portal.
+          </span>
+
+          <button
+            type="submit"
+            class="chatbot-submit"
+            data-chatbot-target="submit"
+          >
+            Enviar
+          </button>
+        </div>
+      </form>
+    </div>
+  </aside>
+</div>

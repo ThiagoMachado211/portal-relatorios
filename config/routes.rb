@@ -31,6 +31,10 @@ Rails.application.routes.draw do
       to: "enem_skills#show",
       as: :enem_skills
 
+  post "chatbot",
+      to: "chatbots#create",
+      as: :chatbot
+
 
   namespace :admin do
     resources :users

@@ -205,5 +205,10 @@
       </div>
     </main>
 
+    <% if user_signed_in? %>
+      <%= render "shared/chatbot" %>
+    <% end %>
+
+    
   </body>
 </html>
