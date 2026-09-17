@@ -129,9 +129,11 @@ module Ai
     TEXT
 
     def initialize(
-      client: Ai::OpenaiClient.new
+      client: Ai::OpenaiClient.new,
+      user: nil
     )
       @client = client
+      @user = user
     end
 
     def ask(question, history: [])
@@ -154,7 +156,9 @@ module Ai
           input: contextualized_question,
           instructions: INSTRUCTIONS,
           tools:
-            Ai::ToolRegistry.definitions,
+            Ai::ToolRegistry.definitions(
+              user: @user
+            ),
           tool_choice: "auto"
         )
 
@@ -193,7 +197,9 @@ module Ai
           input: tool_outputs,
           instructions: INSTRUCTIONS,
           tools:
-            Ai::ToolRegistry.definitions,
+            Ai::ToolRegistry.definitions(
+              user: @user
+            ),
           previous_response_id:
             response.fetch("id"),
           tool_choice: "auto"
@@ -220,7 +226,8 @@ module Ai
       result =
         Ai::ToolRegistry.execute(
           name,
-          arguments
+          arguments,
+          user: @user
         )
 
       {
@@ -237,6 +244,7 @@ module Ai
 
     rescue Ai::Tools::EnemBase::Error,
            Ai::Tools::CustomerServiceBase::Error,
+           Ai::ToolAuthorization::NotAuthorizedError,
            ArgumentError => e
 
       tool_error(

@@ -14,7 +14,9 @@ class ChatbotsController < ApplicationController
     end
 
     answer =
-      Ai::Chatbot.new.ask(
+      Ai::Chatbot.new(
+        user: current_user
+      ).ask(
         question,
         history: chatbot_history
       )

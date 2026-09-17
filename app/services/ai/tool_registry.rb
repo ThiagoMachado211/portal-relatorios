@@ -5,17 +5,38 @@ module Ai
       Ai::CustomerServiceToolRegistry
     ].freeze
 
-    def self.definitions
-      REGISTRIES.flat_map(&:definitions)
+    def self.definitions(user: nil)
+      definitions =
+        REGISTRIES.flat_map(&:definitions)
+
+      return definitions unless user
+
+      definitions.select do |definition|
+        name =
+          definition[:name] ||
+          definition["name"]
+
+        Ai::ToolAuthorization.allowed?(
+          user: user,
+          tool_name: name
+        )
+      end
     end
 
-    def self.execute(name, arguments)
+    def self.execute(name, arguments, user: nil)
       registry =
         registry_for(name)
 
       unless registry
         raise ArgumentError,
               "Ferramenta não permitida: #{name}"
+      end
+
+      if user
+        Ai::ToolAuthorization.authorize!(
+          user: user,
+          tool_name: name
+        )
       end
 
       registry.execute(
