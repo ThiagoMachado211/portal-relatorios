@@ -50,10 +50,13 @@ module Ai
 
         records =
           CustomerServiceMonthlyResult
-            .where(
-              period_condition
-            )
             .order(:year, :month)
+            .select do |record|
+              inside_period?(
+                record.year,
+                record.month
+              )
+            end
 
         if records.empty?
           raise Error,
@@ -101,10 +104,16 @@ module Ai
 
       def validate_period!
         start_position =
-          (@start_year * 12) + @start_month
+          period_position(
+            @start_year,
+            @start_month
+          )
 
         end_position =
-          (@end_year * 12) + @end_month
+          period_position(
+            @end_year,
+            @end_month
+          )
 
         return if start_position <= end_position
 
@@ -112,37 +121,35 @@ module Ai
               "O período inicial não pode ser posterior ao período final."
       end
 
-      def period_condition
-        start_date =
-          Date.new(
+      def inside_period?(year, month)
+        position =
+          period_position(
+            year,
+            month
+          )
+
+        position >= start_position &&
+          position <= end_position
+      end
+
+      def start_position
+        @start_position ||=
+          period_position(
             @start_year,
-            @start_month,
-            1
+            @start_month
           )
+      end
 
-        end_date =
-          Date.new(
+      def end_position
+        @end_position ||=
+          period_position(
             @end_year,
-            @end_month,
-            1
+            @end_month
           )
+      end
 
-        start_key =
-          (start_date.year * 100) +
-          start_date.month
-
-        end_key =
-          (end_date.year * 100) +
-          end_date.month
-
-        CustomerServiceMonthlyResult
-          .arel_table[:year]
-          .multiply(100)
-          .plus(
-            CustomerServiceMonthlyResult
-              .arel_table[:month]
-          )
-          .between(start_key..end_key)
+      def period_position(year, month)
+        (year * 12) + month
       end
     end
   end
