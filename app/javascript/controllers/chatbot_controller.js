@@ -12,6 +12,7 @@ export default class extends Controller {
 
   connect() {
     this.opened = false
+    this.loading = false
   }
 
   open() {
@@ -44,47 +45,93 @@ export default class extends Controller {
     }
   }
 
+  inputKeydown(event) {
+    if (event.key !== "Enter") {
+      return
+    }
+
+    if (event.shiftKey) {
+      return
+    }
+
+    event.preventDefault()
+
+    if (!this.loading) {
+      this.formTarget.requestSubmit()
+    }
+  }
+
   async submit(event) {
     event.preventDefault()
 
-    const question = this.inputTarget.value.trim()
+    if (this.loading) {
+      return
+    }
+
+    const question =
+      this.inputTarget.value.trim()
 
     if (!question) {
       return
     }
 
-    this.addMessage("user", question)
+    this.addMessage(
+      "user",
+      question
+    )
 
     this.inputTarget.value = ""
+
     this.setLoading(true)
 
-    try {
-      const response = await fetch(this.formTarget.action, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "X-CSRF-Token": this.csrfToken()
-        },
-        body: JSON.stringify({
-          question: question
-        })
-      })
+    const thinkingMessage =
+      this.addThinkingMessage()
 
-      const data = await response.json()
+    try {
+      const response =
+        await fetch(
+          this.formTarget.action,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "X-CSRF-Token": this.csrfToken()
+            },
+
+            body: JSON.stringify({
+              question: question
+            })
+          }
+        )
+
+      const data =
+        await response.json()
+
+      thinkingMessage.remove()
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Não foi possível processar a pergunta."
+          data.error ||
+          "Não foi possível processar a pergunta."
         )
       }
 
-      this.addMessage("assistant", data.answer)
+      this.addMessage(
+        "assistant",
+        data.answer
+      )
+
     } catch (error) {
+      thinkingMessage.remove()
+
       this.addMessage(
         "error",
-        error.message || "Ocorreu um erro inesperado."
+        error.message ||
+        "Ocorreu um erro inesperado."
       )
+
     } finally {
       this.setLoading(false)
       this.inputTarget.focus()
@@ -92,38 +139,268 @@ export default class extends Controller {
   }
 
   addMessage(type, text) {
-    const wrapper = document.createElement("div")
+    const wrapper =
+      document.createElement("div")
 
     wrapper.classList.add(
       "chatbot-message",
       `chatbot-message--${type}`
     )
 
-    const content = document.createElement("div")
-    content.classList.add("chatbot-message__content")
+    const content =
+      document.createElement("div")
 
-    // textContent é proposital:
-    // respostas da IA não são injetadas como HTML.
-    content.textContent = text
+    content.classList.add(
+      "chatbot-message__content"
+    )
+
+    if (type === "assistant") {
+      this.renderSafeMarkdown(
+        content,
+        text
+      )
+    } else {
+      content.textContent = text
+    }
 
     wrapper.appendChild(content)
-    this.messagesTarget.appendChild(wrapper)
 
-    this.messagesTarget.scrollTop =
-      this.messagesTarget.scrollHeight
+    this.messagesTarget.appendChild(
+      wrapper
+    )
+
+    this.scrollToBottom()
+
+    return wrapper
+  }
+
+  addThinkingMessage() {
+    const wrapper =
+      document.createElement("div")
+
+    wrapper.classList.add(
+      "chatbot-message",
+      "chatbot-message--assistant",
+      "chatbot-message--thinking"
+    )
+
+    const content =
+      document.createElement("div")
+
+    content.classList.add(
+      "chatbot-message__content"
+    )
+
+    const label =
+      document.createElement("span")
+
+    label.classList.add(
+      "chatbot-thinking__label"
+    )
+
+    label.textContent = "Analisando"
+
+    const dots =
+      document.createElement("span")
+
+    dots.classList.add(
+      "chatbot-thinking__dots"
+    )
+
+    for (let index = 0; index < 3; index += 1) {
+      const dot =
+        document.createElement("span")
+
+      dot.classList.add(
+        "chatbot-thinking__dot"
+      )
+
+      dots.appendChild(dot)
+    }
+
+    content.appendChild(label)
+    content.appendChild(dots)
+
+    wrapper.appendChild(content)
+
+    this.messagesTarget.appendChild(
+      wrapper
+    )
+
+    this.scrollToBottom()
+
+    return wrapper
+  }
+
+  renderSafeMarkdown(container, text) {
+    const lines =
+      String(text || "")
+        .replace(/\r\n/g, "\n")
+        .split("\n")
+
+    let list = null
+
+    lines.forEach((line) => {
+      const trimmed =
+        line.trim()
+
+      if (!trimmed) {
+        list = null
+
+        const spacer =
+          document.createElement("div")
+
+        spacer.classList.add(
+          "chatbot-markdown-spacer"
+        )
+
+        container.appendChild(spacer)
+
+        return
+      }
+
+      const unorderedMatch =
+        trimmed.match(/^[-*]\s+(.+)$/)
+
+      const orderedMatch =
+        trimmed.match(/^\d+\.\s+(.+)$/)
+
+      if (unorderedMatch) {
+        if (
+          !list ||
+          list.tagName !== "UL"
+        ) {
+          list =
+            document.createElement("ul")
+
+          list.classList.add(
+            "chatbot-markdown-list"
+          )
+
+          container.appendChild(list)
+        }
+
+        const item =
+          document.createElement("li")
+
+        this.appendInlineMarkdown(
+          item,
+          unorderedMatch[1]
+        )
+
+        list.appendChild(item)
+
+        return
+      }
+
+      if (orderedMatch) {
+        if (
+          !list ||
+          list.tagName !== "OL"
+        ) {
+          list =
+            document.createElement("ol")
+
+          list.classList.add(
+            "chatbot-markdown-list"
+          )
+
+          container.appendChild(list)
+        }
+
+        const item =
+          document.createElement("li")
+
+        this.appendInlineMarkdown(
+          item,
+          orderedMatch[1]
+        )
+
+        list.appendChild(item)
+
+        return
+      }
+
+      list = null
+
+      const paragraph =
+        document.createElement("div")
+
+      paragraph.classList.add(
+        "chatbot-markdown-line"
+      )
+
+      this.appendInlineMarkdown(
+        paragraph,
+        line
+      )
+
+      container.appendChild(
+        paragraph
+      )
+    })
+  }
+
+  appendInlineMarkdown(container, text) {
+    const source =
+      String(text || "")
+
+    const pattern =
+      /(\*\*[^*]+\*\*)/g
+
+    const parts =
+      source.split(pattern)
+
+    parts.forEach((part) => {
+      if (
+        part.startsWith("**") &&
+        part.endsWith("**") &&
+        part.length > 4
+      ) {
+        const strong =
+          document.createElement("strong")
+
+        strong.textContent =
+          part.slice(2, -2)
+
+        container.appendChild(
+          strong
+        )
+      } else {
+        container.appendChild(
+          document.createTextNode(part)
+        )
+      }
+    })
   }
 
   setLoading(loading) {
-    this.submitTarget.disabled = loading
-    this.inputTarget.disabled = loading
+    this.loading = loading
+
+    this.submitTarget.disabled =
+      loading
 
     this.submitTarget.textContent =
-      loading ? "Enviando..." : "Enviar"
+      loading ? "Aguarde..." : "Enviar"
+
+    this.inputTarget.setAttribute(
+      "aria-busy",
+      loading ? "true" : "false"
+    )
+  }
+
+  scrollToBottom() {
+    window.requestAnimationFrame(() => {
+      this.messagesTarget.scrollTop =
+        this.messagesTarget.scrollHeight
+    })
   }
 
   csrfToken() {
     return document
-      .querySelector('meta[name="csrf-token"]')
+      .querySelector(
+        'meta[name="csrf-token"]'
+      )
       ?.getAttribute("content")
   }
 }
