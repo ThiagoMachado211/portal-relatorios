@@ -37,14 +37,26 @@
         </h2>
       </div>
 
-      <button
-        type="button"
-        class="chatbot-close"
-        data-action="chatbot#close"
-        aria-label="Fechar assistente"
-      >
-        ×
-      </button>
+      <div class="chatbot-header__actions">
+        <button
+          type="button"
+          class="chatbot-reset"
+          data-action="chatbot#reset"
+          data-reset-url="<%= reset_chatbot_path %>"
+          title="Iniciar nova conversa"
+        >
+          Nova conversa
+        </button>
+
+        <button
+          type="button"
+          class="chatbot-close"
+          data-action="chatbot#close"
+          aria-label="Fechar assistente"
+        >
+          ×
+        </button>
+      </div>
     </header>
 
     <div

@@ -1414,3 +1414,63 @@ body.chatbot-open {
 .chatbot-submit:disabled {
   cursor: wait;
 }
+
+
+/* ========================================================= */
+/* ASSISTENTE — HISTÓRICO E NOVA CONVERSA                    */
+/* ========================================================= */
+
+.chatbot-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chatbot-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 38px;
+  padding: 0 11px;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background-color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.chatbot-reset:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.20);
+}
+
+.chatbot-reset:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+@media (max-width: 480px) {
+  .chatbot-header__actions {
+    gap: 6px;
+  }
+
+  .chatbot-reset {
+    min-height: 36px;
+    padding: 0 8px;
+
+    font-size: 10px;
+  }
+}

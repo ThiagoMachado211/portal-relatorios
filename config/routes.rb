@@ -35,6 +35,10 @@ Rails.application.routes.draw do
       to: "chatbots#create",
       as: :chatbot
 
+  delete "chatbot",
+       to: "chatbots#destroy",
+       as: :reset_chatbot
+
 
   namespace :admin do
     resources :users

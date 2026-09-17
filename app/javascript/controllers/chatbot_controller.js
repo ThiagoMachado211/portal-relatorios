@@ -138,6 +138,71 @@ export default class extends Controller {
     }
   }
 
+  async reset(event) {
+    if (this.loading) {
+      return
+    }
+
+    const button =
+      event.currentTarget
+
+    const url =
+      button.dataset.resetUrl
+
+    if (!url) {
+      return
+    }
+
+    button.disabled = true
+
+    try {
+      const response =
+        await fetch(
+          url,
+          {
+            method: "DELETE",
+
+            headers: {
+              "Accept": "application/json",
+              "X-CSRF-Token": this.csrfToken()
+            }
+          }
+        )
+
+      const data =
+        await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Não foi possível iniciar uma nova conversa."
+        )
+      }
+
+      this.clearMessages()
+
+    } catch (error) {
+      this.addMessage(
+        "error",
+        error.message ||
+        "Não foi possível iniciar uma nova conversa."
+      )
+
+    } finally {
+      button.disabled = false
+      this.inputTarget.focus()
+    }
+  }
+
+  clearMessages() {
+    this.messagesTarget.replaceChildren()
+
+    this.addMessage(
+      "assistant",
+      "Nova conversa iniciada. Como posso ajudar?"
+    )
+  }
+
   addMessage(type, text) {
     const wrapper =
       document.createElement("div")

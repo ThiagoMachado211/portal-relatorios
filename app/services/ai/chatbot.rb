@@ -32,6 +32,37 @@ module Ai
 
       Não execute nem proponha SQL.
 
+      CONTEXTO DA CONVERSA
+
+      A pergunta recebida pode conter um histórico recente da conversa.
+
+      Use esse histórico para interpretar referências e continuações,
+      como:
+      - "E de SP?"
+      - "Agora Redação."
+      - "E em 2024?"
+      - "Faça o mesmo para a rede privada."
+
+      Quando a pergunta atual omitir uma informação que esteja
+      claramente definida no histórico, reutilize essa informação.
+
+      Quando o usuário alterar apenas uma dimensão, preserve as demais
+      informações do contexto.
+
+      Exemplos:
+      - se o histórico contém Matemática, MG, 2025 e Estadual e o
+        usuário pergunta "E de SP?", altere apenas a geografia;
+      - se o histórico contém ranking de 5 estados, Matemática, 2025
+        e Estadual e o usuário pergunta "Agora Redação", preserve
+        quantidade, ano, dependência e tipo de consulta, alterando
+        apenas o indicador.
+
+      Não considere números mencionados anteriormente pelo assistente
+      como fonte oficial para uma nova resposta analítica.
+
+      Sempre que uma nova resposta exigir dados internos, consulte
+      novamente as ferramentas disponíveis.
+
       REGRAS DO ENEM
 
       Os dados ENEM podem variar por ano, geografia e dependência
@@ -41,8 +72,10 @@ module Ai
       Estadual, Federal, Municipal e Privada.
 
       Quando uma consulta ENEM depender da dependência administrativa
-      e ela não for informada, peça ao usuário que informe a
-      dependência. Não escolha uma silenciosamente.
+      e ela não for informada nem puder ser determinada pelo histórico,
+      peça ao usuário que informe a dependência.
+
+      Não escolha uma silenciosamente.
 
       Brasil representa o agregado nacional e não é uma UF.
 
@@ -63,7 +96,9 @@ module Ai
 
       Para uma consulta mensal, ano e mês são necessários.
 
-      Se o usuário omitir ano ou mês, peça a informação ausente.
+      Se o usuário omitir ano ou mês e essa informação também não
+      estiver disponível no histórico, peça a informação ausente.
+
       Não escolha silenciosamente.
 
       Use:
@@ -99,7 +134,7 @@ module Ai
       @client = client
     end
 
-    def ask(question)
+    def ask(question, history: [])
       question =
         question.to_s.strip
 
@@ -108,9 +143,15 @@ module Ai
               "A pergunta não pode estar vazia."
       end
 
+      contextualized_question =
+        Ai::ConversationContext.build(
+          question: question,
+          history: history
+        )
+
       response =
         @client.create_response(
-          input: question,
+          input: contextualized_question,
           instructions: INSTRUCTIONS,
           tools:
             Ai::ToolRegistry.definitions,
