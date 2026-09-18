@@ -2,7 +2,11 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_many :travel_metrics, dependent: :destroy
+  has_many :travel_metrics,
+           dependent: :destroy
+
+  has_many :chat_conversations,
+           dependent: :destroy
 
   enum :user_type, {
     client: 0,
@@ -10,8 +14,8 @@ class User < ApplicationRecord
     admin: 2
   }
 
-  validates :name, presence: true
-
+  validates :name,
+            presence: true
 
   # Gestão de Viagens:
   # manager e admin podem acessar dados financeiros;

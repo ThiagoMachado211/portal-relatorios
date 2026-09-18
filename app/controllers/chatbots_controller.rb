@@ -1,7 +1,7 @@
 class ChatbotsController < ApplicationController
   before_action :authenticate_user!
 
-  MAX_HISTORY_MESSAGES = 12
+  CONTEXT_MESSAGE_LIMIT = 12
 
   def create
     question =
@@ -13,27 +13,32 @@ class ChatbotsController < ApplicationController
       }, status: :unprocessable_entity
     end
 
+    conversation =
+      current_chat_conversation
+
+    history =
+      conversation_history(
+        conversation
+      )
+
     answer =
       Ai::Chatbot.new(
         user: current_user
       ).ask(
         question,
-        history: chatbot_history
+        history: history
       )
 
-    append_to_history(
-      role: "user",
-      content: question
-    )
-
-    append_to_history(
-      role: "assistant",
-      content: answer
+    save_exchange!(
+      conversation: conversation,
+      question: question,
+      answer: answer
     )
 
     render json: {
       answer: answer
     }
+
   rescue Ai::OpenaiClient::Error => e
     Rails.logger.error(
       "[Chatbot] OpenAI error: #{e.message}"
@@ -44,6 +49,7 @@ class ChatbotsController < ApplicationController
         "Não foi possível consultar o assistente agora. " \
         "Tente novamente em instantes."
     }, status: :service_unavailable
+
   rescue StandardError => e
     Rails.logger.error(
       "[Chatbot] #{e.class}: #{e.message}"
@@ -61,7 +67,7 @@ class ChatbotsController < ApplicationController
 
   def destroy
     session.delete(
-      chatbot_session_key
+      chatbot_conversation_session_key
     )
 
     render json: {
@@ -71,28 +77,83 @@ class ChatbotsController < ApplicationController
 
   private
 
-  def chatbot_history
-    Array(
-      session[chatbot_session_key]
-    )
+  def current_chat_conversation
+    conversation =
+      conversation_from_session
+
+    return conversation if conversation
+
+    create_chat_conversation!
   end
 
-  def append_to_history(role:, content:)
-    history =
-      chatbot_history.dup
+  def conversation_from_session
+    conversation_id =
+      session[
+        chatbot_conversation_session_key
+      ]
 
-    history << {
-      "role" => role.to_s,
-      "content" => content.to_s
-    }
+    return nil if conversation_id.blank?
 
-    session[chatbot_session_key] =
-      history.last(
-        MAX_HISTORY_MESSAGES
+    current_user
+      .chat_conversations
+      .find_by(
+        id: conversation_id
       )
   end
 
-  def chatbot_session_key
-    "chatbot_history_user_#{current_user.id}"
+  def create_chat_conversation!
+    conversation =
+      current_user
+        .chat_conversations
+        .create!
+
+    session[
+      chatbot_conversation_session_key
+    ] = conversation.id
+
+    conversation
+  end
+
+  def conversation_history(conversation)
+    messages =
+      conversation
+        .chat_messages
+        .order(created_at: :desc)
+        .limit(CONTEXT_MESSAGE_LIMIT)
+        .to_a
+        .reverse
+
+    messages.map do |message|
+      {
+        "role" => message.role,
+        "content" => message.content
+      }
+    end
+  end
+
+  def save_exchange!(
+    conversation:,
+    question:,
+    answer:
+  )
+    ChatMessage.transaction do
+      conversation
+        .chat_messages
+        .create!(
+          role: :user,
+          content: question
+        )
+
+      conversation
+        .chat_messages
+        .create!(
+          role: :assistant,
+          content: answer.to_s
+        )
+    end
+  end
+
+  def chatbot_conversation_session_key
+    "chatbot_conversation_user_#{current_user.id}"
   end
 end
